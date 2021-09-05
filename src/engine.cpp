@@ -10,6 +10,7 @@ void engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint
 {
     engineWindow = window(w, h, "suus");
     engineWindow.init();
+    inputPrevent = 0;
     r = g = b = 0.f;
     a = 1.f;
     initGLAD();
@@ -40,6 +41,7 @@ int engine::initGLAD()
 
 void engine::keyboardHandler()
 {
+    
     if(inputPrevent <= 0)
     {
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -72,19 +74,24 @@ void engine::run()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     while(!engineWindow.quit)
     {
-        keyboardHandler();
+       
 
         glClearColor(r, g, b, a);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
+
+        glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -3.f));
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(45.f), 800.f / 600.f, 0.1f, 100.f);
+        Mesh.rotate(glfwGetTime(), vec3(1.f, 1.f, 1.f));
 
         //
         Shader.use();
-        textureAltas.useTexture(textureAltas.blockAtlas);
-        Mesh.rotate(glfwGetTime(), vec3(1.f, 1.f, 1.f));
-        Mesh.draw(&Shader);
-   
-
+        textureAltas.useTexture(textureAltas.nesCafey);
+        Shader.view(view);
+        Shader.projection(projection);
+        Mesh.draw(&Shader, projection, view);
         engineWindow.update();
+        keyboardHandler();
         if(inputPrevent >= 0) inputPrevent--;
     }
     std::cout<<"--- Fin du rendu ---"<<std::endl;

@@ -125,13 +125,25 @@ void shader::init(std::string vertexPath, std::string fragmentPath)
     compileVertex();
     compileFragment();
     linkProgram();
-    transformId = glGetUniformLocation(shaderProgram, "transform");
+    modelId = glGetUniformLocation(shaderProgram, "model");
+    projectionId = glGetUniformLocation(shaderProgram, "projection");
+    viewId = glGetUniformLocation(shaderProgram, "view");
     
 }
 
 void shader::transform(glm::mat4 transformMatrix)
 {
-    glUniformMatrix4fv(transformId, 1, GL_FALSE, glm::value_ptr(transformMatrix));
+    glUniformMatrix4fv(modelId, 1, GL_FALSE, glm::value_ptr(transformMatrix));
+}
+
+void shader::view(glm::mat4& viewMatrix)
+{
+    glUniformMatrix4fv(viewId, 1, GL_FALSE, &viewMatrix[0][0]);
+}
+
+void shader::projection(glm::mat4 projectionMatrix)
+{
+    glUniformMatrix4fv(projectionId, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 }
 
 void shader::use()

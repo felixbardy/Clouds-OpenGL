@@ -28,6 +28,8 @@ class shader
     void setUniform(std::string uniformName, float x, float y, float z, float a);
     void addUniform(std::string uniformName);
     void transform(glm::mat4 transformMatrix);
+    void view(glm::mat4& viewMatrix);
+    void projection(glm::mat4 projectionMatrix);
 
     ~shader();
 
@@ -44,7 +46,7 @@ class shader
 
     std::vector<uniform> uniformList;
 
-    int transformId;
+    int modelId, viewId, projectionId;
 
     int success;
     char infolog[512];

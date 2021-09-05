@@ -4,13 +4,13 @@
 
 mesh::mesh()
 {
-    transform = glm::mat4(1.f);
+    model = glm::mat4(1.f);
 }
 
 void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<float> c, std::vector<uint> indicesArray)
 {
-    
     indices = indicesArray;
+    std::cout<<indicesArray.size()<<std::endl;
     for(int j = 0; j < vertexArray.size()/3; j++)
     {
         for(int i = 0; i < 3; i++)
@@ -50,13 +50,65 @@ void mesh::setSquare(std::vector<float> u, std::vector<float> c)
         0.5f,  0.5f, 0.0f,  // top right        3--0
         0.5f, -0.5f, 0.0f,  // bottom right     |  |
         -0.5f, -0.5f, 0.0f,  // bottom left     2--1
-        -0.5f,  0.5f, 0.0f   // top left 
+        -0.5f,  0.5f, 0.0f   // top left
+
     };
 
     std::vector<uint> s = 
     {
         3, 0, 2,
         2, 0, 1
+    };
+
+    setPolygon(v, u, c, s);
+}
+
+void mesh::setCube(std::vector<float> u, std::vector<float> c)
+{
+    std::vector<float> v = 
+    {
+        0.5f,  0.5f, 0.5f,  // top right        3--0
+        0.5f, -0.5f, 0.5f,  // bottom right     |  |
+        -0.5f, -0.5f, 0.5f,  // bottom left     2--1
+        -0.5f,  0.5f, 0.5f,   // top left
+        
+        0.5f,  0.5f, -0.5f,  // top right        7--4
+        0.5f, -0.5f, -0.5f,  // bottom right     |  |
+        -0.5f, -0.5f, -0.5f,  // bottom left     6--5
+        -0.5f,  0.5f, -0.5f   // top left
+    };
+
+    /*
+      7--4  
+     /  /|
+    3--0 5
+    |  |/
+    2--1
+    */
+
+    std::vector<uint> s = 
+    {
+        // AVANT ARRIERE
+        3, 0, 2, 
+        2, 0, 1,
+
+        7, 6, 4,
+        4, 6, 5,
+
+        // GAUCHE DROITE
+        7, 6, 3,
+        3, 6, 2,
+
+        0, 4, 1,
+        1, 4, 5,
+
+        // HAUT BAS
+        7, 4, 3,
+        3, 4, 0,
+
+        6, 2, 5,
+        5, 2, 1
+
     };
 
     setPolygon(v, u, c, s);
@@ -86,6 +138,7 @@ void mesh::init()
     initEBO();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);  
 }
 
 void mesh::initVAO()
@@ -94,32 +147,35 @@ void mesh::initVAO()
     glBindVertexArray(VAO);// Bind l'objet a la CG
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // Lie le buffer de data aux attribues du VAO
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex.size(), &vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO VAO
+   
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+   
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+   
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);  
 }
 
 void mesh::rotate(float angle, glm::vec3 vAxis)
 {
-    transform = glm::rotate(transform, angle, vAxis);
+    model = glm::rotate(model, angle, vAxis);
 }
 void mesh::scale(glm::vec3 vScale)
 {
-    transform =  glm::scale(transform, vScale);
+    model =  glm::scale(model, vScale);
 }
 void mesh::translate(glm::vec3 vTranslate)
 {
-    transform = glm::translate(transform, vTranslate);
+    model = glm::translate(model, vTranslate);
 }
-void mesh::draw(shader * shaderToUse)
+void mesh::draw(shader * shaderToUse, glm::mat4 projection, glm::mat4 view)
 {
-    shaderToUse->transform(transform);
+    shaderToUse->transform(model);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    transform = glm::mat4(1.f);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    model = glm::mat4(1.f);
 }
 
 void mesh::initVBO()

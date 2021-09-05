@@ -11,9 +11,14 @@ int main()
         1.f, 1.f,
         1.f, 0.f,
         0.f, 0.f,
-        0.f, 1.0f
+        0.f, 1.f,
+        
+        1.f, 1.f,
+        1.f, 0.f,
+        0.f, 0.f,
+        0.f, 1.f
     };
-    Test.Mesh.setSquare(uv);
+    Test.Mesh.setCube(uv);
     Test.setBackgroundColor(0.1f, 0.1f, 0.1f, 1.f);
     Test.run();
     return 0;

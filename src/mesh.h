@@ -19,14 +19,17 @@ class mesh
     ~mesh();
 
     
-    glm::mat4 transform;
+    glm::mat4 model;
     void rotate(float angle, glm::vec3 vAxis);
     void scale(glm::vec3 vScale);
     void translate(glm::vec3 vTranslate);
-    void draw(shader * shaderToUse);
+    void draw(shader * shaderToUse, glm::mat4 projection, glm::mat4 view);
+    
     void setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<float> c, std::vector<uint> indicesArray);
     void setTriangle(std::vector<float> u = {}, std::vector<float> c = {});
     void setSquare(std::vector<float> u = {}, std::vector<float> c = {});
+    void setCube(std::vector<float> u = {}, std::vector<float> c = {});
+
     uint & getVAO();
 
     unsigned int VAO, VBO, EBO;

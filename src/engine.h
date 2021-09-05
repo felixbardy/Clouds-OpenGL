@@ -31,7 +31,7 @@ class engine
 
     window engineWindow;
     shader Shader;
-    int inputPrevent = 0;
+    int inputPrevent;
     bool isWireframe = false;
     void keyboardHandler();
 
