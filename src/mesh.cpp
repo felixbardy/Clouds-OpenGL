@@ -7,43 +7,45 @@ mesh::mesh()
     model = glm::mat4(1.f);
 }
 
-void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<float> c, std::vector<uint> indicesArray)
+void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray)
 {
     indices = indicesArray;
     std::cout<<indicesArray.size()<<std::endl;
-    for(int j = 0; j < vertexArray.size()/3; j++)
+    for(int i = 0; i < indicesArray.size(); i++)
     {
-        for(int i = 0; i < 3; i++)
+        for(int j = 0; j < 3; j++)
         {
-            vertex.push_back(vertexArray[j*3+i]);
+            vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
         }
-        for(int i = 0; i < 3; i++)
+        for(int j = 0; j < 3; j++)
         {
             if(!c.empty())
             {
-                vertex.push_back(c[j*3+i]);
+                vertex.push_back(c[uI[i] * 3 + j]);
             }
             else
             {
-                vertex.push_back(1.0f);
+                vertex.push_back(1.f);
             }
         }
-        for(int i = 0; i < 2; i++)
+        for(int j = 0; j < 2; j++)
         {
             if(!u.empty())
             {
-                vertex.push_back(u[j*2+i]);
+                vertex.push_back(u[uI[i] * 2 + j]);
             }
             else
             {
-                vertex.push_back(1.0f);
+                vertex.push_back(1.f);
             }
         }
+        std::cout<<"size = "<<vertex.size()<<std::endl;
+        
     }
     init();
 }
 
-void mesh::setSquare(std::vector<float> u, std::vector<float> c)
+void mesh::setSquare(std::vector<float> u, std::vector<uint> uI,  std::vector<float> c)
 {
     std::vector<float> v = 
     {
@@ -51,7 +53,6 @@ void mesh::setSquare(std::vector<float> u, std::vector<float> c)
         0.5f, -0.5f, 0.0f,  // bottom right     |  |
         -0.5f, -0.5f, 0.0f,  // bottom left     2--1
         -0.5f,  0.5f, 0.0f   // top left
-
     };
 
     std::vector<uint> s = 
@@ -60,10 +61,10 @@ void mesh::setSquare(std::vector<float> u, std::vector<float> c)
         2, 0, 1
     };
 
-    setPolygon(v, u, c, s);
+    setPolygon(v, u, uI, c, s);
 }
 
-void mesh::setCube(std::vector<float> u, std::vector<float> c)
+void mesh::setCube(std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
 {
     std::vector<float> v = 
     {
@@ -106,15 +107,15 @@ void mesh::setCube(std::vector<float> u, std::vector<float> c)
         7, 4, 3,
         3, 4, 0,
 
-        6, 2, 5,
-        5, 2, 1
+        2, 6, 1,
+        1, 6, 5
 
     };
 
-    setPolygon(v, u, c, s);
+    setPolygon(v, u, uI, c, s);
 }
 
-void mesh::setTriangle(std::vector<float> u, std::vector<float> c)
+void mesh::setTriangle(std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
 {
     std::vector<float> v = 
    {
@@ -123,13 +124,14 @@ void mesh::setTriangle(std::vector<float> u, std::vector<float> c)
         0.0f,  0.5f, 0.0f
     };
 
+
     std::vector<uint> s =
     {
         0, 1, 2    
     };
 
-    setPolygon(v, u, c, s);
-}
+    setPolygon(v, u, uI, c, s);
+} 
 
 void mesh::init()
 {
@@ -155,7 +157,7 @@ void mesh::initVAO()
     glEnableVertexAttribArray(1);
    
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);  
+    glEnableVertexAttribArray(2);
 }
 
 void mesh::rotate(float angle, glm::vec3 vAxis)
@@ -174,7 +176,9 @@ void mesh::draw(shader * shaderToUse, glm::mat4 projection, glm::mat4 view)
 {
     shaderToUse->transform(model);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    std::cout<<vertex.size()/8<<std::endl;
+    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, vertex.size()/8);
     model = glm::mat4(1.f);
 }
 

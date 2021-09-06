@@ -25,10 +25,10 @@ class mesh
     void translate(glm::vec3 vTranslate);
     void draw(shader * shaderToUse, glm::mat4 projection, glm::mat4 view);
     
-    void setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<float> c, std::vector<uint> indicesArray);
-    void setTriangle(std::vector<float> u = {}, std::vector<float> c = {});
-    void setSquare(std::vector<float> u = {}, std::vector<float> c = {});
-    void setCube(std::vector<float> u = {}, std::vector<float> c = {});
+    void setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray);
+    void setTriangle(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});
+    void setSquare(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});
+    void setCube(std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
 
     uint & getVAO();
 
