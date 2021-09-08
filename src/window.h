@@ -18,6 +18,9 @@ class window
 
     void keyboardHandler();
     GLFWwindow* getWindow();
+
+    int getWidth();
+    int getHeight();
     
 
     private:
@@ -25,6 +28,10 @@ class window
     int width, height;
     std::string title;
     GLFWwindow* Window;
+
+    double xPos, yPos;
+
+    
 
     int initGlfw(const int & major = 4, const int & minor = 6);
     int initWindow();

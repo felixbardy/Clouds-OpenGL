@@ -29,7 +29,7 @@ class mesh
     void setTriangle(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});
     void setSquare(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});
     void setCube(std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
-
+    void resetModel();
     uint & getVAO();
 
     unsigned int VAO, VBO, EBO;

@@ -21,10 +21,12 @@ int window::initGlfw(const int & major, const int & minor)
     
 }
 
+
+
 int window::initWindow()
 {
     std::cout<<"Creation de la window GLFW"<<std::endl;
-    Window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+    Window = glfwCreateWindow(width, height, title.c_str(), glfwGetPrimaryMonitor(), NULL);
     if(Window == nullptr)
     {
         std::cerr<<"ERREUR CREATION window GLFW"<<std::endl;
@@ -32,6 +34,9 @@ int window::initWindow()
         return -1;
     }
     glfwMakeContextCurrent(Window);
+    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    
+
     std::cout<<"window GLFW Cree"<<std::endl;
     return 0;
 }
@@ -47,6 +52,18 @@ window::window()
     height = 0;
     title = "void";
     Window = nullptr;
+}
+
+int window::getWidth()
+{
+    glfwGetWindowSize(Window, &width, &height);
+    return width;
+}
+
+int window::getHeight()
+{
+    glfwGetWindowSize(Window, &width, &height);
+    return height;
 }
 
 window::window(int w, int h, const std::string& t)

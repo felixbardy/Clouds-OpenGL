@@ -10,7 +10,7 @@ mesh::mesh()
 void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray)
 {
     indices = indicesArray;
-    std::cout<<indicesArray.size()<<std::endl;
+    //std::cout<<indicesArray.size()<<std::endl;
     for(int i = 0; i < indicesArray.size(); i++)
     {
         for(int j = 0; j < 3; j++)
@@ -39,7 +39,7 @@ void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std:
                 vertex.push_back(1.f);
             }
         }
-        std::cout<<"size = "<<vertex.size()<<std::endl;
+        //std::cout<<"size = "<<vertex.size()<<std::endl;
         
     }
     init();
@@ -172,11 +172,16 @@ void mesh::translate(glm::vec3 vTranslate)
 {
     model = glm::translate(model, vTranslate);
 }
+void mesh::resetModel()
+{
+    model = glm::mat4(1.f);
+}
+
 void mesh::draw(shader * shaderToUse, glm::mat4 projection, glm::mat4 view)
 {
     shaderToUse->transform(model);
     glBindVertexArray(VAO);
-    std::cout<<vertex.size()/8<<std::endl;
+    //std::cout<<vertex.size()/8<<std::endl;
     //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_TRIANGLES, 0, vertex.size()/8);
     model = glm::mat4(1.f);
