@@ -11,15 +11,15 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
     camera * Cam = static_cast<camera *>(data);
     if (Cam->initMouse)
     {
-        Cam->lX = xPos;
-        Cam->lY = yPos;
+        Cam->setLastX(xPos);
+        Cam->setLastY(yPos);
         Cam->initMouse = false;
     }
     float xOffset, yOffset;
-    xOffset = (xPos - Cam->lX) * Cam->mouseSensitivity;
-    yOffset = (Cam->lY - yPos) * Cam->mouseSensitivity;
-    Cam->lX = xPos;
-    Cam->lY = yPos;
+    xOffset = (xPos - Cam->getLastX()) * Cam->getMouseSensitivity();
+    yOffset = (Cam->getLastY() - yPos) * Cam->getMouseSensitivity();
+    Cam->setLastX(xPos);
+    Cam->setLastY(yPos);
     Cam->yawD += xOffset;
     Cam->pitchD += yOffset;
     if(Cam->pitchD > 89.0f)
@@ -37,19 +37,23 @@ void engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint
 {
     engineWindow = window(w, h, "suus");
     engineWindow.init();
-    inputPrevent = 0;
-    Cam.lX = w / 2.f;
-    Cam.lY = h / 2.f;
-    r = g = b = 0.f;
-    a = 1.f;
     initGLAD();
-    Cam = camera();
-    Shader.init(vertexPath, fragmentPath);
+
+    World = new world;
+    World->Cam->setLastX(w / 2.f);
+    World->Cam->setLastY(h / 2.f);
+    World->projection = mat4(1.f);
+    
     glfwSetFramebufferSizeCallback(engineWindow.getWindow(), resetCamerawindow);
-    glfwSetWindowUserPointer(engineWindow.getWindow(), &Cam);
+    glfwSetWindowUserPointer(engineWindow.getWindow(), World->Cam);
     glfwSetCursorPosCallback(engineWindow.getWindow(), cursorCallback);  
     textureAltas.initAtlas();
-    projection = mat4(1.f);
+
+    r = g = b = 0.f;
+    a = 1.f;
+    inputPrevent = 0;
+
+    Shader.init(vertexPath, fragmentPath);
 }
 
 void engine::setBackgroundColor(float red, float green, float blue, float alpha)
@@ -72,11 +76,11 @@ int engine::initGLAD()
     return 0;
 }
 
-void engine::keyboardHandler()
+void engine::keyboardHandler(camera * Cam)
 {
     float deltaTime = glfwGetTime() - lastTime;
     lastTime = glfwGetTime();
-    float speed = Cam.getSpeed() * deltaTime;
+    float speed = Cam->getSpeed() * deltaTime;
     if(inputPrevent <= 0)
     {
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -95,27 +99,27 @@ void engine::keyboardHandler()
     
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         {
-            Cam.move(FORWARD, speed);
+            Cam->move(FORWARD, speed);
         }
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
         {
-            Cam.move(BACKWARD, speed);
+            Cam->move(BACKWARD, speed);
         }
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
         {
-            Cam.move(LEFT, speed);
+            Cam->move(LEFT, speed);
         }
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
         {
-            Cam.move(RIGHT, speed);
+            Cam->move(RIGHT, speed);
         }
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            Cam.move(UP, speed);
+            Cam->move(UP, speed);
         }
         if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
-            Cam.move(BOTTOM, speed);
+            Cam->move(BOTTOM, speed);
         }
     }
 
@@ -141,36 +145,25 @@ void engine::run()
     std::cout<<"--- Debut du rendu ---"<<std::endl;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   
     
+    World->Mesh->setPosition(position);
 
     while(!engineWindow.quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-
-        Cam.update();
+        textureAltas.useTexture(textureAltas.nesCafey);World->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
         
-        
-        
-        
-        projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
-        //
         Shader.use();
-        textureAltas.useTexture(textureAltas.nesCafey);
-        Shader.view(Cam.getViewRef());
-        Shader.projection(projection);
-        for(int i = 0; i < position.size(); i++)
-        {
-            Mesh.resetModel();
-            Mesh.rotate(glfwGetTime(), position[i]);
-            Mesh.translate(position[i]);
-            Mesh.scale(vec3(0.5f, 0.5f, 0.5f));
-            Mesh.draw(&Shader, projection, Cam.getView());
-        }
-        //Mesh.draw(&Shader, projection, view);
+        Shader.view(World->Cam->getViewRef());
+        Shader.projection(World->projection);
+
+        World->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
+        World->update();
+        World->render(Shader, glfwGetTime());
+
         engineWindow.update();
-        keyboardHandler();
+        keyboardHandler(World->Cam);
         if(inputPrevent >= 0) inputPrevent--;
         time+=0.01;
     }

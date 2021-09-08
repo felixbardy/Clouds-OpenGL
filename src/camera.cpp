@@ -9,11 +9,41 @@ camera::camera()
     view = glm::lookAt(position, position + front, up);
 }
 
+void camera::setLastX(float newX)
+{
+    lX = newX;
+}
+
+void camera::setLastY(float newY)
+{
+    lY = newY;
+}
+
+void camera::setMouseSensitivity(float nS)
+{
+    mouseSensitivity = nS;
+}
+
+float camera::getMouseSensitivity()
+{
+    return mouseSensitivity;
+}
+
+float camera::getLastX()
+{
+    return lX;
+}
+
+float camera::getLastY()
+{
+    return lY;
+}
+
 camera::camera(int x, int y, int z)
 {
     position   = glm::vec3(0.0f, 0.0f,  3.0f);
     front = glm::vec3(0.0f, 0.0f, -1.0f);
-    up    = glm::vec3(0.0f, 1.0f,  0.0f);
+    up = glm::vec3(0.0f, 1.0f,  0.0f);
     view = glm::mat4(1.f);
     view = glm::lookAt(position, position + front, up);
 }
@@ -79,8 +109,6 @@ void camera::update()
 {
     view = glm::lookAt(position, position + front, up);
     right = glm::normalize(glm::cross(front, up));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-    //up    = glm::normalize(glm::cross(right, front));
-
 }
 
 

@@ -20,11 +20,17 @@ class mesh
 
     
     glm::mat4 model;
+
+    std::vector<glm::vec3> position;
+
     void rotate(float angle, glm::vec3 vAxis);
     void scale(glm::vec3 vScale);
     void translate(glm::vec3 vTranslate);
     void draw(shader * shaderToUse, glm::mat4 projection, glm::mat4 view);
     
+    
+    void render(float angle, shader & Shader, glm::mat4 projection, glm::mat4 view);
+    void setPosition(std::vector<glm::vec3> positions);
     void setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray);
     void setTriangle(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});
     void setSquare(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});

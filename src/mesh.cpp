@@ -5,6 +5,9 @@
 mesh::mesh()
 {
     model = glm::mat4(1.f);
+    position = {
+        glm::vec3(0.f, 0.f, 0.f)
+    };
 }
 
 void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray)
@@ -205,6 +208,23 @@ void mesh::initEBO()
 uint& mesh::getVAO()
 {
     return VAO;
+}
+
+void mesh::render(float angle, shader & Shader, glm::mat4 projection, glm::mat4 view)
+{
+    for(int i = 0; i < position.size(); i++)
+    {
+        resetModel();
+        rotate(angle, position[i]);
+        translate(position[i]);
+        scale(glm::vec3(0.5f, 0.5f, 0.5f));
+        draw(&Shader, projection, view);
+    }
+}
+
+void mesh::setPosition(std::vector<glm::vec3> positions)
+{
+    position = positions;
 }
 
 mesh::~mesh()

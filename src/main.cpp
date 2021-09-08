@@ -39,7 +39,7 @@ int main()
         3, 2, 0, // Bas
         0, 2, 1,
     };
-    Test.Mesh.setCube(uv, uvI);
+    Test.World->Mesh->setCube(uv, uvI);
     Test.setBackgroundColor(0.4f, 0.4f, 0.8f, 1.f);
     Test.run();
     return 0;
