@@ -12,7 +12,8 @@ void textures::initAtlas()
 
     loadTexture(blockAtlas, "./data/blockAtlas.png");
     loadTexture(nesCafey, "./data/coffeeSquare.jpg");
-
+    loadTexture(cage, "./data/Scage.jpg");
+    
 }
 
 void textures::useTexture(const uint& texture)

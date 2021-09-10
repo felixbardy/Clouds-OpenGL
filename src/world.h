@@ -9,9 +9,12 @@ class world
 {
     public:
 
-    mesh * Mesh;
+    std::vector<mesh *> Meshs;
     camera * Cam;
     glm::mat4 projection;
+
+    void addMesh(const textures& textures);
+    
 
     void render(shader & Shader, float time);
     void update();

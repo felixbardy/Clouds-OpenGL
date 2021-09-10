@@ -132,27 +132,20 @@ shader* engine::getShader()
 }
 
 void engine::run()
-{
-    std::vector<vec3> position = 
-    {
-        vec3(-1, 0, -1),
-        vec3(-1, 0, 1),
-        vec3(0, -0.5, 0),
-        vec3(1, 0, -1),
-        vec3(1, 0, 1)
-    };
+{   
+    std::vector<vec3> position;
+    
     float time = 0;
     std::cout<<"--- Debut du rendu ---"<<std::endl;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    World->Mesh->setPosition(position);
-
+    World->addMesh(textureAltas);
+    std::cout<<World->Meshs.size()<<std::endl;
     while(!engineWindow.quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        textureAltas.useTexture(textureAltas.nesCafey);World->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
+        textureAltas.useTexture(textureAltas.blockAtlas);World->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
         
         Shader.use();
         Shader.view(World->Cam->getViewRef());

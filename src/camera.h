@@ -14,8 +14,6 @@ class camera
     glm::mat4 & getViewRef();
     glm::mat4 getView();
 
-    
-    
     camera(int x, int y, int z);
     camera();
 
@@ -36,7 +34,6 @@ class camera
     float getMouseSensitivity();
     void setMouseSensitivity(float newSensitivity);
 
-    
     bool initMouse = true;
     float yawD = -90.f;
     float pitchD = 0.f;

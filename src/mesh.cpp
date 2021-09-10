@@ -10,10 +10,11 @@ mesh::mesh()
     };
 }
 
-void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray)
+void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray)
 {
     indices = indicesArray;
     //std::cout<<indicesArray.size()<<std::endl;
+    uint id = 1;//rand()%(texture.blockTextures.size()+1);
     for(int i = 0; i < indicesArray.size(); i++)
     {
         for(int j = 0; j < 3; j++)
@@ -35,7 +36,17 @@ void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std:
         {
             if(!u.empty())
             {
-                vertex.push_back(u[uI[i] * 2 + j]);
+                int val;
+                if(j == 0) 
+                {
+                    val = texture.blockTextures[id][i/6]%4;
+                }
+                else
+                {
+                    val = (3 - texture.blockTextures[id][i/6]/4);
+                }
+                std::cout<<val<<std::endl;
+                vertex.push_back((float)val/4 + 0.25f * u[uI[i] * 2 + j]);
             }
             else
             {
@@ -48,26 +59,7 @@ void mesh::setPolygon(std::vector<float> vertexArray, std::vector<float> u, std:
     init();
 }
 
-void mesh::setSquare(std::vector<float> u, std::vector<uint> uI,  std::vector<float> c)
-{
-    std::vector<float> v = 
-    {
-        0.5f,  0.5f, 0.0f,  // top right        3--0
-        0.5f, -0.5f, 0.0f,  // bottom right     |  |
-        -0.5f, -0.5f, 0.0f,  // bottom left     2--1
-        -0.5f,  0.5f, 0.0f   // top left
-    };
-
-    std::vector<uint> s = 
-    {
-        3, 0, 2,
-        2, 0, 1
-    };
-
-    setPolygon(v, u, uI, c, s);
-}
-
-void mesh::setCube(std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
+void mesh::setCube(const textures & texture, std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
 {
     std::vector<float> v = 
     {
@@ -82,13 +74,42 @@ void mesh::setCube(std::vector<float> u, std::vector<uint> uI, std::vector<float
         -0.5f,  0.5f, -0.5f   // top left
     };
 
-    /*
+    u =
+    {
+        1.f, 1.f,
+        1.f, 0.f,
+        0.f, 0.f,
+        0.f, 1.f
+    };
+    
+    
+    uI = 
+    {/*
       7--4  
-     /  /|
+    /  / | 764 465
     3--0 5
     |  |/
     2--1
     */
+        3, 0, 2, // Devant
+        2, 0, 1,
+
+        0, 1, 3, // derriere
+        3, 1, 2,
+
+        3, 2, 0, // Gauche
+        0, 2, 1,
+
+        3, 0, 2, // droite
+        2, 0, 1,
+
+        3, 0, 2, // Haut
+        2, 0, 1,
+
+        3, 2, 0, // Bas
+        0, 2, 1,
+    };
+    
 
     std::vector<uint> s = 
     {
@@ -115,26 +136,8 @@ void mesh::setCube(std::vector<float> u, std::vector<uint> uI, std::vector<float
 
     };
 
-    setPolygon(v, u, uI, c, s);
+    setPolygon(texture, v, u, uI, c, s);
 }
-
-void mesh::setTriangle(std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
-{
-    std::vector<float> v = 
-   {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f
-    };
-
-
-    std::vector<uint> s =
-    {
-        0, 1, 2    
-    };
-
-    setPolygon(v, u, uI, c, s);
-} 
 
 void mesh::init()
 {
@@ -180,7 +183,7 @@ void mesh::resetModel()
     model = glm::mat4(1.f);
 }
 
-void mesh::draw(shader * shaderToUse, glm::mat4 projection, glm::mat4 view)
+void mesh::draw(shader * shaderToUse, glm::mat4& projection, glm::mat4& view)
 {
     shaderToUse->transform(model);
     glBindVertexArray(VAO);
@@ -210,14 +213,14 @@ uint& mesh::getVAO()
     return VAO;
 }
 
-void mesh::render(float angle, shader & Shader, glm::mat4 projection, glm::mat4 view)
+void mesh::render(float angle, shader & Shader, glm::mat4& projection, glm::mat4& view)
 {
     for(int i = 0; i < position.size(); i++)
     {
         resetModel();
-        rotate(angle, position[i]);
+        //rotate(angle/10.f, glm::vec3(glm::cos(position[i].x), log2(position[i].y), sin(position[i].z)));
         translate(position[i]);
-        scale(glm::vec3(0.5f, 0.5f, 0.5f));
+        //rotate(position[i].length, glm::vec3(1.f));
         draw(&Shader, projection, view);
     }
 }
