@@ -96,8 +96,8 @@ void engine::keyboardHandler(camera * Cam)
             else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             inputPrevent = 10;
         }
-    
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+    }
+     if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         {
             Cam->move(FORWARD, speed);
         }
@@ -121,7 +121,6 @@ void engine::keyboardHandler(camera * Cam)
         {
             Cam->move(BOTTOM, speed);
         }
-    }
 
     
 }
