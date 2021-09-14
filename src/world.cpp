@@ -9,8 +9,7 @@ world::world()
 void world::addMesh(const textures& textures)
 {
     mesh * nM = new mesh();
-    nM->setCube(textures);
-    
+    nM->setCube(textures, 5);
     glm::vec3 pos = glm::vec3(Meshs.size()%16, 0.f, (Meshs.size()/16)%16);
     pos.y = Meshs.size()/256;
     nM->position.push_back(pos);

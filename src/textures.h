@@ -21,8 +21,9 @@ class textures
     std::vector<std::vector<uint>> blockTextures = 
     {
         {0, 0, 0, 0, 0, 0}, //Stone
-        {5, 5, 5, 5, 6, 6},
-        {10, 10, 10, 10, 10, 10} //Stone DEV DER G D H B
+        {5, 5, 5, 5, 6, 6}, // Oak Log
+        {10, 10, 10, 10, 10, 10}, //Sand DEV DER G D H B
+        {12, 13, 13, 13, 15, 15}
     };
 
 

@@ -32,10 +32,8 @@ class mesh
     
     void render(float angle, shader & Shader, glm::mat4 & projection, glm::mat4 & view);
     void setPosition(std::vector<glm::vec3> positions);
-    void setPolygon(const textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray);
-    void setTriangle(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});
-    void setSquare(std::vector<float> u = {}, std::vector<uint> uI = {}, std::vector<float> c = {});
-    void setCube(const textures & texture, std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
+    void setPolygon(const textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray, uint id);
+    void setCube(const textures & texture, uint id = 0, std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
     void resetModel();
     uint & getVAO();
 

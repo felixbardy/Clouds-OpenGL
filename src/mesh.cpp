@@ -10,11 +10,11 @@ mesh::mesh()
     };
 }
 
-void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray)
+void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
 {
     indices = indicesArray;
-    //std::cout<<indicesArray.size()<<std::endl;
-    uint id = 1;//rand()%(texture.blockTextures.size()+1);
+    
+    
     for(int i = 0; i < indicesArray.size(); i++)
     {
         for(int j = 0; j < 3; j++)
@@ -45,7 +45,6 @@ void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, s
                 {
                     val = (3 - texture.blockTextures[id][i/6]/4);
                 }
-                std::cout<<val<<std::endl;
                 vertex.push_back((float)val/4 + 0.25f * u[uI[i] * 2 + j]);
             }
             else
@@ -53,13 +52,11 @@ void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, s
                 vertex.push_back(1.f);
             }
         }
-        //std::cout<<"size = "<<vertex.size()<<std::endl;
-        
     }
     init();
 }
 
-void mesh::setCube(const textures & texture, std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
+void mesh::setCube(const textures & texture, uint id, std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
 {
     std::vector<float> v = 
     {
@@ -135,8 +132,7 @@ void mesh::setCube(const textures & texture, std::vector<float> u, std::vector<u
         1, 6, 5
 
     };
-
-    setPolygon(texture, v, u, uI, c, s);
+    setPolygon(texture, v, u, uI, c, s, 0);
 }
 
 void mesh::init()

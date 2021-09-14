@@ -38,6 +38,7 @@ class camera
     float yawD = -90.f;
     float pitchD = 0.f;
     glm::vec3 front = glm::vec3(0.f, 0.f, -1.f);
+    glm::vec3 frontMove = front;
 
     private:
 

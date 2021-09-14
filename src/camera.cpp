@@ -56,15 +56,23 @@ float camera::getSpeed()
 void camera::move(movement m, float speed)
 {   
     float prevY = position.y;
+    glm::vec3 F = front;
+    if(F.x < 0) F.x = -1; 
+    else F.x = 1;
+
+    if(F.z < 0) F.z = -1; 
+    else F.z = 1;
+
+    
     switch (m)
     {
-    case FORWARD:
-        position += front * speed;
+    case FORWARD:   
+        position += frontMove * speed;
         position.y = prevY;
         break;
     
     case BACKWARD:
-        position -= front * speed;
+        position -= frontMove * speed;
         position.y = prevY;
         break;
 

@@ -26,7 +26,7 @@ int window::initGlfw(const int & major, const int & minor)
 int window::initWindow()
 {
     std::cout<<"Creation de la window GLFW"<<std::endl;
-    Window = glfwCreateWindow(width, height, title.c_str(), glfwGetPrimaryMonitor(), NULL);
+    Window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
     if(Window == nullptr)
     {
         std::cerr<<"ERREUR CREATION window GLFW"<<std::endl;

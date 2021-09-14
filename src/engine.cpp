@@ -28,10 +28,11 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
         Cam->pitchD = -89.0f;
 
     glm::vec3 FG;
-    FG.x = cos(glm::radians(Cam->yawD)) * cos(glm::radians(Cam->pitchD));
+    FG.x = cos(glm::radians(Cam->yawD)); //* cos(glm::radians(Cam->pitchD));
     FG.y = sin(glm::radians(Cam->pitchD));
-    FG.z = sin(glm::radians(Cam->yawD)) * cos(glm::radians(Cam->pitchD));
-    Cam->front = normalize(FG);
+    FG.z = sin(glm::radians(Cam->yawD)); //* cos(glm::radians(Cam->pitchD));
+    Cam->frontMove = normalize(FG);
+    Cam->front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->pitchD)), FG.y, FG.z * cos(glm::radians(Cam->pitchD))));
 }
 void engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint h)
 {
@@ -55,7 +56,6 @@ void engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint
 
     Shader.init(vertexPath, fragmentPath);
 }
-
 void engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
     r = red;
@@ -63,7 +63,6 @@ void engine::setBackgroundColor(float red, float green, float blue, float alpha)
     b = blue;
     a = alpha;
 }
-
 int engine::initGLAD()
 {
     std::cout<<"initialisation GLAD"<<std::endl;
@@ -75,7 +74,6 @@ int engine::initGLAD()
     std::cout<<"GLAD Initialise"<<std::endl;
     return 0;
 }
-
 void engine::keyboardHandler(camera * Cam)
 {
     float deltaTime = glfwGetTime() - lastTime;
@@ -124,7 +122,6 @@ void engine::keyboardHandler(camera * Cam)
 
     
 }
-
 shader* engine::getShader()
 {
     return &Shader;
@@ -133,12 +130,20 @@ shader* engine::getShader()
 void engine::run()
 {   
     std::vector<vec3> position;
+    for(int i = 0; i < 25; i++)
+    {
+        for(int j = 0; j < 25; j++)
+        {
+            position.push_back(glm::vec3(i-13, 0, j-13));
+        }
+    }
     
     float time = 0;
     std::cout<<"--- Debut du rendu ---"<<std::endl;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     World->addMesh(textureAltas);
+    World->Meshs[0]->setPosition(position);
     std::cout<<World->Meshs.size()<<std::endl;
     while(!engineWindow.quit)
     {
