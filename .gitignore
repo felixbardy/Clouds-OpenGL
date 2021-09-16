@@ -1,0 +1,8 @@
+# Ignorer les .o
+*.o
+
+# Ignorer le contenu de bin/
+bin/
+
+# Garder les .keep
+!.keep
