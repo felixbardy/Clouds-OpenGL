@@ -34,7 +34,7 @@ void Shader::errorHandler(unsigned int& Shader, bool isLinking)
 void Shader::compileVertex()
 {
     vertexShader = glCreateShader(GL_VERTEX_SHADER); // Creation du Shader
-std::cout << " -------> " << vertexShaderSource << std::endl;
+    //std::cout << " -------> " << vertexShaderSource << std::endl;
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // Injection du code source du Shader
     glCompileShader(vertexShader); // Compilation du Shader
     errorHandler(vertexShader);
@@ -104,7 +104,6 @@ void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
         fShaderFile.open(fragmentPath);
         std::stringstream vShaderStream, fShaderStream;
 
-				std::cout<<"debug3"<<std::endl;
         // read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
