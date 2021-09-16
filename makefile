@@ -7,8 +7,23 @@ LIBDIR=build
 BINDIR=bin
 OBJDIR=obj
 
+OS=`uname`
 
-all: ./$(BINDIR)/run
+#detecting Operating system
+ifeq ( $(OS), Windows_NT )     # is Windows
+    #TODO Fais ton truc Mattéo
+else
+  ifeq ( $(OS), Darwin ) # is MacOS
+    GL = -ldl -lglfw
+  else #is Linux
+    #TODO à compléter
+  endif
+endif
+
+.PHONY: all doc
+
+all: ./$(BINDIR)/run doc clean
+
 
 # exécutables
 
@@ -49,7 +64,10 @@ all: ./$(BINDIR)/run
 ./$(OBJDIR)/stb_image.o : ./$(SRCDIR)/stb_image.cpp ./$(SRCDIR)/stb_image.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
-#Clean
+# documentation doxygen
+doc:
+  doxygen doc/Doxyfile
 
+# clean
 clean:
 	@rm obj/* bin/*
