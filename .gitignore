@@ -2,7 +2,7 @@
 *.o
 
 # Ignorer le contenu de bin/
-bin/
+bin/*
 
 # Garder les .keep
 !.keep
