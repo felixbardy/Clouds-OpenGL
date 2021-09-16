@@ -139,12 +139,10 @@ void Engine::run()
     }
 
     float time = 0;
-    std::cout<<"--- Debut du rendu ---"<<std::endl;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     zaWarudo->addMesh(textureAltas);
     zaWarudo->Meshs[0]->setPosition(position);
-    std::cout<<zaWarudo->Meshs.size()<<std::endl;
     while(!engineWindow.quit)
     {
         glClearColor(r, g, b, a);
@@ -164,5 +162,4 @@ void Engine::run()
         if(inputPrevent >= 0) inputPrevent--;
         time+=0.01;
     }
-    std::cout<<"--- Fin du rendu ---"<<std::endl;
 }
