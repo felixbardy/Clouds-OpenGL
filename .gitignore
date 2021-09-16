@@ -1,8 +1,10 @@
 # Ignorer les .o
 *.o
 
-# Ignorer le contenu de bin/
+# Ignorer le contenu de ces dossiers
 bin/*
+doc/html/
+doc/latex/
 
 # Garder les .keep
 !.keep
