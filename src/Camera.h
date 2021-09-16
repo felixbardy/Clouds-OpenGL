@@ -9,8 +9,8 @@
 enum movement{FORWARD, BACKWARD, LEFT, RIGHT, UP, BOTTOM};
 class camera
 {
-    public: 
-    
+    public:
+
     glm::mat4 & getViewRef();
     glm::mat4 getView();
 
@@ -47,7 +47,7 @@ class camera
     float mouseSensitivity = 0.1f;
     glm::mat4 view;
     float speed = 3.f;
-    
+
 };
 
 #endif

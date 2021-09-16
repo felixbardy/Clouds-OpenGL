@@ -1,24 +1,24 @@
-#include "shader.h"
-void shader::errorHandler(unsigned int& shader, bool isLinking)
+#include "Shader.h"
+void Shader::errorHandler(unsigned int& Shader, bool isLinking)
 {
     if(!isLinking)
     {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        glGetShaderiv(Shader, GL_COMPILE_STATUS, &success);
     }
     else
     {
-        glGetShaderiv(shader, GL_LINK_STATUS, &success);
+        glGetShaderiv(Shader, GL_LINK_STATUS, &success);
     }
-    
+
     if(!success)
     {
-        glGetShaderInfoLog(shader, 512, NULL, infolog);
+        glGetShaderInfoLog(Shader, 512, NULL, infolog);
         std::string error;
         if(isLinking)
         {
             error = "ERROR LINKING SHADER PROGRAM :: ";
         }
-        else if(shader == vertexShader)
+        else if(Shader == vertexShader)
         {
             error = "ERROR COMPILING VERTEX SHADER :: ";
         }
@@ -31,15 +31,15 @@ void shader::errorHandler(unsigned int& shader, bool isLinking)
     }
 }
 
-void shader::compileVertex()
+void Shader::compileVertex()
 {
-    vertexShader = glCreateShader(GL_VERTEX_SHADER); // Creation du shader
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // Injection du code source du shader
-    glCompileShader(vertexShader); // Compilation du shader
+    vertexShader = glCreateShader(GL_VERTEX_SHADER); // Creation du Shader
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // Injection du code source du Shader
+    glCompileShader(vertexShader); // Compilation du Shader
     errorHandler(vertexShader);
 }
 
-void shader::compileFragment()
+void Shader::compileFragment()
 {
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
@@ -47,12 +47,12 @@ void shader::compileFragment()
     errorHandler(fragmentShader);
 }
 
-void shader::linkProgram()
+void Shader::linkProgram()
 {
     shaderProgram = glCreateProgram(); // On crée le programme
     glAttachShader(shaderProgram, vertexShader); // on attache les shaders au programme
     glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram); // on link le shader a la CG
+    glLinkProgram(shaderProgram); // on link le Shader a la CG
     errorHandler(shaderProgram, true);
     glDeleteShader(vertexShader); // on supprime les shaders inutile
     glDeleteShader(fragmentShader);
@@ -61,11 +61,11 @@ void shader::linkProgram()
 
 
 
-shader::shader()
+Shader::Shader()
 {
-    std::cout<<"Initialisation code shader"<<std::endl;
+    std::cout<<"Initialisation code Shader"<<std::endl;
 
-    vertexShaderSource = 
+    vertexShaderSource =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "layout (location = 1) in vec3 aColor;\n"
@@ -76,8 +76,8 @@ shader::shader()
     "   ourColor = aColor;\n"
     "}\0";
 
-    fragmentShaderSource = 
-    
+    fragmentShaderSource =
+
     "#version 330 core\n"
     "out vec4 FragColor;\n"
     "in vec3 ourColor;\n"
@@ -85,17 +85,17 @@ shader::shader()
     "{\n"
     "    FragColor = vec4(ourColor, 1.0);\n"
     "}\0";
-    std::cout<<"Fin initialisation code shader"<<std::endl;
+    std::cout<<"Fin initialisation code Shader"<<std::endl;
 }
 
-void shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
+void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
 {
     std::ifstream vShaderFile;
     std::ifstream fShaderFile;
     // ensure ifstream objects can throw exceptions:
     vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-    try 
+    try
     {
         // open files
         vShaderFile.open(vertexPath);
@@ -103,13 +103,13 @@ void shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
         std::stringstream vShaderStream, fShaderStream;
         // read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();		
+        fShaderStream << fShaderFile.rdbuf();
         // close file handlers
         vShaderFile.close();
         fShaderFile.close();
         // convert stream into string
         vertexCode   = vShaderStream.str();
-        fragmentCode = fShaderStream.str();		
+        fragmentCode = fShaderStream.str();
     }
     catch(std::ifstream::failure e)
     {
@@ -119,7 +119,7 @@ void shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
     fragmentShaderSource = fragmentCode.c_str();
 }
 
-void shader::init(std::string vertexPath, std::string fragmentPath)
+void Shader::init(std::string vertexPath, std::string fragmentPath)
 {
     readShaderFile(vertexPath, fragmentPath);
     compileVertex();
@@ -128,30 +128,30 @@ void shader::init(std::string vertexPath, std::string fragmentPath)
     modelId = glGetUniformLocation(shaderProgram, "model");
     projectionId = glGetUniformLocation(shaderProgram, "projection");
     viewId = glGetUniformLocation(shaderProgram, "view");
-    
+
 }
 
-void shader::transform(glm::mat4 transformMatrix)
+void Shader::transform(glm::mat4 transformMatrix)
 {
     glUniformMatrix4fv(modelId, 1, GL_FALSE, glm::value_ptr(transformMatrix));
 }
 
-void shader::view(glm::mat4& viewMatrix)
+void Shader::view(glm::mat4& viewMatrix)
 {
     glUniformMatrix4fv(viewId, 1, GL_FALSE, &viewMatrix[0][0]);
 }
 
-void shader::projection(glm::mat4 projectionMatrix)
+void Shader::projection(glm::mat4 projectionMatrix)
 {
     glUniformMatrix4fv(projectionId, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 }
 
-void shader::use()
+void Shader::use()
 {
     glUseProgram(shaderProgram);
 }
 
-void shader::addUniform(std::string uniformName)
+void Shader::addUniform(std::string uniformName)
 {
     uniform u;
     u.id = glGetUniformLocation(shaderProgram, uniformName.c_str());
@@ -159,7 +159,7 @@ void shader::addUniform(std::string uniformName)
     uniformList.push_back(u);
 }
 
-void shader::setUniform(std::string uniformName, float x, float y, float z, float a)
+void Shader::setUniform(std::string uniformName, float x, float y, float z, float a)
 {
     uniform u;
     int i = 0;
@@ -181,11 +181,9 @@ void shader::setUniform(std::string uniformName, float x, float y, float z, floa
 }
 
 
-shader::~shader()
-{  
+Shader::~Shader()
+{
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(shaderProgram);
 }
-
-

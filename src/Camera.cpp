@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "Camera.h"
 
 camera::camera()
 {
@@ -54,23 +54,23 @@ float camera::getSpeed()
 }
 
 void camera::move(movement m, float speed)
-{   
+{
     float prevY = position.y;
     glm::vec3 F = front;
-    if(F.x < 0) F.x = -1; 
+    if(F.x < 0) F.x = -1;
     else F.x = 1;
 
-    if(F.z < 0) F.z = -1; 
+    if(F.z < 0) F.z = -1;
     else F.z = 1;
 
-    
+
     switch (m)
     {
-    case FORWARD:   
+    case FORWARD:
         position += frontMove * speed;
         position.y = prevY;
         break;
-    
+
     case BACKWARD:
         position -= frontMove * speed;
         position.y = prevY;
@@ -85,7 +85,7 @@ void camera::move(movement m, float speed)
         position += right * speed;
         position.y = prevY;
         break;
-    
+
     case UP:
         position.y += speed;
         break;
@@ -93,11 +93,11 @@ void camera::move(movement m, float speed)
     case BOTTOM:
         position.y -= speed;
         break;
-    
+
     default:
         break;
     }
-    
+
 }
 
 void camera::printView()

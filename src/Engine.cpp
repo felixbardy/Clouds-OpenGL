@@ -1,4 +1,4 @@
-#include "engine.h"
+#include "Engine.h"
 
 void resetCamerawindow(GLFWwindow* f, int w, int h)
 {
@@ -7,8 +7,8 @@ void resetCamerawindow(GLFWwindow* f, int w, int h)
 }
 void cursorCallback(GLFWwindow * window, double xPos, double yPos)
 {
-    void *data = glfwGetWindowUserPointer(window);  
-    camera * Cam = static_cast<camera *>(data);
+    void *data = glfwGetWindowUserPointer(window);
+    Camera * Cam = static_cast<Camera *>(data);
     if (Cam->initMouse)
     {
         Cam->setLastX(xPos);
@@ -34,20 +34,20 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
     Cam->frontMove = normalize(FG);
     Cam->front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->pitchD)), FG.y, FG.z * cos(glm::radians(Cam->pitchD))));
 }
-void engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint h)
+void Engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint h)
 {
-    engineWindow = window(w, h, "suus");
-    engineWindow.init();
+    EngineWindow = Window(w, h, "suus");
+    EngineWindow.init();
     initGLAD();
 
-    World = new world;
+    World = new World;
     World->Cam->setLastX(w / 2.f);
     World->Cam->setLastY(h / 2.f);
     World->projection = mat4(1.f);
-    
-    glfwSetFramebufferSizeCallback(engineWindow.getWindow(), resetCamerawindow);
-    glfwSetWindowUserPointer(engineWindow.getWindow(), World->Cam);
-    glfwSetCursorPosCallback(engineWindow.getWindow(), cursorCallback);  
+
+    glfwSetFramebufferSizeCallback(EngineWindow.getWindow(), resetCamerawindow);
+    glfwSetWindowUserPointer(EngineWindow.getWindow(), World->Cam);
+    glfwSetCursorPosCallback(EngineWindow.getWindow(), cursorCallback);
     textureAltas.initAtlas();
 
     r = g = b = 0.f;
@@ -56,14 +56,14 @@ void engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint
 
     Shader.init(vertexPath, fragmentPath);
 }
-void engine::setBackgroundColor(float red, float green, float blue, float alpha)
+void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
     r = red;
     g = green;
     b = blue;
     a = alpha;
 }
-int engine::initGLAD()
+int Engine::initGLAD()
 {
     std::cout<<"initialisation GLAD"<<std::endl;
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -74,20 +74,20 @@ int engine::initGLAD()
     std::cout<<"GLAD Initialise"<<std::endl;
     return 0;
 }
-void engine::keyboardHandler(camera * Cam)
+void Engine::keyboardHandler(Camera * Cam)
 {
     float deltaTime = glfwGetTime() - lastTime;
     lastTime = glfwGetTime();
     float speed = Cam->getSpeed() * deltaTime;
     if(inputPrevent <= 0)
     {
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(engineWindow.getWindow(), true);
+            glfwSetWindowShouldClose(EngineWindow.getWindow(), true);
             inputPrevent = 10;
         }
 
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_P) == GLFW_PRESS)
+        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_P) == GLFW_PRESS)
         {
             isWireframe = !isWireframe;
             if(isWireframe)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -95,40 +95,40 @@ void engine::keyboardHandler(camera * Cam)
             inputPrevent = 10;
         }
     }
-     if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+     if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         {
             Cam->move(FORWARD, speed);
         }
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
         {
             Cam->move(BACKWARD, speed);
         }
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
         {
             Cam->move(LEFT, speed);
         }
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
+        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
         {
             Cam->move(RIGHT, speed);
         }
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {
             Cam->move(UP, speed);
         }
-        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
             Cam->move(BOTTOM, speed);
         }
 
-    
+
 }
-shader* engine::getShader()
+Shader* Engine::getShader()
 {
     return &Shader;
 }
 
-void engine::run()
-{   
+void Engine::run()
+{
     std::vector<vec3> position;
     for(int i = 0; i < 25; i++)
     {
@@ -137,7 +137,7 @@ void engine::run()
             position.push_back(glm::vec3(i-13, 0, j-13));
         }
     }
-    
+
     float time = 0;
     std::cout<<"--- Debut du rendu ---"<<std::endl;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
@@ -145,21 +145,21 @@ void engine::run()
     World->addMesh(textureAltas);
     World->Meshs[0]->setPosition(position);
     std::cout<<World->Meshs.size()<<std::endl;
-    while(!engineWindow.quit)
+    while(!EngineWindow.quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        textureAltas.useTexture(textureAltas.blockAtlas);World->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
-        
+        textureAltas.useTexture(textureAltas.blockAtlas);World->projection = glm::perspective(glm::radians(70.f), (float)EngineWindow.getWidth() / (float)EngineWindow.getHeight(), 0.1f, 100.f);
+
         Shader.use();
         Shader.view(World->Cam->getViewRef());
         Shader.projection(World->projection);
 
-        World->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
+        World->projection = glm::perspective(glm::radians(70.f), (float)EngineWindow.getWidth() / (float)EngineWindow.getHeight(), 0.1f, 100.f);
         World->update();
         World->render(Shader, glfwGetTime());
 
-        engineWindow.update();
+        EngineWindow.update();
         keyboardHandler(World->Cam);
         if(inputPrevent >= 0) inputPrevent--;
         time+=0.01;

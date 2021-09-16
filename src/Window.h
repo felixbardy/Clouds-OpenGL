@@ -5,13 +5,13 @@
 #include <string>
 #include <iostream>
 
-class window
+class Window
 {
     public:
-    
-    window();
-    window(int w, int h, const std::string& title);
-    ~window();
+
+    Window();
+    Window(int w, int h, const std::string& title);
+    ~Window();
     int init();
     void update();
     bool quit = false;
@@ -21,7 +21,7 @@ class window
 
     int getWidth();
     int getHeight();
-    
+
 
     private:
 
@@ -31,12 +31,12 @@ class window
 
     double xPos, yPos;
 
-    
+
 
     int initGlfw(const int & major = 4, const int & minor = 6);
     int initWindow();
     int initGLAD();
-    
+
 
 
 

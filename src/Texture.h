@@ -5,12 +5,12 @@
 #include "stb_image.h"
 #include <vector>
 
-class textures
+class Textures
 {
     public:
 
-    textures();
-    ~textures();
+    Textures();
+    ~Textures();
     void initAtlas();
     void useTexture(const uint& texture);
     uint blockAtlas;
@@ -18,7 +18,7 @@ class textures
     uint cage;
     bool loadTexture(uint& texture, std::string path);
 
-    std::vector<std::vector<uint>> blockTextures = 
+    std::vector<std::vector<uint>> blockTextures =
     {
         {0, 0, 0, 0, 0, 0}, //Stone
         {5, 5, 5, 5, 6, 6}, // Oak Log
@@ -27,8 +27,8 @@ class textures
     };
 
 
-    
-    
+
+
     private:
 
 };

@@ -1,6 +1,6 @@
-#include "window.h"
+#include "Window.h"
 
-int window::initGlfw(const int & major, const int & minor)
+int Window::initGlfw(const int & major, const int & minor)
 {
     std::cout<<"initialisation GLFW"<<std::endl;
     // initialisation
@@ -13,17 +13,17 @@ int window::initGlfw(const int & major, const int & minor)
         std::cout<<"GLFW Initilise"<<std::endl;
         return 0;
     }
-    else 
+    else
     {
         std::cerr<<"ERREUR INITIALISATION GLFW"<<std::endl;
         return -1;
     }
-    
+
 }
 
 
 
-int window::initWindow()
+int Window::initWindow()
 {
     std::cout<<"Creation de la window GLFW"<<std::endl;
     Window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
@@ -35,18 +35,18 @@ int window::initWindow()
     }
     glfwMakeContextCurrent(Window);
     glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
+
 
     std::cout<<"window GLFW Cree"<<std::endl;
     return 0;
 }
 
-GLFWwindow* window::getWindow()
+GLFWwindow* Window::getWindow()
 {
     return Window;
 }
 
-window::window()
+Window::Window()
 {
     width = 0;
     height = 0;
@@ -54,19 +54,19 @@ window::window()
     Window = nullptr;
 }
 
-int window::getWidth()
+int Window::getWidth()
 {
     glfwGetWindowSize(Window, &width, &height);
     return width;
 }
 
-int window::getHeight()
+int Window::getHeight()
 {
     glfwGetWindowSize(Window, &width, &height);
     return height;
 }
 
-window::window(int w, int h, const std::string& t)
+Window::Window(int w, int h, const std::string& t)
 {
     std::cout<<"construction window"<<std::endl;
     width = w;
@@ -76,7 +76,7 @@ window::window(int w, int h, const std::string& t)
     std::cout<<"fin construction window"<<std::endl;
 }
 
-int window::init()
+int Window::init()
 {
     std::cout<<"--- Initilisation de la window ---"<<std::endl;
     if(initGlfw() < 0) return -1;
@@ -86,15 +86,14 @@ int window::init()
     return 0;
 }
 
-void window::update()
+void Window::update()
 {
         // Callback et evenement
-        glfwPollEvents();   
+        glfwPollEvents();
         glfwSwapBuffers(Window);
         quit = glfwWindowShouldClose(Window);
 }
 
-window::~window()
+Window::~Window()
 {
 }
-

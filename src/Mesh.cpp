@@ -1,8 +1,8 @@
-#include "mesh.h"
+#include "Mesh.h"
 #include <iostream>
 
 
-mesh::mesh()
+Mesh::Mesh()
 {
     model = glm::mat4(1.f);
     position = {
@@ -10,11 +10,11 @@ mesh::mesh()
     };
 }
 
-void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
+void Mesh::setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
 {
     indices = indicesArray;
-    
-    
+
+
     for(int i = 0; i < indicesArray.size(); i++)
     {
         for(int j = 0; j < 3; j++)
@@ -37,7 +37,7 @@ void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, s
             if(!u.empty())
             {
                 int val;
-                if(j == 0) 
+                if(j == 0)
                 {
                     val = texture.blockTextures[id][i/6]%4;
                 }
@@ -56,15 +56,15 @@ void mesh::setPolygon(const textures& texture, std::vector<float> vertexArray, s
     init();
 }
 
-void mesh::setCube(const textures & texture, uint id, std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
+void Mesh::setCube(const Textures & texture, uint id, std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
 {
-    std::vector<float> v = 
+    std::vector<float> v =
     {
         0.5f,  0.5f, 0.5f,  // top right        3--0
         0.5f, -0.5f, 0.5f,  // bottom right     |  |
         -0.5f, -0.5f, 0.5f,  // bottom left     2--1
         -0.5f,  0.5f, 0.5f,   // top left
-        
+
         0.5f,  0.5f, -0.5f,  // top right        7--4
         0.5f, -0.5f, -0.5f,  // bottom right     |  |
         -0.5f, -0.5f, -0.5f,  // bottom left     6--5
@@ -78,11 +78,11 @@ void mesh::setCube(const textures & texture, uint id, std::vector<float> u, std:
         0.f, 0.f,
         0.f, 1.f
     };
-    
-    
-    uI = 
+
+
+    uI =
     {/*
-      7--4  
+      7--4
     /  / | 764 465
     3--0 5
     |  |/
@@ -106,12 +106,12 @@ void mesh::setCube(const textures & texture, uint id, std::vector<float> u, std:
         3, 2, 0, // Bas
         0, 2, 1,
     };
-    
 
-    std::vector<uint> s = 
+
+    std::vector<uint> s =
     {
         // AVANT ARRIERE
-        3, 0, 2, 
+        3, 0, 2,
         2, 0, 1,
 
         7, 6, 4,
@@ -135,51 +135,51 @@ void mesh::setCube(const textures & texture, uint id, std::vector<float> u, std:
     setPolygon(texture, v, u, uI, c, s, 0);
 }
 
-void mesh::init()
+void Mesh::init()
 {
     initVBO();
     initVAO();
     initEBO();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    glEnable(GL_DEPTH_TEST);  
+    glEnable(GL_DEPTH_TEST);
 }
 
-void mesh::initVAO()
+void Mesh::initVAO()
 {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);// Bind l'objet a la CG
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // Lie le buffer de data aux attribues du VAO
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex.size(), &vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO VAO
-   
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-   
+
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-   
+
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 }
 
-void mesh::rotate(float angle, glm::vec3 vAxis)
+void Mesh::rotate(float angle, glm::vec3 vAxis)
 {
     model = glm::rotate(model, angle, vAxis);
 }
-void mesh::scale(glm::vec3 vScale)
+void Mesh::scale(glm::vec3 vScale)
 {
     model =  glm::scale(model, vScale);
 }
-void mesh::translate(glm::vec3 vTranslate)
+void Mesh::translate(glm::vec3 vTranslate)
 {
     model = glm::translate(model, vTranslate);
 }
-void mesh::resetModel()
+void Mesh::resetModel()
 {
     model = glm::mat4(1.f);
 }
 
-void mesh::draw(shader * shaderToUse, glm::mat4& projection, glm::mat4& view)
+void Mesh::draw(Shader * shaderToUse, glm::mat4& projection, glm::mat4& view)
 {
     shaderToUse->transform(model);
     glBindVertexArray(VAO);
@@ -189,7 +189,7 @@ void mesh::draw(shader * shaderToUse, glm::mat4& projection, glm::mat4& view)
     model = glm::mat4(1.f);
 }
 
-void mesh::initVBO()
+void Mesh::initVBO()
 {
     // Permet de créer une zone mémoire dans la CG pour stocker le vertice;
     glGenBuffers(1, &VBO); // Genere l'ID du buffer
@@ -197,19 +197,19 @@ void mesh::initVBO()
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex.size(), &vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO VAO
 }
 
-void mesh::initEBO()
+void Mesh::initEBO()
 {
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indices.size(), &indices[0], GL_STATIC_DRAW);
 }
 
-uint& mesh::getVAO()
+uint& Mesh::getVAO()
 {
     return VAO;
 }
 
-void mesh::render(float angle, shader & Shader, glm::mat4& projection, glm::mat4& view)
+void Mesh::render(float angle, Shader & Shader, glm::mat4& projection, glm::mat4& view)
 {
     for(int i = 0; i < position.size(); i++)
     {
@@ -221,14 +221,14 @@ void mesh::render(float angle, shader & Shader, glm::mat4& projection, glm::mat4
     }
 }
 
-void mesh::setPosition(std::vector<glm::vec3> positions)
+void Mesh::setPosition(std::vector<glm::vec3> positions)
 {
     position = positions;
 }
 
-mesh::~mesh()
+Mesh::~Mesh()
 {
-    std::cout<<"Destruction de la mesh"<<std::endl;
+    std::cout<<"Destruction de la Mesh"<<std::endl;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);

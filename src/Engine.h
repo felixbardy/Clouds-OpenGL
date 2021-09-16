@@ -3,35 +3,35 @@
 
 #include <iostream>
 #include "glad.h"
-#include "window.h"
-#include "shader.h"
-#include "textures.h"
-#include "world.h"
+#include "Window.h"
+#include "Shader.h"
+#include "Textures.h"Windows
+#include "World.h"
 #include <random>
 
 using namespace glm;
 
 
-class engine
+class Engine
 {
     public:
-    
-    world * World;
+
+    World * World;
     void init(std::string vertexPath, std::string fragmentPath, uint w = 500, uint h = 500);
     void run();
     void close();
     void setBackgroundColor(float r, float g, float b, float a);
-    shader* getShader();
+    Shader* getShader();
     float lastTime = 0;
-    textures textureAltas;
+    Textures textureAltas;
 
     private:
 
     window engineWindow;
-    shader Shader;
+    Shader Shader;
     int inputPrevent;
     bool isWireframe = false;
-    void keyboardHandler(camera * Cam);
+    void keyboardHandler(Camera * Cam);
 
     float r, g, b, a;
 

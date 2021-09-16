@@ -17,10 +17,10 @@ struct uniform
     std::string name;
 };
 
-class shader
+class Shader
 {
     public:
-    shader();
+    Shader();
 
     void init(std::string vertexPath, std::string fragmentPath);
     void use();
@@ -31,11 +31,11 @@ class shader
     void view(glm::mat4& viewMatrix);
     void projection(glm::mat4 projectionMatrix);
 
-    ~shader();
+    ~Shader();
 
     private:
 
-    
+
 
     unsigned int vertexShader, fragmentShader, shaderProgram;
     const char* vertexShaderSource;
@@ -58,8 +58,8 @@ class shader
 
 
 
-    void errorHandler(unsigned int& shader, bool isLinking = false);
-    
+    void errorHandler(unsigned int& Shader, bool isLinking = false);
+
 };
 
 

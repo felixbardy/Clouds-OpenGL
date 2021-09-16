@@ -1,14 +1,14 @@
-#include "world.h"
+Textures#include "World.h"
 
-world::world()
+World::World()
 {
-    Cam = new camera();
+    Cam = new Camera();
     projection = glm::mat4(1.f);
 }
 
-void world::addMesh(const textures& textures)
+void World::addMesh(const Textures& textures)
 {
-    mesh * nM = new mesh();
+    Mesh * nM = new Mesh();
     nM->setCube(textures, 5);
     glm::vec3 pos = glm::vec3(Meshs.size()%16, 0.f, (Meshs.size()/16)%16);
     pos.y = Meshs.size()/256;
@@ -16,29 +16,29 @@ void world::addMesh(const textures& textures)
     Meshs.push_back(nM);
 }
 
-void world::render(shader & Shader, float time)
+void World::render(Shader & Shader, float time)
 {
     for(int i = 0; i < Meshs.size(); i++)
     {
         Meshs[i]->render(time, Shader, projection, Cam->getViewRef());
     }
-    
+
 }
 
-void world::update()
+void World::update()
 {
     Cam->update();
 }
 
 
-world::~world()
+World::~World()
 {
-    Cam->~camera();
+    Cam->~Camera();
     delete Cam;
 
     for(int i = 0; i < Meshs.size(); i++)
     {
-        Meshs[i]->~mesh();
+        Meshs[i]->~Mesh();
         delete Meshs[i];
     }
 }

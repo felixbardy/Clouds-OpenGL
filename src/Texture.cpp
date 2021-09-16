@@ -1,27 +1,27 @@
-#include "textures.h"
+#include "Textures.h"
 #include "stb_image.h"
 #include "glad.h"
-textures::textures()
+Textures::Textures()
 {
 
 }
 
-void textures::initAtlas()
+void Textures::initAtlas()
 {
-    
+
 
     loadTexture(blockAtlas, "./data/blockAtlas.png");
     loadTexture(nesCafey, "./data/coffeeSquare.jpg");
     loadTexture(cage, "./data/Scage.jpg");
-    
+
 }
 
-void textures::useTexture(const uint& texture)
+void Textures::useTexture(const uint& texture)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-bool textures::loadTexture(uint& textures, std::string path)
+bool Textures::loadTexture(uint& textures, std::string path)
 {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -31,7 +31,7 @@ bool textures::loadTexture(uint& textures, std::string path)
     float borderColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);  
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     if(data)
     {
@@ -49,7 +49,7 @@ bool textures::loadTexture(uint& textures, std::string path)
     }
 }
 
-textures::~textures()
+Textures::~Textures()
 {
 
 }

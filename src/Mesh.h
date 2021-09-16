@@ -4,36 +4,36 @@
 #include "glad.h"
 #include <iostream>
 #include <vector>
-#include "shader.h"
-#include "textures.h"
+#include "Shader.h"
+#include "Textures.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class mesh
+class Mesh
 {
     public:
     std::vector<uint> indices;
 
-    mesh();
-    ~mesh();
+    Mesh();
+    ~Mesh();
 
-    
+
     glm::mat4 model;
-
+Textures
     std::vector<glm::vec3> position;
 
     void rotate(float angle, glm::vec3 vAxis);
     void scale(glm::vec3 vScale);
     void translate(glm::vec3 vTranslate);
-    void draw(shader * shaderToUse, glm::mat4& projection, glm::mat4& view);
-    
-    
-    void render(float angle, shader & Shader, glm::mat4 & projection, glm::mat4 & view);
+    void draw(Shader * shaderToUse, glm::mat4& projection, glm::mat4& view);
+
+
+    void render(float angle, Shader & Shader, glm::mat4 & projection, glm::mat4 & view);
     void setPosition(std::vector<glm::vec3> positions);
-    void setPolygon(const textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray, uint id);
-    void setCube(const textures & texture, uint id = 0, std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
+    void setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray, uint id);
+    void setCube(const Textures & texture, uint id = 0, std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
     void resetModel();
     uint & getVAO();
 
