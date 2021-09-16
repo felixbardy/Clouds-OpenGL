@@ -66,7 +66,7 @@ all: ./$(BINDIR)/run doc clean
 
 # documentation doxygen
 doc:
-  doxygen doc/Doxyfile
+	doxygen doc/Doxyfile
 
 # clean
 clean:
