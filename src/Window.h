@@ -33,7 +33,7 @@ class Window
 
 
 
-    int initGlfw(const int & major = 4, const int & minor = 6);
+    int initGlfw(const int & major = 4, const int & minor = 5);
     int initWindow();
     int initGLAD();
 
