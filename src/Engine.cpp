@@ -36,25 +36,25 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
 }
 void Engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint h)
 {
-    EngineWindow = Window(w, h, "suus");
-    EngineWindow.init();
+    engineWindow = Window(w, h, "suus");
+    engineWindow.init();
     initGLAD();
 
-    World = new World;
-    World->Cam->setLastX(w / 2.f);
-    World->Cam->setLastY(h / 2.f);
-    World->projection = mat4(1.f);
+    zaWarudo = new World;
+    zaWarudo->Cam->setLastX(w / 2.f);
+    zaWarudo->Cam->setLastY(h / 2.f);
+    zaWarudo->projection = mat4(1.f);
 
-    glfwSetFramebufferSizeCallback(EngineWindow.getWindow(), resetCamerawindow);
-    glfwSetWindowUserPointer(EngineWindow.getWindow(), World->Cam);
-    glfwSetCursorPosCallback(EngineWindow.getWindow(), cursorCallback);
+    glfwSetFramebufferSizeCallback(engineWindow.getWindow(), resetCamerawindow);
+    glfwSetWindowUserPointer(engineWindow.getWindow(), zaWarudo->Cam);
+    glfwSetCursorPosCallback(engineWindow.getWindow(), cursorCallback);
     textureAltas.initAtlas();
 
     r = g = b = 0.f;
     a = 1.f;
     inputPrevent = 0;
 
-    Shader.init(vertexPath, fragmentPath);
+    shader.init(vertexPath, fragmentPath);
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -81,13 +81,13 @@ void Engine::keyboardHandler(Camera * Cam)
     float speed = Cam->getSpeed() * deltaTime;
     if(inputPrevent <= 0)
     {
-        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(EngineWindow.getWindow(), true);
+            glfwSetWindowShouldClose(engineWindow.getWindow(), true);
             inputPrevent = 10;
         }
 
-        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_P) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_P) == GLFW_PRESS)
         {
             isWireframe = !isWireframe;
             if(isWireframe)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -95,27 +95,27 @@ void Engine::keyboardHandler(Camera * Cam)
             inputPrevent = 10;
         }
     }
-     if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+     if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         {
             Cam->move(FORWARD, speed);
         }
-        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
         {
             Cam->move(BACKWARD, speed);
         }
-        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
         {
             Cam->move(LEFT, speed);
         }
-        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
         {
             Cam->move(RIGHT, speed);
         }
-        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {
             Cam->move(UP, speed);
         }
-        if(glfwGetKey(EngineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
             Cam->move(BOTTOM, speed);
         }
@@ -124,7 +124,7 @@ void Engine::keyboardHandler(Camera * Cam)
 }
 Shader* Engine::getShader()
 {
-    return &Shader;
+    return &shader;
 }
 
 void Engine::run()
@@ -142,25 +142,25 @@ void Engine::run()
     std::cout<<"--- Debut du rendu ---"<<std::endl;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    World->addMesh(textureAltas);
-    World->Meshs[0]->setPosition(position);
-    std::cout<<World->Meshs.size()<<std::endl;
-    while(!EngineWindow.quit)
+    zaWarudo->addMesh(textureAltas);
+    zaWarudo->Meshs[0]->setPosition(position);
+    std::cout<<zaWarudo->Meshs.size()<<std::endl;
+    while(!engineWindow.quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        textureAltas.useTexture(textureAltas.blockAtlas);World->projection = glm::perspective(glm::radians(70.f), (float)EngineWindow.getWidth() / (float)EngineWindow.getHeight(), 0.1f, 100.f);
+        textureAltas.useTexture(textureAltas.blockAtlas);zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
 
-        Shader.use();
-        Shader.view(World->Cam->getViewRef());
-        Shader.projection(World->projection);
+        shader.use();
+        shader.view(zaWarudo->Cam->getViewRef());
+        shader.projection(zaWarudo->projection);
 
-        World->projection = glm::perspective(glm::radians(70.f), (float)EngineWindow.getWidth() / (float)EngineWindow.getHeight(), 0.1f, 100.f);
-        World->update();
-        World->render(Shader, glfwGetTime());
+        zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
+        zaWarudo->update();
+        zaWarudo->render(shader, glfwGetTime());
 
-        EngineWindow.update();
-        keyboardHandler(World->Cam);
+        engineWindow.update();
+        keyboardHandler(zaWarudo->Cam);
         if(inputPrevent >= 0) inputPrevent--;
         time+=0.01;
     }

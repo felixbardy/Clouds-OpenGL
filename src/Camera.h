@@ -7,15 +7,15 @@
 
 #include <iostream>
 enum movement{FORWARD, BACKWARD, LEFT, RIGHT, UP, BOTTOM};
-class camera
+class Camera
 {
     public:
 
     glm::mat4 & getViewRef();
     glm::mat4 getView();
 
-    camera(int x, int y, int z);
-    camera();
+    Camera(int x, int y, int z);
+    Camera();
 
     void update();
 

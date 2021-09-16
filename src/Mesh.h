@@ -21,7 +21,6 @@ class Mesh
 
 
     glm::mat4 model;
-Textures
     std::vector<glm::vec3> position;
 
     void rotate(float angle, glm::vec3 vAxis);

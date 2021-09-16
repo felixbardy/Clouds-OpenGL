@@ -27,7 +27,7 @@ class Window
 
     int width, height;
     std::string title;
-    GLFWwindow* Window;
+    GLFWwindow* window;
 
     double xPos, yPos;
 

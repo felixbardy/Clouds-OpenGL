@@ -26,15 +26,15 @@ int Window::initGlfw(const int & major, const int & minor)
 int Window::initWindow()
 {
     std::cout<<"Creation de la window GLFW"<<std::endl;
-    Window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
-    if(Window == nullptr)
+    window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+    if(window == nullptr)
     {
         std::cerr<<"ERREUR CREATION window GLFW"<<std::endl;
         glfwTerminate(); // On termine glfw en cas d'erreur.
         return -1;
     }
-    glfwMakeContextCurrent(Window);
-    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
     std::cout<<"window GLFW Cree"<<std::endl;
@@ -43,7 +43,7 @@ int Window::initWindow()
 
 GLFWwindow* Window::getWindow()
 {
-    return Window;
+    return window;
 }
 
 Window::Window()
@@ -51,18 +51,18 @@ Window::Window()
     width = 0;
     height = 0;
     title = "void";
-    Window = nullptr;
+    window = nullptr;
 }
 
 int Window::getWidth()
 {
-    glfwGetWindowSize(Window, &width, &height);
+    glfwGetWindowSize(window, &width, &height);
     return width;
 }
 
 int Window::getHeight()
 {
-    glfwGetWindowSize(Window, &width, &height);
+    glfwGetWindowSize(window, &width, &height);
     return height;
 }
 
@@ -72,7 +72,7 @@ Window::Window(int w, int h, const std::string& t)
     width = w;
     height = h;
     title = t;
-    Window = nullptr;
+    window = nullptr;
     std::cout<<"fin construction window"<<std::endl;
 }
 
@@ -90,8 +90,8 @@ void Window::update()
 {
         // Callback et evenement
         glfwPollEvents();
-        glfwSwapBuffers(Window);
-        quit = glfwWindowShouldClose(Window);
+        glfwSwapBuffers(window);
+        quit = glfwWindowShouldClose(window);
 }
 
 Window::~Window()

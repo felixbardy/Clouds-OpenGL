@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-camera::camera()
+Camera::Camera()
 {
     position   = glm::vec3(0.0f, 0.0f,  3.0f);
     front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -9,37 +9,37 @@ camera::camera()
     view = glm::lookAt(position, position + front, up);
 }
 
-void camera::setLastX(float newX)
+void Camera::setLastX(float newX)
 {
     lX = newX;
 }
 
-void camera::setLastY(float newY)
+void Camera::setLastY(float newY)
 {
     lY = newY;
 }
 
-void camera::setMouseSensitivity(float nS)
+void Camera::setMouseSensitivity(float nS)
 {
     mouseSensitivity = nS;
 }
 
-float camera::getMouseSensitivity()
+float Camera::getMouseSensitivity()
 {
     return mouseSensitivity;
 }
 
-float camera::getLastX()
+float Camera::getLastX()
 {
     return lX;
 }
 
-float camera::getLastY()
+float Camera::getLastY()
 {
     return lY;
 }
 
-camera::camera(int x, int y, int z)
+Camera::Camera(int x, int y, int z)
 {
     position   = glm::vec3(0.0f, 0.0f,  3.0f);
     front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -48,12 +48,12 @@ camera::camera(int x, int y, int z)
     view = glm::lookAt(position, position + front, up);
 }
 
-float camera::getSpeed()
+float Camera::getSpeed()
 {
     return speed;
 }
 
-void camera::move(movement m, float speed)
+void Camera::move(movement m, float speed)
 {
     float prevY = position.y;
     glm::vec3 F = front;
@@ -100,7 +100,7 @@ void camera::move(movement m, float speed)
 
 }
 
-void camera::printView()
+void Camera::printView()
 {
     std::cout<<"matriceView ::"<<std::endl;
     for(int i = 0; i < 4; i++)
@@ -113,7 +113,7 @@ void camera::printView()
     }
 }
 
-void camera::update()
+void Camera::update()
 {
     view = glm::lookAt(position, position + front, up);
     right = glm::normalize(glm::cross(front, up));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
@@ -121,12 +121,12 @@ void camera::update()
 
 
 
-glm::mat4 camera::getView()
+glm::mat4 Camera::getView()
 {
     return view;
 }
 
-glm::mat4 & camera::getViewRef()
+glm::mat4 & Camera::getViewRef()
 {
     return view;
 }

@@ -22,40 +22,44 @@ endif
 
 .PHONY: all doc
 
-all: ./$(BINDIR)/run doc clean
+default: ./$(BINDIR)/run
+
+all: ./$(BINDIR)/run doc
+
+
 
 
 # exécutables
 
 # debug
-./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/engine.o ./$(OBJDIR)/camera.o ./$(OBJDIR)/world.o ./$(OBJDIR)/window.o ./$(OBJDIR)/stb_image.o ./$(OBJDIR)/textures.o ./$(OBJDIR)/mesh.o ./$(OBJDIR)/shader.o ./$(OBJDIR)/glad.o 
-	g++ $(FLAGS) $^ -o $@ $(CURSES) $(GL)
+./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/stb_image.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(OBJDIR)/glad.o 
+	g++ $(FLAGS) $^ -o $@ $(GL)
 
 #compilable
 
 # partie jeu
-./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/engine.h ./$(SRCDIR)/glad.h
+./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/Engine.h ./$(SRCDIR)/glad.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
-./$(OBJDIR)/window.o : ./$(SRCDIR)/window.cpp ./$(SRCDIR)/window.h ./$(SRCDIR)/glad.h
+./$(OBJDIR)/Window.o : ./$(SRCDIR)/Window.cpp ./$(SRCDIR)/Window.h ./$(SRCDIR)/glad.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
-./$(OBJDIR)/shader.o : ./$(SRCDIR)/shader.cpp ./$(SRCDIR)/shader.h ./$(SRCDIR)/glad.h
+./$(OBJDIR)/Shader.o : ./$(SRCDIR)/Shader.cpp ./$(SRCDIR)/Shader.h ./$(SRCDIR)/glad.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
-./$(OBJDIR)/mesh.o : ./$(SRCDIR)/mesh.cpp ./$(SRCDIR)/mesh.h ./$(SRCDIR)/glad.h
+./$(OBJDIR)/Mesh.o : ./$(SRCDIR)/Mesh.cpp ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/glad.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
-./$(OBJDIR)/camera.o : ./$(SRCDIR)/camera.cpp ./$(SRCDIR)/camera.h
+./$(OBJDIR)/Camera.o : ./$(SRCDIR)/Camera.cpp ./$(SRCDIR)/Camera.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
-./$(OBJDIR)/engine.o : ./$(SRCDIR)/engine.cpp ./$(SRCDIR)/engine.h ./$(SRCDIR)/camera.h ./$(SRCDIR)/mesh.h ./$(SRCDIR)/textures.h ./$(SRCDIR)/window.h ./$(SRCDIR)/glad.h
+./$(OBJDIR)/Engine.o : ./$(SRCDIR)/Engine.cpp ./$(SRCDIR)/Engine.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h ./$(SRCDIR)/glad.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
-./$(OBJDIR)/world.o : ./$(SRCDIR)/world.cpp ./$(SRCDIR)/world.h ./$(SRCDIR)/camera.h ./$(SRCDIR)/mesh.h ./$(SRCDIR)/textures.h ./$(SRCDIR)/window.h ./$(SRCDIR)/glad.h
+./$(OBJDIR)/World.o : ./$(SRCDIR)/World.cpp ./$(SRCDIR)/World.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h ./$(SRCDIR)/glad.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 	
-./$(OBJDIR)/textures.o : ./$(SRCDIR)/textures.cpp ./$(SRCDIR)/textures.h ./$(SRCDIR)/stb_image.h ./$(SRCDIR)/glad.h
+./$(OBJDIR)/Textures.o : ./$(SRCDIR)/Textures.cpp ./$(SRCDIR)/Textures.h ./$(SRCDIR)/stb_image.h ./$(SRCDIR)/glad.h
 	g++ $(FLAGS) -c -o $@ $< $(GL)
 
 ./$(OBJDIR)/glad.o : ./$(SRCDIR)/glad.c ./$(SRCDIR)/glad.h

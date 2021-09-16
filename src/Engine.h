@@ -5,7 +5,7 @@
 #include "glad.h"
 #include "Window.h"
 #include "Shader.h"
-#include "Textures.h"Windows
+#include "Textures.h"
 #include "World.h"
 #include <random>
 
@@ -16,7 +16,7 @@ class Engine
 {
     public:
 
-    World * World;
+    World * zaWarudo;
     void init(std::string vertexPath, std::string fragmentPath, uint w = 500, uint h = 500);
     void run();
     void close();
@@ -27,8 +27,8 @@ class Engine
 
     private:
 
-    window engineWindow;
-    Shader Shader;
+    Window engineWindow;
+    Shader shader;
     int inputPrevent;
     bool isWireframe = false;
     void keyboardHandler(Camera * Cam);
