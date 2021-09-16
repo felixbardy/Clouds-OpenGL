@@ -60,6 +60,7 @@ class Engine
 
     float r, g, b, a;
 
+    /** @brief Initialise GLAD */
     int initGLAD();
 };
 

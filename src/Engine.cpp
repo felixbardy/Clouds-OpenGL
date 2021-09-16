@@ -144,7 +144,7 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     zaWarudo->addMesh(textureAltas);
     zaWarudo->Meshs[0]->setPosition(position);
-    std::cout<<zaWarudo->Meshs.size()<<std::endl;
+    std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
     while(!engineWindow.quit)
     {
         glClearColor(r, g, b, a);
