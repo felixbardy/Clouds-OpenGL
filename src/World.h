@@ -9,7 +9,7 @@
 /** @class World
  * @brief
  * 
- * <insérer grande description ici>
+ * Gère les meshs, un peu comme une scène sur unity et contient la matrice du monde
  * 
  */
 class World
@@ -34,12 +34,17 @@ class World
      */
     void render(Shader & Shader, float time);
 
-    /// Fait la mise à jour physique du monde
+    /** @brief Fait la mise à jour physique du monde
+     */
     void update();
 
-    /// Constructeur par défaut, initialise la caméra et la matrice de projection
+    /** @brief Constructeur par défaut, initialise la caméra et la matrice de projection
+     */
     World();
-    /// Destructeur, détruit la caméra et les meshs avant l'objet
+
+    /// 
+    /** @brief Destructeur, détruit la caméra et les meshs avant l'objet
+     */
     ~World();
 
 
