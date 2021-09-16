@@ -29,6 +29,8 @@ class Window
 
     /** @brief Actualisation de la fenêtre */
     void update();
+
+    /// Booléen de quittage de rendue
     bool quit = false;
 
     /** @brief Gestion des inputs */
@@ -52,11 +54,21 @@ class Window
 
     private:
 
-    int width, height;
+    /// Largeur de la fenêtre
+    int width;
+    /// Hauteur de la fenêtre
+    int height;
+
+    /// Titre de la fenêtre
     std::string title;
+
+    /// Pointeur GLFW de la fenêtre
     GLFWwindow* window;
 
-    double xPos, yPos;
+    /// Position X de la souris
+    double xPos;
+    /// Position Y de la souris
+    double yPos;
 
 
     /** @brief Initialisation de la librairie GLFW

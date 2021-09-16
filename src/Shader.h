@@ -46,17 +46,36 @@ class Shader
     ~Shader();
 
     private:
-    
-    unsigned int vertexShader, fragmentShader, shaderProgram;
+    /// Variable de référence du vertex shader
+    uint vertexShader;
+    /// Variable de référence du fragment shader
+    uint fragmentShader;
+
+    /// Variable de référence du programme de shader
+    uint shaderProgram;
+
+    /// String du code source du vertex shader
     const char* vertexShaderSource;
+    /// String du code source du fragment shader
     const char* fragmentShaderSource;
 
+    /// string pour récuperer le code du vertex shader
     std::string vertexCode;
+
+    /// string pour récupérer le code du fragment shader
     std::string fragmentCode;
 
-    int modelId, viewId, projectionId;
+    /// Id de l'uniform du model
+    int modelId;
+    /// Id de l'uniform de vue
+    int viewId;
+    /// Id de l'uniform de la projection
+    int projectionId;
 
+    /// Entier représentant le succés d'une étape de compilation
     int success;
+
+    /// Tableau ou sont stocker les rapports d'erreur en cas de compilation du shader
     char infolog[512];
 
     /** @brief Compile le shader de fragment */

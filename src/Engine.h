@@ -21,7 +21,9 @@ class Engine
 {
     public:
 
+    /// Pointeur vers le MONDEUH
     World * zaWarudo;
+
     /** @brief Initialise les variables
      * @param vertexPath chemin vers le shader de vertex
      * @param fragmentPath chemin vers le shader de fragment
@@ -43,14 +45,24 @@ class Engine
 
     /** @brief Accesseur adresse memoire shader */
     Shader* getShader();
+
+    /// Temps de la dernière frame
     float lastTime = 0;
+
+    /// Instance de l'objet contenant toutes les textures
     Textures textureAltas;
 
     private:
-
+    /// Instance de l'objet contenant la fenêtre
     Window engineWindow;
+
+    /// Instance du shader
     Shader shader;
+
+    /// Variable de prévetion pour éviter les multiples input
     int inputPrevent;
+
+    /// Booléen, si oui le rendu passe en wireframe
     bool isWireframe = false;
 
     /** @brief Gère les inputs
@@ -58,7 +70,14 @@ class Engine
      */
     void keyboardHandler(Camera * Cam);
 
-    float r, g, b, a;
+    /// Valeur de rouge du background entre 0 et 1
+    float r;
+    /// Valeur de vert du background entre 0 et 1
+    float g;
+    /// Valeur de bleue du background entre 0 et 1
+    float b;
+    /// Valeur de transparence du background entre 0 et 1
+    float a;
 
     /** @brief Initialise GLAD */
     int initGLAD();

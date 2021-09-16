@@ -24,8 +24,11 @@ class Textures
     */
     void useTexture(const uint& texture);
     
+    /// Variable de référence de la texture blockAtlas
     uint blockAtlas;
+    /// Variable de référence de Nescafey, what else ?
     uint nesCafey;
+    /// Valeur de référence de la texture de nicolas cage
     uint cage;
 
     /** @brief Charge une texture dans la CG
@@ -34,6 +37,7 @@ class Textures
     */
     bool loadTexture(uint& texture, std::string path);
 
+    /// Tableau des id des textures pour les faces des cubes minecraft
     std::vector<std::vector<uint>> blockTextures =
     {
         {0, 0, 0, 0, 0, 0}, //Stone

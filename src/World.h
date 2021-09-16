@@ -5,12 +5,8 @@
 #include "Camera.h"
 #include "Mesh.h"
 
-/// @TODO écrire la doc de World
 /** @class World
- * @brief
- * 
- * Gère les meshs, un peu comme une scène sur unity et contient la matrice du monde
- * 
+ * @brief Gère les meshs, un peu comme une scène sur unity et contient la matrice du monde
  */
 class World
 {
