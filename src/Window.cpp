@@ -68,12 +68,10 @@ int Window::getHeight()
 
 Window::Window(int w, int h, const std::string& t)
 {
-    std::cout<<"construction window"<<std::endl;
     width = w;
     height = h;
     title = t;
     window = nullptr;
-    std::cout<<"fin construction window"<<std::endl;
 }
 
 int Window::init()

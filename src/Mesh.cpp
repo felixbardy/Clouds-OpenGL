@@ -228,9 +228,7 @@ void Mesh::setPosition(std::vector<glm::vec3> positions)
 
 Mesh::~Mesh()
 {
-    std::cout<<"Destruction de la Mesh"<<std::endl;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    std::cout<<"Destruction termine"<<std::endl;
 }

@@ -13,9 +13,9 @@ using namespace glm;
 
 /** @class Engine
  * @brief
- * 
+ *
  * Gère le rendu global
- * 
+ *
  */
 class Engine
 {
