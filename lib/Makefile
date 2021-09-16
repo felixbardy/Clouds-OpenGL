@@ -11,4 +11,4 @@ all: $(LIBDIR)/glad.a ./$(LIBDIR)/stb_image.a
 	g++ -c -o $@ $< -I $(HEADDIR)
 
 clean:
-	@rm $(LIBDIR)/glad.a ./$(LIBDIR)/stb_image.a
+	@rm -f $(LIBDIR)/*.a

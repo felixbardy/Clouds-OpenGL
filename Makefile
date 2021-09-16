@@ -1,6 +1,6 @@
 FLAGS = -g
-GL = -ldl -lglfw -I $(HEADDIR)
-LIB = $(LIBDIR)/glad.a ./$(LIBDIR)/stb_image.a
+GL = -ldl -lglfw -I $(HEADDIR) ./$(LIBDIR)/glad.a ./$(LIBDIR)/stb_image.a
+LIB = -I $(HEADDIR)
 
 SRCDIR=src
 HEADDIR=include
@@ -44,28 +44,28 @@ lib:
 
 # partie jeu
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/Engine.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Window.o : ./$(SRCDIR)/Window.cpp ./$(SRCDIR)/Window.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Shader.o : ./$(SRCDIR)/Shader.cpp ./$(SRCDIR)/Shader.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Mesh.o : ./$(SRCDIR)/Mesh.cpp ./$(SRCDIR)/Mesh.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Camera.o : ./$(SRCDIR)/Camera.cpp ./$(SRCDIR)/Camera.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Engine.o : ./$(SRCDIR)/Engine.cpp ./$(SRCDIR)/Engine.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/World.o : ./$(SRCDIR)/World.cpp ./$(SRCDIR)/World.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Textures.o : ./$(SRCDIR)/Textures.cpp ./$(SRCDIR)/Textures.h #./$(SRCDIR)/stb_image.h
-	g++ $(FLAGS) -c -o $@ $<
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 
 # documentation doxygen
@@ -74,7 +74,7 @@ doc:
 
 # clean
 clean:
-	@rm obj/* bin/*
+	@rm -f obj/* bin/*
 
 pentaclean: clean
 	@make --no-print-directory -f ./$(LIBDIR)/Makefile clean
