@@ -75,3 +75,6 @@ doc:
 # clean
 clean:
 	@rm obj/* bin/*
+
+pentaclean: clean
+	@rm -rf doc/html doc/latex
