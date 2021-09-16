@@ -100,11 +100,8 @@ void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
     try
     {
         // open files
-std::cout<<"debug0"<<std::endl;
         vShaderFile.open(vertexPath);
-std::cout<<"debug1"<<std::endl;
         fShaderFile.open(fragmentPath);
-std::cout<<"debug2"<<std::endl;
         std::stringstream vShaderStream, fShaderStream;
 
 				std::cout<<"debug3"<<std::endl;
