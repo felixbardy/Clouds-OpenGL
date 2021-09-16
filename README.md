@@ -52,4 +52,4 @@ mail: _felix.bardy@etu.univ-lyon1.fr_
 * **Mattéo Deransart**, L3 Info \
 mail: _matteo.deransart@etu.univ-lyon1.fr_
 
-Sous la supervision de Alexandre Meyer.
+Sous la supervision de Alexandre Meyer dans le cadre de l'UE LifProjet d'automne 2021.
