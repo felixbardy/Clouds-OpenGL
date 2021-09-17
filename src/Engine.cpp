@@ -94,6 +94,35 @@ void Engine::keyboardHandler(Camera * Cam)
             else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             inputPrevent = 10;
         }
+
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_F11) == GLFW_PRESS)
+        {
+            if(isFullscreen)
+            {
+                glfwSetWindowMonitor(engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 0);
+            }
+            else
+            {
+                glfwSetWindowMonitor(engineWindow.getWindow(), NULL, 710, 290, 500, 500, 0);
+            }
+
+            isFullscreen = !isFullscreen;
+            inputPrevent = 10;
+                //glfwSetWindowMonitor(engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 60);
+        }
+
+        
+
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+        {
+            if(isCursorLocked)
+                glfwSetInputMode(engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            else
+                glfwSetInputMode(engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+            isCursorLocked = !isCursorLocked;
+            inputPrevent = 10;
+        }
     }
      if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         {

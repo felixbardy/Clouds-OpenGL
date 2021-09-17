@@ -65,6 +65,12 @@ class Engine
     /// Booléen, si oui le rendu passe en wireframe
     bool isWireframe = false;
 
+    /// Booléen, si non le curseur n'est plus bloqué par la fenêtre
+    bool isCursorLocked = true;
+
+    /// Booléen, si oui la fenêtre est en plein écran
+    bool isFullscreen = false;
+
     /** @brief Gère les inputs
      * @param Cam adresse memoire de la camera
      */
