@@ -41,8 +41,8 @@ float Camera::getLastY()
 
 Camera::Camera(int x, int y, int z)
 {
-    position   = glm::vec3(0.0f, 0.0f,  3.0f);
-    front = glm::vec3(0.0f, 0.0f, -1.0f);
+    position = glm::vec3(0.0f, 0.0f,  0.0f);
+    front = glm::vec3(0.0f, 0.0f, 0.0f);
     up = glm::vec3(0.0f, 1.0f,  0.0f);
     view = glm::mat4(1.f);
     view = glm::lookAt(position, position + front, up);

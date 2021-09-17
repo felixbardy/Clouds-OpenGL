@@ -4,12 +4,14 @@
 #include <iostream>
 #include "stb_image.h"
 #include <vector>
+#include "FastNoise.h"
 /** @class Textures
  * @brief Contient toutes les textures du projet
  * */
 class Textures
 {
     public:
+
     /** @brief Constructeur par défaut */
     Textures();
 
@@ -30,7 +32,7 @@ class Textures
     uint nesCafey;
     /// Valeur de référence de la texture de nicolas cage
     uint cage;
-
+    uint tex3D;
     /** @brief Charge une texture dans la CG
      * @param texture uint qui va contenir l'ID de la texture
      * @param path string qui contient le chemin de la texture

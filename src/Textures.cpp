@@ -8,38 +8,66 @@ Textures::Textures()
 
 void Textures::initAtlas()
 {
-
-
+   
+    //F.SetSeed(42);
     loadTexture(blockAtlas, "./data/blockAtlas.png");
-    loadTexture(nesCafey, "./data/coffeeSquare.jpg");
-    loadTexture(cage, "./data/Scage.jpg");
+    //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
+    //loadTexture(cage, "./data/Scage.jpg");
 
 }
 
 void Textures::useTexture(const uint& texture)
 {
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_3D, texture);
 }
 
 bool Textures::loadTexture(uint& textures, std::string path)
 {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    float borderColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-    int width, height, nrChannels;
+    //glEnable(GL_BLEND);
+    //glEnable(GL_DEPTH);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    int width, height, depth, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
-    if(data)
+    width = height = depth = 100;
+    FastNoise F;
+    F.SetNoiseType(FastNoise::NoiseType::SimplexFractal);
+    F.SetSeed(42);
+    F.SetFractalOctaves(3);
+    F.SetFrequency(0.05);
+    std::vector<unsigned char> data;
+    int x, y, z;
+    x = y = z = 0;
+    int c = 1;
+    for(int i = 0; i < width * depth * height * 4; i+=4)
+    {
+        float noise = F.GetNoise(x, y, z);
+        
+        data.push_back(noise * 255);
+        data.push_back(noise * 255);
+        data.push_back(noise * 255);
+        data.push_back(noise * 255);
+ 
+        x++;
+        if(x >= width)
+        {
+            x = 0;
+            y++;
+        }
+
+        if(y >= height)
+        {
+            x = 0;
+            y = 0;
+            z++;
+        }
+    }
+    
+    if(!data.empty())
     {
         glGenTextures(1, &textures);
-        glBindTexture(GL_TEXTURE_2D, textures);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(data);
+        glBindTexture(GL_TEXTURE_3D, textures);
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+        glGenerateMipmap(GL_TEXTURE_3D);
         return true;
     }
     else

@@ -129,7 +129,7 @@ class Camera
     glm::mat4 view;
 
     /// Vitesse de déplacement
-    float speed = 3.f;
+    float speed = 10.f;
 
 };
 
