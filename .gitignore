@@ -1,5 +1,6 @@
-# Ignorer les .o
+# Ignorer les .o et les .a
 *.o
+*.a
 
 # Ignorer le contenu de ces dossiers
 bin/*
