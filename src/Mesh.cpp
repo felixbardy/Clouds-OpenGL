@@ -172,7 +172,7 @@ void Mesh::render(float angle, Shader & Shader, glm::mat4& projection, glm::mat4
     {
         resetModel();
         //rotate(angle/10.f, glm::vec3(glm::cos(position[i].x), log2(position[i].y), sin(position[i].z)));
-        translate(position[i] + glm::vec3(0, 0, 0));
+        translate(position[i] + glm::vec3(-8, -8, -8));
         scale(glm::vec3(16, 16, 16));
         //rotate(position[i].length, glm::vec3(1.f));
         draw(&Shader, projection, view);

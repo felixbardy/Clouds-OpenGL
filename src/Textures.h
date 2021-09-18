@@ -5,6 +5,8 @@
 #include "stb_image.h"
 #include <vector>
 #include "FastNoise.h"
+#include <thread>
+#include <mutex>
 /** @class Textures
  * @brief Contient toutes les textures du projet
  * */
@@ -20,6 +22,10 @@ class Textures
 
     /** @brief Initialise toutes les textures */
     void initAtlas();
+
+    std::mutex m;
+
+    void fillPoint(int width, int height, int i, int x, int y, int z, FastNoise & F, std::vector<unsigned char> & tab);
 
     /** @brief Définit la texture a utiliser pour déssinner
      * @param texture uint contenant l'id de la texture

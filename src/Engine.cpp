@@ -158,16 +158,6 @@ Shader* Engine::getShader()
 
 void Engine::run()
 {
-    std::vector<vec3> position;
-    /*for(int i = 0; i < 25; i++)
-    {
-        for(int j = 0; j < 25; j++)
-        {
-            position.push_back(glm::vec3(i-13, 0, j-13));
-        }
-    }*/
-    position = {glm::vec3(0, 0, 0)};
-
     float time = 0;
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -175,7 +165,6 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     zaWarudo->addMesh(textureAltas);
-    zaWarudo->Meshs[0]->setPosition(position);
     std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
     while(!engineWindow.quit)
     {
@@ -187,7 +176,6 @@ void Engine::run()
         shader.use();
         shader.view(zaWarudo->Cam->getViewRef());
         shader.projection(zaWarudo->projection);
-
         zaWarudo->update();
         zaWarudo->render(shader, glfwGetTime());
 
