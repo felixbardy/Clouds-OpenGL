@@ -14,6 +14,7 @@
 class Mesh
 {
     public:
+    /// Vecteur d'indices des sommets
     std::vector<uint> indices;
     /** @brief Constructeur par défaut     */
     Mesh();
@@ -21,8 +22,9 @@ class Mesh
     /** @brief destructeur par défaut     */
     ~Mesh();
 
-
+    /// Matrice 4D de repère de l'objet
     glm::mat4 model;
+    /// Vecteur 3D de position
     std::vector<glm::vec3> position;
 
     /** @brief Tourne autour des axes données
@@ -89,12 +91,21 @@ class Mesh
     */
     uint & getVAO();
 
-    unsigned int VAO, VBO, EBO;
+    /// Variable de référence du Vertex Array Object
+    unsigned int VAO;
+
+    /// Variable de référence du Vertex Buffer Object
+    unsigned int VBO;
+
+    /// Variable de référence de l'Element Buffer Object
+    unsigned int EBO;
+
     /** @brief init le mesh    */
     void init();
 
     private:
 
+    /// Tableau des vertexs à déssinner
     std::vector<float> vertex;
 
     /** @brief init le Vertex Buffer Object    */

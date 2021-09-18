@@ -1,5 +1,5 @@
 FLAGS = -g
-GL = -ldl -lglfw -I $(HEADDIR) ./$(LIBDIR)/glad.a ./$(LIBDIR)/stb_image.a
+GL = -ldl -lglfw -I $(HEADDIR) ./$(LIBDIR)/stb_image.a
 LIB = -I $(HEADDIR)
 
 SRCDIR=src
@@ -35,7 +35,7 @@ all: lib ./$(BINDIR)/run doc
 # exécutables
 
 # debug
-./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o
+./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 
 #compilable

@@ -34,7 +34,6 @@ void Shader::errorHandler(unsigned int& Shader, bool isLinking)
 void Shader::compileVertex()
 {
     vertexShader = glCreateShader(GL_VERTEX_SHADER); // Creation du Shader
-    //std::cout << " -------> " << vertexShaderSource << std::endl;
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // Injection du code source du Shader
     glCompileShader(vertexShader); // Compilation du Shader
     errorHandler(vertexShader);
@@ -102,8 +101,7 @@ void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
         // open files
         vShaderFile.open(vertexPath);
         fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream;
-
+        std::stringstream vShaderStream, fShaderStream; 
         // read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
@@ -154,34 +152,8 @@ void Shader::use()
     glUseProgram(shaderProgram);
 }
 
-void Shader::addUniform(std::string uniformName)
-{
-    uniform u;
-    u.id = glGetUniformLocation(shaderProgram, uniformName.c_str());
-    u.name = uniformName;
-    uniformList.push_back(u);
-}
 
-void Shader::setUniform(std::string uniformName, float x, float y, float z, float a)
-{
-    uniform u;
-    int i = 0;
-    bool isMissing = false;
-    while(uniformList[i].name != uniformName)
-    {
-        if(i >= uniformList.size())
-        {
-            std::cerr<<"ERREUR UNIFORM INTROUVABLE"<<std::endl;
-            isMissing = true;
-            break;
-        }
-        i++;
-    }
-    if(!isMissing)
-    {
-        glUniform4f(uniformList[i].id, x, y, z, a);
-    }
-}
+
 
 
 Shader::~Shader()

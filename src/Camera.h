@@ -59,8 +59,14 @@ class Camera
      */
     void move(movement m, float speed);
 
-    
-    glm::vec3 position, up, right;
+    /// Vecteur de position dans l'espace 
+    glm::vec3 position;
+
+    /// Vecteur d'axe Y pour le regard
+    glm::vec3 up;
+
+    /// Vecteur d'axe x pour le regard
+    glm::vec3 right;
 
     /** @brief Accesseur position X souris précédente
      *  @return float
@@ -93,18 +99,36 @@ class Camera
      */
     void setMouseSensitivity(float newSensitivity);
 
+    /// Vrai si il faut initialisé la souris
     bool initMouse = true;
+
+    /// Angle Euler Vertical
     float yawD = -90.f;
+
+    /// Angle Euler Horizontal
     float pitchD = 0.f;
+
+    /// Vecteur de regard
     glm::vec3 front = glm::vec3(0.f, 0.f, -1.f);
+
+    /// Vecteur de regard sans Y pour le déplacement (pour ne pas qu'il dépende de la hauteur)
     glm::vec3 frontMove = front;
 
     private:
 
+    /// Derniere position en X de la souris
     float lX = 0;
+
+    /// Derniere position en Y de la souris
     float lY = 0;
+
+    /// Multiplicateur de sensibilité pour la souris
     float mouseSensitivity = 0.1f;
+
+    /// matrice 4D de vue
     glm::mat4 view;
+
+    /// Vitesse de déplacement
     float speed = 3.f;
 
 };

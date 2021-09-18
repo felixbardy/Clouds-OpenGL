@@ -4,20 +4,40 @@
 #include <iostream>
 #include "stb_image.h"
 #include <vector>
-
+/** @class Textures
+ * @brief Contient toutes les textures du projet
+ * */
 class Textures
 {
     public:
-
+    /** @brief Constructeur par défaut */
     Textures();
+
+    /** @brief Destructeur par défaut */
     ~Textures();
+
+    /** @brief Initialise toutes les textures */
     void initAtlas();
+
+    /** @brief Définit la texture a utiliser pour déssinner
+     * @param texture uint contenant l'id de la texture
+    */
     void useTexture(const uint& texture);
+    
+    /// Variable de référence de la texture blockAtlas
     uint blockAtlas;
+    /// Variable de référence de Nescafey, what else ?
     uint nesCafey;
+    /// Valeur de référence de la texture de nicolas cage
     uint cage;
+
+    /** @brief Charge une texture dans la CG
+     * @param texture uint qui va contenir l'ID de la texture
+     * @param path string qui contient le chemin de la texture
+    */
     bool loadTexture(uint& texture, std::string path);
 
+    /// Tableau des id des textures pour les faces des cubes minecraft
     std::vector<std::vector<uint>> blockTextures =
     {
         {0, 0, 0, 0, 0, 0}, //Stone
