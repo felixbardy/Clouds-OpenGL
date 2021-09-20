@@ -138,7 +138,7 @@ void Mesh::resetModel()
 
 void Mesh::draw(Shader * shaderToUse, glm::mat4& projection, glm::mat4& view)
 {
-    shaderToUse->transform(model);
+    shaderToUse->setMat4("model", model);
     glBindVertexArray(VAO);
     //std::cout<<vertex.size()/8<<std::endl;
     //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

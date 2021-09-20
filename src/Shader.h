@@ -27,20 +27,77 @@ class Shader
     /** @brief Utilise le shader pour openGL */
     void use();
 
-    /** @brief Accesseur matrice de transformation
-     * @param transformMatrix matrice 4D qui représente le repère de l'objet
-    */
-    void transform(glm::mat4 transformMatrix);
+    /** @brief Ajoute un uniform de type int
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setInt(const std::string& name, int value) const;
 
-    /** @brief Accesseur matrice de vue
-     * @param viewMatrix matrice 4D qui représente la caméra
-    */
-    void view(glm::mat4& viewMatrix);
+    /** @brief Ajoute un uniform de type float
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setFloat(const std::string& name, float value) const;
 
-    /** @brief Accesseur matrice de vue
-     * @param projectionMatrix matrice 4D qui représente la caméra
-    */
-    void projection(glm::mat4 projectionMatrix);
+    /** @brief Ajoute un uniform de type vec2
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setVec2(const std::string& name, const glm::vec2& value) const;
+
+    /** @brief Ajoute un uniform de type vec2
+     * @param name le nom de l'uniform
+     * @param x coordonnée x du vecteur
+     * @param y coordonnée y du vecteur
+     */
+    void setVec2(const std::string& name, float x, float y) const;
+
+    /** @brief Ajoute un uniform de type vec3
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setVec3(const std::string& name, const glm::vec3& value) const;
+
+    /** @brief Ajoute un uniform de type vec3
+     * @param name le nom de l'uniform
+     * @param x coordonnée x du vecteur
+     * @param y coordonnée y du vecteur
+     * @param z coordonnée z du vecteur
+     */
+    void setVec3(const std::string& name, float x, float y, float z) const;
+
+    /** @brief Ajoute un uniform de type vec4
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setVec4(const std::string& name, const glm::vec4& value) const;
+
+    /** @brief Ajoute un uniform de type vec4
+     * @param name le nom de l'uniform
+     * @param x coordonnée x du vecteur
+     * @param y coordonnée y du vecteur
+     * @param z coordonnée z du vecteur
+     * @param w coordonnée w du vecteur
+     */
+    void setVec4(const std::string& name, float x, float y, float z, float w) const;
+
+    /** @brief Ajoute un uniform de type mat2
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setMat2(const std::string& name, const glm::mat2& mat) const;
+
+    /** @brief Ajoute un uniform de type mat3
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setMat3(const std::string& name, const glm::mat3& mat) const;
+
+    /** @brief Ajoute un uniform de type mat4
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setMat4(const std::string& name, const glm::mat4& mat) const;
 
     /** @brief Destructeur par défaut */
     ~Shader();
@@ -64,13 +121,6 @@ class Shader
 
     /// string pour récupérer le code du fragment shader
     std::string fragmentCode;
-
-    /// Id de l'uniform du model
-    int modelId;
-    /// Id de l'uniform de vue
-    int viewId;
-    /// Id de l'uniform de la projection
-    int projectionId;
 
     /// Entier représentant le succés d'une étape de compilation
     int success;
