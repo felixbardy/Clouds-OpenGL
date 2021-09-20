@@ -4,12 +4,16 @@
 #include <iostream>
 #include "stb_image.h"
 #include <vector>
+#include "FastNoise.h"
+#include <thread>
+#include <mutex>
 /** @class Textures
  * @brief Contient toutes les textures du projet
  * */
 class Textures
 {
     public:
+
     /** @brief Constructeur par défaut */
     Textures();
 
@@ -18,6 +22,10 @@ class Textures
 
     /** @brief Initialise toutes les textures */
     void initAtlas();
+
+    std::mutex m;
+
+    void fillPoint(int width, int height, int i, int x, int y, int z, FastNoise & F, std::vector<unsigned char> & tab);
 
     /** @brief Définit la texture a utiliser pour déssinner
      * @param texture uint contenant l'id de la texture
@@ -30,7 +38,7 @@ class Textures
     uint nesCafey;
     /// Valeur de référence de la texture de nicolas cage
     uint cage;
-
+    uint tex3D;
     /** @brief Charge une texture dans la CG
      * @param texture uint qui va contenir l'ID de la texture
      * @param path string qui contient le chemin de la texture

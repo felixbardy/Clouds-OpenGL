@@ -8,38 +8,78 @@ Textures::Textures()
 
 void Textures::initAtlas()
 {
-
-
+   
+    //F.SetSeed(42);
     loadTexture(blockAtlas, "./data/blockAtlas.png");
-    loadTexture(nesCafey, "./data/coffeeSquare.jpg");
-    loadTexture(cage, "./data/Scage.jpg");
+    //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
+    //loadTexture(cage, "./data/Scage.jpg");
 
 }
 
 void Textures::useTexture(const uint& texture)
 {
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_3D, texture);
+}
+void Textures::fillPoint(int width, int height, int i, int x, int y, int z, FastNoise & F, std::vector<unsigned char> & data)
+{
+    
+    float noise = (F.GetNoise(x, y, z) + 1)/2;
+    data[i] = noise * 255;
+    if((rand() % width * height * width) < width * height)
+    {
+        data[i+1] = 255;
+    }
+    else
+    {
+        data[i+1] = 0;
+    }
+    
 }
 
 bool Textures::loadTexture(uint& textures, std::string path)
 {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glEnable(GL_BLEND);
+    glEnable(GL_DEPTH);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    int width, height, depth, nrChannels;
+    //stbi_set_flip_vertically_on_load(true);
+    width = height = depth = 200;
+    nrChannels = 2;
+    FastNoise F;
+    F.SetNoiseType(FastNoise::NoiseType::Perlin);
+    F.SetSeed(42);
+    F.SetFractalOctaves(3);
+    F.SetFrequency(0.05);
+    std::vector<unsigned char> data(width * height * depth * nrChannels);
+    int x, y, z;
+    x = y = z = 0;
+    int c = 1;
+    int i = 0;
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    float borderColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
-    if(data)
+    while(i < width * depth * height * nrChannels)
+    {
+        fillPoint(width, height, i, x, y, z, F, data);
+        x++;
+        if(x >= width)
+        {
+            x = 0;
+            y++;
+        }
+        if(y >= height)
+        {
+            y = 0;
+            z++;
+        }
+        i+=2;  
+    }
+
+    std::cout<<data.size()<<std::endl;
+    if(!data.empty())
     {
         glGenTextures(1, &textures);
-        glBindTexture(GL_TEXTURE_2D, textures);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(data);
+        glBindTexture(GL_TEXTURE_3D, textures);
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, 0, GL_RG, GL_UNSIGNED_BYTE, &data[0]);
+        glGenerateMipmap(GL_TEXTURE_3D);
         return true;
     }
     else

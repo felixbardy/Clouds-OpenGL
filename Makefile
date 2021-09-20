@@ -1,5 +1,5 @@
 FLAGS = -g
-GL = -ldl -lglfw -I $(HEADDIR) ./$(LIBDIR)/stb_image.a
+GL = -ldl -lglfw -pthread -I $(HEADDIR) ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a
 LIB = -I $(HEADDIR)
 
 SRCDIR=src

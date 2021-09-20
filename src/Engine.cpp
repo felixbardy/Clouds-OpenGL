@@ -158,32 +158,24 @@ Shader* Engine::getShader()
 
 void Engine::run()
 {
-    std::vector<vec3> position;
-    for(int i = 0; i < 25; i++)
-    {
-        for(int j = 0; j < 25; j++)
-        {
-            position.push_back(glm::vec3(i-13, 0, j-13));
-        }
-    }
-
     float time = 0;
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    zaWarudo->addMesh(textureAltas);
-    zaWarudo->Meshs[0]->setPosition(position);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    zaWarudo->addNewMeshCube(textureAltas);
     std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
     while(!engineWindow.quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        textureAltas.useTexture(textureAltas.blockAtlas);zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
+        textureAltas.useTexture(textureAltas.blockAtlas);
+        zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 1000.f);
 
         shader.use();
         shader.view(zaWarudo->Cam->getViewRef());
         shader.projection(zaWarudo->projection);
-
-        zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 100.f);
         zaWarudo->update();
         zaWarudo->render(shader, glfwGetTime());
 
