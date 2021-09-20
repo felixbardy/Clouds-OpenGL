@@ -18,7 +18,7 @@ void main()
 	}
 	else
 	{
-		FragColor = vec4(tex.x, tex.x, tex.x, 1.0) * vec4(ourColor, 1.0);
+		FragColor = vec4(tex.x, tex.x, tex.x, tex.x) * vec4(ourColor, 1.0);
 	}
 	
 }

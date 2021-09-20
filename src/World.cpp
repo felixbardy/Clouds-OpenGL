@@ -6,7 +6,7 @@ World::World()
     projection = glm::mat4(1.f);
 }
 
-void World::addMesh(const Textures& textures)
+void World::addNewMeshCube(const Textures& textures)
 {
     Mesh * nM = new Mesh();
     nM->setCube(textures, 5);
@@ -14,6 +14,11 @@ void World::addMesh(const Textures& textures)
     pos.y = Meshs.size()/256;
     nM->position.push_back(pos);
     Meshs.push_back(nM);
+}
+
+void World::addMesh(Mesh * mesh)
+{
+    Meshs.push_back(mesh);
 }
 
 void World::render(Shader & Shader, float time)

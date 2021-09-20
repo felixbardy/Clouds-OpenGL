@@ -42,7 +42,7 @@ bool Textures::loadTexture(uint& textures, std::string path)
     glEnable(GL_DEPTH);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     int width, height, depth, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
+    //stbi_set_flip_vertically_on_load(true);
     width = height = depth = 200;
     nrChannels = 2;
     FastNoise F;
@@ -50,7 +50,6 @@ bool Textures::loadTexture(uint& textures, std::string path)
     F.SetSeed(42);
     F.SetFractalOctaves(3);
     F.SetFrequency(0.05);
-    std::vector<std::thread> thList;
     std::vector<unsigned char> data(width * height * depth * nrChannels);
     int x, y, z;
     x = y = z = 0;

@@ -19,10 +19,15 @@ class World
     /// Matrice de projection utilisée
     glm::mat4 projection;
 
-    /** @brief Ajoute un mesh à la scène
+    /** @brief Ajoute un cube a la scene
      * @param textures Les textures à appliquer au mesh 
      */
-    void addMesh(const Textures& textures);
+    void addNewMeshCube(const Textures& textures);
+    
+    /** @brief Ajoute un cube a la scene
+     * @param textures Les textures à appliquer au mesh 
+     */
+    void addMesh(Mesh * M);
 
     /** @brief Affiche la scène sur le contexte courant avec le shader et temps fournis
      * @param Shader les shaders à utiliser
