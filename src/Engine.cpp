@@ -176,7 +176,10 @@ void Engine::run()
         shader.use();
 
         // Définition des uniforms
-        //FIXME Trouver un moyen de passer la bonne matrice (j'ai pas cherché pour l'instant j'ai juste copié sur shader_kit)
+        //FIXME Intégrer correctement la définition de la "boite à nuage"
+        vec3 box_vmin = vec3(-0.5f, -0.5f, -0.5f);
+        vec3 box_vmax = vec3(0.5f, 0.5f, 0.5f);
+
         mat4 model = mat4(1.f);
         mat4 view = zaWarudo->Cam->getView();
         mat4 projection = zaWarudo->projection;
@@ -184,10 +187,14 @@ void Engine::run()
         mat4 mvp = projection * view * model;
         mat4 mvpInv = glm::inverse(mvp);
 
+        shader.setVec3("vmin", box_vmin);
+        shader.setVec3("vmax", box_vmax);
+
         shader.setMat4("view", zaWarudo->Cam->getViewRef());
         shader.setMat4("projection", zaWarudo->projection);
         shader.setMat4("mvpMatrix", mvp);
         shader.setMat4("mvpInvMatrix", mvpInv);
+
 
         zaWarudo->update();
         zaWarudo->render(shader, glfwGetTime());
