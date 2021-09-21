@@ -10,6 +10,7 @@ void Textures::initAtlas()
 {
    
     //F.SetSeed(42);
+    glEnable(GL_TEXTURE_3D);
     loadTexture(blockAtlas, "./data/blockAtlas.png");
     //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
     //loadTexture(cage, "./data/Scage.jpg");
@@ -43,7 +44,7 @@ bool Textures::loadTexture(uint& textures, std::string path)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     int width, height, depth, nrChannels;
     //stbi_set_flip_vertically_on_load(true);
-    width = height = depth = 200;
+    width = height = depth = 256;
     nrChannels = 2;
     FastNoise F;
     F.SetNoiseType(FastNoise::NoiseType::Perlin);
