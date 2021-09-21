@@ -195,6 +195,8 @@ void Engine::run()
         shader.setMat4("mvpMatrix", mvp);
         shader.setMat4("mvpInvMatrix", mvpInv);
 
+        shader.setFloat("time", time);
+
 
         zaWarudo->update();
         zaWarudo->render(shader, glfwGetTime());

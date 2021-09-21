@@ -12,6 +12,8 @@ uniform sampler3D texture1;
 uniform vec3 vmin;
 uniform vec3 vmax;
 
+uniform float time;
+
 in vec2 position;
 
 out vec4 fragment_color;
@@ -28,7 +30,7 @@ vec3 random( vec3 p )
 vec4 worley(vec3 position, bool drawPropagation, bool drawPoint, bool drawGrid)
 {
     vec3 st = position;
-    st *= 5;
+    st *= 3;
     vec3 i_st = floor(st);
     vec3 f_st = fract(st);
     vec4 color = vec4(0);
@@ -43,7 +45,7 @@ vec4 worley(vec3 position, bool drawPropagation, bool drawPoint, bool drawGrid)
             {
                 vec3 voisin = vec3(float(x), float(y), float(z));
                 vec3 point = random(i_st + voisin);
-                //point = 0.5 + 0.5*sin(time + 6.2831*point);
+                point = 0.5 + 0.5*sin(time + 6.2831*point);
                 vec3 diff = voisin + point - f_st;
                 float dist = length(diff);
                 minDist = min(minDist, dist);
@@ -129,7 +131,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.x /= boxdim.x;
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
-        density += worley(texcoords, false, false, false).x;
+        density += mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35);//(worley(texcoords, false, false, false).x * texture(texture1, texcoords).x) * 2;
     }
 
     return density / float(steps);
