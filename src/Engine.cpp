@@ -177,8 +177,8 @@ void Engine::run()
 
         // Définition des uniforms
         //FIXME Intégrer correctement la définition de la "boite à nuage"
-        vec3 box_vmin = vec3(-0.5f, -0.5f, -0.5f);
-        vec3 box_vmax = vec3(0.5f, 0.5f, 0.5f);
+        vec3 box_vmin = vec3(-1.0f, -1.0f, -1.0f);
+        vec3 box_vmax = vec3(1.0f, 1.0f, 1.0f);
 
         mat4 model = mat4(1.f);
         mat4 view = zaWarudo->Cam->getView();
