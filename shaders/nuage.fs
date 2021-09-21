@@ -56,6 +56,29 @@ vec2 cloudBoxIntersection(vec3 ray_o, vec3 ray_d)
     return vec2(tmin,tmax); 
 }
 
+float computeCloudDensity(vec3 entry, vec3 exit, int steps)
+{
+    entry = entry - vmin;
+    exit = exit - vmin;
+    vec3 texcoords;
+    vec3 boxdim = vmax - vmin;
+    float step_value = 1.0f / float(steps);
+    float t;
+    float density = 0;
+    for (int i = 0; i < steps; i++)
+    {
+        t = step_value * (steps);
+        texcoords = entry * (1 - t) + exit * t;
+        texcoords.x /= boxdim.x;
+        texcoords.y /= boxdim.y;
+        texcoords.z /= boxdim.z;
+        density += texture(texture1, texcoords).x;
+    }
+
+    return density / float(steps);
+
+}
+
 void main() 
 {
     // construction du rayon pour le pixel
@@ -74,22 +97,26 @@ void main()
     float T_in = itrsect.x;
     float T_out = itrsect.y;
     
+    vec4 bgcolor = vec4(0,0.5,0.8,1);
+
     // Si intersection:
     if (T_out >= 0)
     {
         // Prendre en compte le cas où la caméra est dans le nuage
         if (T_in < 0) T_in = 0;
         //TODO Vrai calcul de densité à partir de la texture3D
-        // vec3 entry = o + T_in * d;
-        // vec3 exit = o + T_out * d;
-        // float density = computeCloudDensity(entry, exit);
+        vec3 entry = o + T_in * d;
+        vec3 exit = o + T_out * d;
+        float density = computeCloudDensity(entry, exit, 5);
 
-        //? 1.5f est juste au dessus de la distance maximale dans le cube (=sqrt(2) ~= 1.4f)
-        float density = (itrsect.y - itrsect.x) / 1.5f;
-        fragment_color = vec4(density, density, density, 1);
+        // Une densité inférieure à density_offset donnera un espace vide
+        float density_offset = 0.25;
+        density = max(density - density_offset, 0) / (1.0 - density_offset);
+        //density *= (itrsect.y - itrsect.x) / length(vmax-vmin);
+        fragment_color = bgcolor * exp(-density);
     }
     // Si pas d'intersection:
-    else  fragment_color = vec4(0,0,0,1);
+    else  fragment_color = bgcolor;
     
     
 }
