@@ -67,7 +67,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
     float density = 0;
     for (int i = 0; i < steps; i++)
     {
-        t = step_value * (steps);
+        t = step_value * float(i);
         texcoords = entry * (1 - t) + exit * t;
         texcoords.x /= boxdim.x;
         texcoords.y /= boxdim.y;
@@ -107,12 +107,11 @@ void main()
         //TODO Vrai calcul de densité à partir de la texture3D
         vec3 entry = o + T_in * d;
         vec3 exit = o + T_out * d;
-        float density = computeCloudDensity(entry, exit, 5);
+        float density = computeCloudDensity(entry, exit, 256);
 
         // Une densité inférieure à density_offset donnera un espace vide
-        float density_offset = 0.25;
+        float density_offset = 0.5;
         density = max(density - density_offset, 0) / (1.0 - density_offset);
-        //density *= (itrsect.y - itrsect.x) / length(vmax-vmin);
         fragment_color = bgcolor * exp(-density);
     }
     // Si pas d'intersection:
