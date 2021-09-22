@@ -14,6 +14,8 @@ uniform vec3 vmax;
 
 uniform float time;
 
+uniform float temperature; // Plus froid = plus dense
+
 in vec2 position;
 
 out vec4 fragment_color;
@@ -45,7 +47,7 @@ vec4 worley(vec3 position, bool drawPropagation, bool drawPoint, bool drawGrid)
             {
                 vec3 voisin = vec3(float(x), float(y), float(z));
                 vec3 point = random(i_st + voisin);
-                point = 0.5 + 0.5*sin(time + 6.2831*point);
+                //point = 0.5 + 0.5*sin(time + 6.2831*point);
                 vec3 diff = voisin + point - f_st;
                 float dist = length(diff);
                 minDist = min(minDist, dist);
@@ -124,14 +126,16 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
     float step_value = 1.0f / float(steps);
     float t;
     float density = 0;
-    for (int i = 0; i < steps; i++)
+    for (int i = 1; i < steps-1; i++)
     {
         t = step_value * float(i);
         texcoords = entry * (1 - t) + exit * t;
         texcoords.x /= boxdim.x;
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
-        density += mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35);//(worley(texcoords, false, false, false).x * texture(texture1, texcoords).x) * 2;
+        vec3 centre = vec3(0.5);
+        float delta = 1 - (distance(centre, texcoords));
+        density += mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
     }
 
     return density / float(steps);
@@ -156,7 +160,7 @@ void main()
     float T_in = itrsect.x;
     float T_out = itrsect.y;
     
-    vec4 bgcolor = vec4(0,0.5,0.8,1);
+    vec4 bgcolor = vec4(0.4, 0.4, 0.8, 1.);
 
     // Si intersection:
     if (T_out >= 0)
@@ -169,7 +173,7 @@ void main()
         float density = computeCloudDensity(entry, exit, 25);
 
         // Une densité inférieure à density_offset donnera un espace vide
-        float density_offset = 0.4;
+        float density_offset = 0.25;
         density = max(density - density_offset, 0) / (1.0 - density_offset);
         fragment_color = bgcolor * exp(-density);
     }
