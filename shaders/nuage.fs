@@ -12,6 +12,9 @@ uniform sampler3D texture1;
 uniform vec3 vmin;
 uniform vec3 vmax;
 
+uniform vec3 lightpos;
+uniform float lightpower;
+
 uniform float time;
 
 uniform float temperature; // Plus froid = plus dense
@@ -142,14 +145,63 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
 
 }
 
+float getIlluminationAtPoint(vec3 point)
+{
+    vec3 dir = lightpos - point;
+    vec2 intersect = cloudBoxIntersection(point, dir);
+    
+    if (intersect.y < 0) return lightpower;
+    
+    intersect.x = max(intersect.x, 0);
+
+    vec3 entry = point + dir * intersect.x;
+    vec3 exit  = point + dir * intersect.y;
+    float density = computeCloudDensity(entry, exit, 10);
+    return lightpower * exp(-density);
+}
+
+float rayleighPhase(float angle)
+{
+    float cosvalue = cos(angle);
+    return 3.0/8.0 * (1 + cosvalue*cosvalue);
+}
+
+vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
+{
+    entry = entry - vmin;
+    exit = exit - vmin;
+    vec3 texcoords;
+    vec3 boxdim = vmax - vmin;
+    vec3 true_pos;
+    float step_value = 1.0f / float(steps);
+    float t;
+    float density = 0;
+    float light = 0;
+    vec3 raydir = normalize(exit-entry);
+    vec3 to_light;
+    for (int i = 1; i < steps-1; i++)
+    {
+        t = step_value * float(i);
+        texcoords = entry * (1 - t) + exit * t;
+        true_pos = texcoords + vmin;
+        texcoords.x /= boxdim.x;
+        texcoords.y /= boxdim.y;
+        texcoords.z /= boxdim.z;
+        vec3 centre = vec3(0.5);
+        float delta = 1 - (distance(centre, texcoords));
+        to_light = normalize(lightpos - true_pos);
+        density += mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
+        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(exit-entry, lightpos-true_pos))*exp(-density);
+    }
+
+    return vec2(density, light);
+}
+
 void main() 
 {
     // construction du rayon pour le pixel
     vec4 origin_s = mvpInvMatrix * vec4(position, 0, 1); // origine sur near
     vec4 end_s    = mvpInvMatrix * vec4(position, 1, 1); // fin sur far
-
-    const vec3 light = vec3(2,0,0); // origine de la lumière
-    const float min_light = 0.2; // Luminosité minimum des objets
 
     // normalisation pour l'expression du rayon
     //? pas compris
@@ -170,12 +222,16 @@ void main()
         //TODO Vrai calcul de densité à partir de la texture3D
         vec3 entry = o + T_in * d;
         vec3 exit = o + T_out * d;
-        float density = computeCloudDensity(entry, exit, 25);
+        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 50);
+        float density = density_light.x;
+        float light = density_light.y;
 
-        // Une densité inférieure à density_offset donnera un espace vide
-        float density_offset = 0.25;
-        density = max(density - density_offset, 0) / (1.0 - density_offset);
-        fragment_color = bgcolor * exp(-density);
+        //float density = computeCloudDensity(entry, exit, 50);
+
+        // // Une densité inférieure à density_offset donnera un espace vide
+        // float density_offset = 0;
+        // density = max(density - density_offset, 0) / (1.0 - density_offset);
+        fragment_color = (bgcolor * exp(-density)) * (1-light) + vec4(1.0) * light;
     }
     // Si pas d'intersection:
     else  fragment_color = bgcolor;
