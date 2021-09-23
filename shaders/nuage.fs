@@ -82,7 +82,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         vec3 centre = vec3(0.5);
         float delta = 1 - (distance(centre, texcoords));
         vec4 tex = texture(texture1, texcoords);
-        density += mix(tex.y, tex.x, 0.35) * delta;
+        density += mix(tex.y, tex.x, 0.25) * delta;
     }
 
     return density / float(steps);

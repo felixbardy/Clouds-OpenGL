@@ -35,7 +35,7 @@ all: lib ./$(BINDIR)/run doc
 # exécutables
 
 # debug
-./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
+./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 
 #compilable
@@ -64,7 +64,10 @@ lib:
 ./$(OBJDIR)/World.o : ./$(SRCDIR)/World.cpp ./$(SRCDIR)/World.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
-./$(OBJDIR)/Textures.o : ./$(SRCDIR)/Textures.cpp ./$(SRCDIR)/Textures.h #./$(SRCDIR)/stb_image.h
+./$(OBJDIR)/Textures.o : ./$(SRCDIR)/Textures.cpp ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Worley.h#./$(SRCDIR)/stb_image.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
+
+./$(OBJDIR)/Worley.o : ./$(SRCDIR)/Worley.cpp ./$(SRCDIR)/Worley.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 

@@ -5,8 +5,7 @@
 #include "stb_image.h"
 #include <vector>
 #include "FastNoise.h"
-#include <thread>
-#include <mutex>
+#include "Worley.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -27,11 +26,7 @@ class Textures
     /** @brief Initialise toutes les textures */
     void initAtlas();
 
-    std::mutex m;
-
-    float worley(glm::vec3 position);
-
-    void fillPoint(int width, int height, int i, int x, int y, int z, FastNoise & F, std::vector<unsigned char> & tab);
+    void fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & tab);
 
     /** @brief Définit la texture a utiliser pour déssinner
      * @param texture uint contenant l'id de la texture
