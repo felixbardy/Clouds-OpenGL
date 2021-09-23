@@ -179,7 +179,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
     float light = 0;
     vec3 raydir = normalize(exit-entry);
     vec3 to_light;
-    for (int i = 1; i < steps-1; i++)
+    for (int i = 0; i < steps; i++)
     {
         t = step_value * float(i);
         texcoords = entry * (1 - t) + exit * t;
@@ -190,10 +190,16 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         vec3 centre = vec3(0.5);
         float delta = 1 - (distance(centre, texcoords));
         to_light = normalize(lightpos - true_pos);
-        density += mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
-        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(exit-entry, lightpos-true_pos))*exp(-density);
+        float local_density = mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
+        density += local_density;
+        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density);
     }
-
+    density /= float(steps);
+    light /= float(steps);
+    float d = density;
+    float density_offset = 0.25;
+    density = max(density - density_offset, 0) / (1.0 - density_offset);
+    if (density == 0) light = 0;
     return vec2(density, light);
 }
 
@@ -222,14 +228,14 @@ void main()
         //TODO Vrai calcul de densité à partir de la texture3D
         vec3 entry = o + T_in * d;
         vec3 exit = o + T_out * d;
-        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 50);
+        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 10);
         float density = density_light.x;
         float light = density_light.y;
 
         //float density = computeCloudDensity(entry, exit, 50);
 
         // // Une densité inférieure à density_offset donnera un espace vide
-        // float density_offset = 0;
+        // float density_offset = 0.25;
         // density = max(density - density_offset, 0) / (1.0 - density_offset);
         fragment_color = (bgcolor * exp(-density)) * (1-light) + vec4(1.0) * light;
     }
