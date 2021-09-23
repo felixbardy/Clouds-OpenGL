@@ -123,6 +123,11 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
     float light = 0;
     vec3 raydir = normalize(exit-entry);
     vec3 to_light;
+
+    float density_offset = 0.25;
+
+    int rS = steps;
+
     for (int i = 0; i < steps; i++)
     {
         t = step_value * float(i);
@@ -136,14 +141,14 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         to_light = normalize(lightpos - true_pos);
         vec4 tex = texture(texture1, texcoords);
         float local_density = mix(tex.y, tex.x, 0.35) * delta;
+        local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
+        if(local_density == 0) rS--;
         density += local_density;
-        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density);
+        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density) * delta;
     }
-    density /= float(steps);
-    light /= float(steps);
-    float d = density;
-    float density_offset = 0.25;
-    density = max(density - density_offset, 0) / (1.0 - density_offset);
+    density /= float(rS);
+    light /= float(rS);
+    
     return vec2(density, light);
 }
 
