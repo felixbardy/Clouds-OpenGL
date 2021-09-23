@@ -126,7 +126,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
     float step_value = 1.0f / float(steps);
     float t;
     float density = 0;
-    for (int i = 1; i < steps-1; i++)
+    for (int i = 0; i < steps; i++)
     {
         t = step_value * float(i);
         texcoords = entry * (1 - t) + exit * t;
