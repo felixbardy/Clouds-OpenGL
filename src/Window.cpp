@@ -34,7 +34,7 @@ int Window::initWindow()
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    
 
 
     std::cout<<"window GLFW Cree"<<std::endl;

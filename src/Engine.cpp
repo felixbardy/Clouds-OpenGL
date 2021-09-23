@@ -158,12 +158,13 @@ Shader* Engine::getShader()
 
 void Engine::run()
 {
+    glfwSetInputMode(engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     zaWarudo->addNewMeshCube(textureAltas);
     std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
     while(!engineWindow.quit)
@@ -190,7 +191,7 @@ void Engine::run()
         shader.setVec3("vmin", box_vmin);
         shader.setVec3("vmax", box_vmax);
         shader.setVec3("lightpos", vec3(4,4,8));
-        shader.setFloat("lightpower", 10);
+        shader.setFloat("lightpower", 50);
 
         shader.setMat4("view", zaWarudo->Cam->getViewRef());
         shader.setMat4("projection", zaWarudo->projection);

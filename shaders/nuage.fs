@@ -23,63 +23,6 @@ in vec2 position;
 
 out vec4 fragment_color;
 
-vec3 random( vec3 p ) 
-{
-    return fract(sin(vec3(
-        dot(p,vec3(127.1,311.7, 214.4)),
-        dot(p,vec3(269.5,183.3, 107.5)),
-        dot(p,vec3(114.5,413.3, 49.5))
-        ))*43758.5453);
-}
-
-vec4 worley(vec3 position, bool drawPropagation, bool drawPoint, bool drawGrid)
-{
-    vec3 st = position;
-    st *= 3;
-    vec3 i_st = floor(st);
-    vec3 f_st = fract(st);
-    vec4 color = vec4(0);
-
-    float minDist = 1;
-
-    for(int x = -1; x <= 1; x++)
-    {
-        for(int y = -1; y <= 1; y++)
-        {
-            for(int z = -1; z <= 1; z++)
-            {
-                vec3 voisin = vec3(float(x), float(y), float(z));
-                vec3 point = random(i_st + voisin);
-                //point = 0.5 + 0.5*sin(time + 6.2831*point);
-                vec3 diff = voisin + point - f_st;
-                float dist = length(diff);
-                minDist = min(minDist, dist);
-            }
-        }
-    }
-
-    color += minDist;
-    if(drawPropagation)
-    {
-        // Draw Propagation
-        color -= step(.7,abs(sin(50.0*minDist)))*.3;
-    }
-    
-    if(drawPoint)
-    {
-        // Draw Points
-        color.g += 1.-step(.02, minDist);
-    }
-
-    if(drawGrid)
-    {
-        // Draw grid
-        color.r += step(.98, f_st.x) + step(.98, f_st.y);
-    }
-
-    return vec4(1) - color;
-}
-
 vec2 cloudBoxIntersection(vec3 ray_o, vec3 ray_d)
 {
     float temp;
@@ -138,7 +81,8 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.z /= boxdim.z;
         vec3 centre = vec3(0.5);
         float delta = 1 - (distance(centre, texcoords));
-        density += mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
+        vec4 tex = texture(texture1, texcoords);
+        density += mix(tex.y, tex.x, 0.35) * delta;
     }
 
     return density / float(steps);
@@ -190,7 +134,8 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         vec3 centre = vec3(0.5);
         float delta = 1 - (distance(centre, texcoords));
         to_light = normalize(lightpos - true_pos);
-        float local_density = mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
+        vec4 tex = texture(texture1, texcoords);
+        float local_density = mix(tex.y, tex.x, 0.35) * delta;
         density += local_density;
         light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density);
     }
@@ -199,7 +144,6 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
     float d = density;
     float density_offset = 0.25;
     density = max(density - density_offset, 0) / (1.0 - density_offset);
-    if (density == 0) light = 0;
     return vec2(density, light);
 }
 
@@ -228,7 +172,7 @@ void main()
         //TODO Vrai calcul de densité à partir de la texture3D
         vec3 entry = o + T_in * d;
         vec3 exit = o + T_out * d;
-        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 10);
+        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 64);
         float density = density_light.x;
         float light = density_light.y;
 

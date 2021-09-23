@@ -7,6 +7,10 @@
 #include "FastNoise.h"
 #include <thread>
 #include <mutex>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 /** @class Textures
  * @brief Contient toutes les textures du projet
  * */
@@ -24,6 +28,8 @@ class Textures
     void initAtlas();
 
     std::mutex m;
+
+    float worley(glm::vec3 position);
 
     void fillPoint(int width, int height, int i, int x, int y, int z, FastNoise & F, std::vector<unsigned char> & tab);
 
