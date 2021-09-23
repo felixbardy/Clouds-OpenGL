@@ -174,8 +174,33 @@ void Engine::run()
         zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 1000.f);
 
         shader.use();
-        shader.view(zaWarudo->Cam->getViewRef());
-        shader.projection(zaWarudo->projection);
+
+        // Définition des uniforms
+        //FIXME Intégrer correctement la définition de la "boite à nuage"
+        vec3 box_vmin = vec3(-3.0f, -3.0f, -3.0f);
+        vec3 box_vmax = vec3(3.0f, 3.0f, 3.0f);
+
+        mat4 model = mat4(1.f);
+        mat4 view = zaWarudo->Cam->getView();
+        mat4 projection = zaWarudo->projection;
+
+        mat4 mvp = projection * view * model;
+        mat4 mvpInv = glm::inverse(mvp);
+
+        shader.setVec3("vmin", box_vmin);
+        shader.setVec3("vmax", box_vmax);
+        shader.setVec3("lightpos", vec3(4,4,8));
+        shader.setFloat("lightpower", 10);
+
+        shader.setMat4("view", zaWarudo->Cam->getViewRef());
+        shader.setMat4("projection", zaWarudo->projection);
+        shader.setMat4("mvpMatrix", mvp);
+        shader.setMat4("mvpInvMatrix", mvpInv);
+
+        shader.setFloat("time", time);
+        shader.setFloat("temperature", 2);
+
+
         zaWarudo->update();
         zaWarudo->render(shader, glfwGetTime());
 

@@ -51,6 +51,17 @@
         "condition_variable": "cpp",
         "ctime": "cpp",
         "ratio": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "unordered_set": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp"
     }
 }
