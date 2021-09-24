@@ -7,7 +7,6 @@
 #include "FastNoise.h"
 #include "Worley.h"
 
-#
 #include "stb_image.h"
 #include "glad.h"
 
