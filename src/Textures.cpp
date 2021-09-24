@@ -49,7 +49,7 @@ bool Textures::loadTexture(uint& textures, std::string path)
     F.SetSeed(42);
     F.SetFractalOctaves(3);
     F.SetFrequency(0.05);
-    Worley W = Worley(2, width, height, depth);
+    Worley W = Worley(3, width, height, depth);
 
     std::vector<unsigned char> data;
     int x, y, z;

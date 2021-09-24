@@ -82,7 +82,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         vec3 centre = vec3(0.5);
         float delta = 1 - (distance(centre, texcoords));
         vec4 tex = texture(texture1, texcoords);
-        density += mix(tex.y, tex.x, 0.25) * delta;
+        density += mix(tex.y, tex.x, 0.45) * delta;
     }
 
     return density / float(steps);
@@ -137,17 +137,17 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
         vec3 centre = vec3(0.5);
-        float delta = 1 - (distance(centre, texcoords));
+        float delta = (1 - (distance(centre, texcoords)));
         to_light = normalize(lightpos - true_pos);
         vec4 tex = texture(texture1, texcoords);
-        float local_density = mix(tex.y, tex.x, 0.35) * delta;
+        float local_density = mix(tex.y, tex.x, 0.75) * delta;
         local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
         if(local_density == 0) rS--;
         density += local_density;
-        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density) * delta;
+        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density);
     }
-    density /= float(rS);
-    light /= float(rS);
+    density /= float(steps);
+    light /= float(steps);
     
     return vec2(density, light);
 }
