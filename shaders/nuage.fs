@@ -23,6 +23,13 @@ in vec2 position;
 
 out vec4 fragment_color;
 
+float angle_between_normed_vec3(vec3 u, vec3 v)
+{
+    float angle = acos(dot(u,v));
+    if (angle > PI) angle = TWO_PI - angle;
+    return angle;
+}
+
 vec2 cloudBoxIntersection(vec3 ray_o, vec3 ray_d)
 {
     float temp;
@@ -146,7 +153,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         density += local_density;
         // Lumière transmise depuis le point =
         light += getIlluminationAtPoint(true_pos)     // Illumination au point
-               * rayleighPhase(dot(raydir, to_light)) // Portion de lumière renvoyée dans la direction du rayon
+               * rayleighPhase(angle_between_normed_vec3(raydir, to_light)) // Portion de lumière renvoyée dans la direction du rayon
                * local_density                        // Densité locale (modifie la portion de lumière renvoyée)
                * exp(-density);                       // Dispersion approximative le long du rayon
     }
