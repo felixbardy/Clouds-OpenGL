@@ -126,7 +126,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
 
     float density_offset = 0.25;
 
-    int rS = steps;
+    int rS = steps; //< Real steps
 
     for (int i = 0; i < steps; i++)
     {
@@ -144,7 +144,11 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
         if(local_density == 0) rS--;
         density += local_density;
-        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density);
+        // Lumière transmise depuis le point =
+        light += getIlluminationAtPoint(true_pos)     // Illumination au point
+               * rayleighPhase(dot(raydir, to_light)) // Portion de lumière renvoyée dans la direction du rayon
+               * local_density                        // Densité locale (modifie la portion de lumière renvoyée)
+               * exp(-density);                       // Dispersion approximative le long du rayon
     }
     density /= float(steps);
     light /= float(steps);
