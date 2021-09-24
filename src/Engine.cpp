@@ -177,8 +177,8 @@ void Engine::run()
 
         // Définition des uniforms
         //FIXME Intégrer correctement la définition de la "boite à nuage"
-        vec3 box_vmin = vec3(-0.5f, -0.5f, -0.5f);
-        vec3 box_vmax = vec3(0.5f, 0.5f, 0.5f);
+        vec3 box_vmin = vec3(-3.0f, -3.0f, -3.0f);
+        vec3 box_vmax = vec3(3.0f, 3.0f, 3.0f);
 
         mat4 model = mat4(1.f);
         mat4 view = zaWarudo->Cam->getView();
@@ -189,11 +189,16 @@ void Engine::run()
 
         shader.setVec3("vmin", box_vmin);
         shader.setVec3("vmax", box_vmax);
+        shader.setVec3("lightpos", vec3(4,4,8));
+        shader.setFloat("lightpower", 10);
 
         shader.setMat4("view", zaWarudo->Cam->getViewRef());
         shader.setMat4("projection", zaWarudo->projection);
         shader.setMat4("mvpMatrix", mvp);
         shader.setMat4("mvpInvMatrix", mvpInv);
+
+        shader.setFloat("time", time);
+        shader.setFloat("temperature", 2);
 
 
         zaWarudo->update();
