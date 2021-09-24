@@ -202,5 +202,12 @@ void main()
     // Si pas d'intersection:
     else  fragment_color = bgcolor;
     
-    
+    // Affichage lumière
+    vec3 dir_to_light = normalize(lightpos - o);
+    float angle = angle_between_normed_vec3(d, dir_to_light);
+    // 0.03490658503988659rad ~= 2deg
+    if ( angle < 0.03490658503988659 && angle > -0.03490658503988659) {
+        fragment_color = vec4(1.0f);
+        return;
+    } 
 }
