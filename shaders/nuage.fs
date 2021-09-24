@@ -1,7 +1,7 @@
 #version 330 core
 
-// Source: https://fiftylinesofcode.com/ray-sphere-intersection/
-// Renvoie -1 sans intrsectio
+#define PI 3.1415926538
+#define TWO_PI 6.2831853076
 
 uniform mat4 mvpInvMatrix;
 uniform mat4 mvMatrix;
@@ -200,7 +200,7 @@ void main()
         fragment_color = (bgcolor * exp(-density)) * (1-light) + vec4(1.0) * light;
     }
     // Si pas d'intersection:
-    else  fragment_color = bgcolor;
+    else    fragment_color = bgcolor;
     
     // Affichage lumière
     vec3 dir_to_light = normalize(lightpos - o);
