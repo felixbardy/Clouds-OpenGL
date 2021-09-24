@@ -7,6 +7,10 @@
 #include "FastNoise.h"
 #include "Worley.h"
 
+#
+#include "stb_image.h"
+#include "glad.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -39,6 +43,7 @@ class Textures
     uint nesCafey;
     /// Valeur de référence de la texture de nicolas cage
     uint cage;
+    
     uint tex3D;
     /** @brief Charge une texture dans la CG
      * @param texture uint qui va contenir l'ID de la texture

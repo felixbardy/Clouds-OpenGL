@@ -144,10 +144,11 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
         vec3 centre = vec3(0.5);
-        float delta = (1 - (distance(centre, texcoords)));
+        float delta = (1 - (distance(centre, texcoords)*1.35));
+        if(delta < 0) delta = 0;
         to_light = normalize(lightpos - true_pos);
         vec4 tex = texture(texture1, texcoords);
-        float local_density = mix(tex.y, tex.x, 0.75) * delta;
+        float local_density = mix(tex.y, tex.x, 0.55) * delta * ((100 - temperature)/100);
         local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
         if(local_density == 0) rS--;
         density += local_density;

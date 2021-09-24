@@ -1,6 +1,4 @@
 #include "Textures.h"
-#include "stb_image.h"
-#include "glad.h"
 Textures::Textures()
 {
 
@@ -48,13 +46,13 @@ bool Textures::loadTexture(uint& textures, std::string path)
     F.SetNoiseType(FastNoise::NoiseType::Perlin);
     F.SetSeed(42);
     F.SetFractalOctaves(3);
-    F.SetFrequency(0.05);
+    F.SetFrequency(0.15);
+    
     Worley W = Worley(3, width, height, depth);
 
     std::vector<unsigned char> data;
     int x, y, z;
     x = y = z = 0;
-    int c = 1;
     int i = 0;
 
     while(i < width * depth * height * nrChannels)
