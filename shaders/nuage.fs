@@ -98,7 +98,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
 
 float getIlluminationAtPoint(vec3 point)
 {
-    vec3 dir = lightpos - point;
+    vec3 dir = normalize(lightpos - point);
     vec2 intersect = cloudBoxIntersection(point, dir);
     
     if (intersect.y < 0) return lightpower;
