@@ -133,30 +133,40 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
 
     float density_offset = 0.25;
 
+    //FIXME Hack tant qu'on se sert de exp(-density)
     int rS = steps; //< Real steps
 
     for (int i = 0; i < steps; i++)
     {
+        // Calcul des coordonées de textures et de la position du point dans le monde
         t = step_value * float(i);
         texcoords = entry * (1 - t) + exit * t;
         true_pos = texcoords + vmin;
         texcoords.x /= boxdim.x;
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
+
+        // Calcul de l'excentricité du point
         vec3 centre = vec3(0.5);
-        float delta = (1 - (distance(centre, texcoords)*1.35));
-        if(delta < 0) delta = 0;
-        to_light = normalize(lightpos - true_pos);
+        float delta = max(1 - 2*distance(centre, texcoords), 0);
+
+        // Calcul de densité par sampling des bruits mixés
         vec4 tex = texture(texture1, texcoords);
-        float local_density = mix(tex.y, tex.x, 0.55) * delta * ((100 - temperature)/100);
+        float local_density = mix(tex.y, tex.x, 0.75) * delta;
+
+        // Calcul du vecteur point->lumière
+        to_light = normalize(lightpos - true_pos);
+        // Puis de la transmission le long du rayon par le point
+        float transmission = rayleighPhase(angle_between_normed_vec3(raydir, to_light)) * local_density;
+        
         local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
         if(local_density == 0) rS--;
         density += local_density;
         // Lumière transmise depuis le point =
         light += getIlluminationAtPoint(true_pos)     // Illumination au point
-               * rayleighPhase(angle_between_normed_vec3(raydir, to_light)) // Portion de lumière renvoyée dans la direction du rayon
+               * transmission
                * local_density                        // Densité locale (modifie la portion de lumière renvoyée)
-               * exp(-density);                       // Dispersion approximative le long du rayon
+               * exp(-density);                       // Dispersion depuis le point le long du rayon
     }
     density /= float(steps);
     light /= float(steps);
