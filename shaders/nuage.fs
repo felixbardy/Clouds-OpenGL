@@ -108,6 +108,8 @@ float getIlluminationAtPoint(vec3 point)
     vec3 entry = point + dir * intersect.x;
     vec3 exit  = point + dir * intersect.y;
     float density = computeCloudDensity(entry, exit, 10);
+    //TODO Remplacer exp(-density) par une dispertion de lumière par la fontion de phase
+    // le long du rayon (faire une boucle)
     return lightpower * exp(-density);
 }
 
@@ -131,7 +133,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
     vec3 raydir = normalize(exit-entry);
     vec3 to_light;
 
-    float density_offset = 0.25;
+    float density_offset = 0.3;
 
     //FIXME Hack tant qu'on se sert de exp(-density)
     int rS = steps; //< Real steps
