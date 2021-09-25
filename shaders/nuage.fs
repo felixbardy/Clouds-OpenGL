@@ -188,8 +188,10 @@ void main()
     vec2 itrsect = cloudBoxIntersection(o,d);
     float T_in = itrsect.x;
     float T_out = itrsect.y;
-    
-    vec4 bgcolor = vec4(0.4, 0.4, 0.8, 1.);
+        
+    float lum = lightpower / 25.0;
+    vec4 bgcolor = vec4(vec3(0.4, 0.4, 0.8) * lum, 1);
+    vec4 lightcolor = vec4(1,1,0,1);
 
     // Si intersection:
     if (T_out >= 0)
@@ -208,7 +210,7 @@ void main()
         // // Une densité inférieure à density_offset donnera un espace vide
         // float density_offset = 0.25;
         // density = max(density - density_offset, 0) / (1.0 - density_offset);
-        fragment_color = (bgcolor * exp(-density)) * (1-light) + vec4(1.0) * light;
+        fragment_color = vec4(bgcolor.xyz, exp(-density)) * (1-light) + lightcolor * light;
     }
     // Si pas d'intersection:
     else    fragment_color = bgcolor;
@@ -218,7 +220,7 @@ void main()
     float angle = angle_between_normed_vec3(d, dir_to_light);
     // 0.03490658503988659rad ~= 2deg
     if ( angle < 0.03490658503988659 && angle > -0.03490658503988659) {
-        fragment_color = vec4(1.0f);
+        fragment_color = fragment_color + lightcolor * lum;
         return;
     } 
 }
