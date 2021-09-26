@@ -90,7 +90,8 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
         vec3 centre = vec3(0.5);
-        float delta = 1 - (distance(centre, texcoords));
+        //FIXME delta est défini et utilisé à la fois par cette fonction et getDensityAndLightAlongRay
+        float delta = max(1 - 1*distance(centre, texcoords), 0);
         vec4 tex = texture(texture1, texcoords);
         density +=  mix(tex.x, tex.z, 0.25) * delta;
     }
@@ -152,8 +153,8 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         texcoords.z /= boxdim.z;
 
         // Calcul de l'excentricité du point
-        vec3 centre = vec3(0.5);
-        float delta = max(1 - 2*distance(centre, texcoords), 0);
+        vec3 centre = vec3(0.5); //FIXME delta est défini et utilisé à la fois par cette fonction et ComputeCloudDensity
+        float delta = max(1 - 1*distance(centre, texcoords), 0);
 
         // Calcul de densité par sampling des bruits mixés
         vec4 tex = mix(texture(texture1, texcoords), texture(texture2, texcoords), (cos(time)+1)/2);
@@ -215,12 +216,6 @@ void main()
         vec2 density_light = getDensityAndLightAlongRay(entry, exit, 64);
         float density = density_light.x;
         float light = density_light.y;
-
-        //float density = computeCloudDensity(entry, exit, 50);
-
-        // // Une densité inférieure à density_offset donnera un espace vide
-        // float density_offset = 0.25;
-        // density = max(density - density_offset, 0) / (1.0 - density_offset);
         fragment_color = vec4(bgcolor.xyz, exp(-density)) * (1-light) + lightcolor * light;
     }
     // Si pas d'intersection:
