@@ -190,13 +190,9 @@ void Engine::run()
 
         shader.setVec3("vmin", box_vmin);
         shader.setVec3("vmax", box_vmax);
-        shader.setVec3("lightpos", vec3(
-                            cos(time) * 100,
-                            0,
-                            sin(time) * 100
-                            )
+        shader.setVec3("lightpos", vec3(0,100,100)
                         );
-        shader.setFloat("lightpower", 25 * ((cos(time / 3.0)/2)+0.5));
+        shader.setFloat("lightpower", 1);
 
         shader.setMat4("view", zaWarudo->Cam->getViewRef());
         shader.setMat4("projection", zaWarudo->projection);
