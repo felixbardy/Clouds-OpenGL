@@ -191,7 +191,7 @@ void main()
     float T_in = itrsect.x;
     float T_out = itrsect.y;
         
-    float lum = lightpower / 25.0;
+    float lum = lightpower / 50.0;
     vec4 bgcolor = vec4(vec3(0.4, 0.4, 0.8) * lum, 1);
     vec4 lightcolor = vec4(1,1,0,1);
 

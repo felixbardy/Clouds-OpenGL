@@ -196,7 +196,7 @@ void Engine::run()
                             sin(time) * 100
                             )
                         );
-        shader.setFloat("lightpower", 25 * ((cos(time / 3.0)/2)+0.5));
+        shader.setFloat("lightpower", 50 * ((cos(time / 3.0)/2)+0.5));
 
         shader.setMat4("view", zaWarudo->Cam->getViewRef());
         shader.setMat4("projection", zaWarudo->projection);
