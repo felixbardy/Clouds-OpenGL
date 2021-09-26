@@ -1,7 +1,7 @@
 #version 330 core
 
-// Source: https://fiftylinesofcode.com/ray-sphere-intersection/
-// Renvoie -1 sans intrsectio
+#define PI 3.1415926538
+#define TWO_PI 6.2831853076
 
 uniform mat4 mvpInvMatrix;
 uniform mat4 mvMatrix;
@@ -23,61 +23,11 @@ in vec2 position;
 
 out vec4 fragment_color;
 
-vec3 random( vec3 p ) 
+float angle_between_normed_vec3(vec3 u, vec3 v)
 {
-    return fract(sin(vec3(
-        dot(p,vec3(127.1,311.7, 214.4)),
-        dot(p,vec3(269.5,183.3, 107.5)),
-        dot(p,vec3(114.5,413.3, 49.5))
-        ))*43758.5453);
-}
-
-vec4 worley(vec3 position, bool drawPropagation, bool drawPoint, bool drawGrid)
-{
-    vec3 st = position;
-    st *= 3;
-    vec3 i_st = floor(st);
-    vec3 f_st = fract(st);
-    vec4 color = vec4(0);
-
-    float minDist = 1;
-
-    for(int x = -1; x <= 1; x++)
-    {
-        for(int y = -1; y <= 1; y++)
-        {
-            for(int z = -1; z <= 1; z++)
-            {
-                vec3 voisin = vec3(float(x), float(y), float(z));
-                vec3 point = random(i_st + voisin);
-                //point = 0.5 + 0.5*sin(time + 6.2831*point);
-                vec3 diff = voisin + point - f_st;
-                float dist = length(diff);
-                minDist = min(minDist, dist);
-            }
-        }
-    }
-
-    color += minDist;
-    if(drawPropagation)
-    {
-        // Draw Propagation
-        color -= step(.7,abs(sin(50.0*minDist)))*.3;
-    }
-    
-    if(drawPoint)
-    {
-        // Draw Points
-        color.g += 1.-step(.02, minDist);
-    }
-
-    if(drawGrid)
-    {
-        // Draw grid
-        color.r += step(.98, f_st.x) + step(.98, f_st.y);
-    }
-
-    return vec4(1) - color;
+    float angle = acos(dot(u,v));
+    if (angle > PI) angle = TWO_PI - angle;
+    return angle;
 }
 
 vec2 cloudBoxIntersection(vec3 ray_o, vec3 ray_d)
@@ -138,7 +88,8 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.z /= boxdim.z;
         vec3 centre = vec3(0.5);
         float delta = 1 - (distance(centre, texcoords));
-        density += mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
+        vec4 tex = texture(texture1, texcoords);
+        density += mix(tex.y, tex.x, 0.45) * delta;
     }
 
     return density / float(steps);
@@ -147,7 +98,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
 
 float getIlluminationAtPoint(vec3 point)
 {
-    vec3 dir = lightpos - point;
+    vec3 dir = normalize(lightpos - point);
     vec2 intersect = cloudBoxIntersection(point, dir);
     
     if (intersect.y < 0) return lightpower;
@@ -157,6 +108,8 @@ float getIlluminationAtPoint(vec3 point)
     vec3 entry = point + dir * intersect.x;
     vec3 exit  = point + dir * intersect.y;
     float density = computeCloudDensity(entry, exit, 10);
+    //TODO Remplacer exp(-density) par une dispertion de lumière par la fontion de phase
+    // le long du rayon (faire une boucle)
     return lightpower * exp(-density);
 }
 
@@ -179,27 +132,47 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
     float light = 0;
     vec3 raydir = normalize(exit-entry);
     vec3 to_light;
+
+    float density_offset = 0.3;
+
+    //FIXME Hack tant qu'on se sert de exp(-density)
+    int rS = steps; //< Real steps
+
     for (int i = 0; i < steps; i++)
     {
+        // Calcul des coordonées de textures et de la position du point dans le monde
         t = step_value * float(i);
         texcoords = entry * (1 - t) + exit * t;
         true_pos = texcoords + vmin;
         texcoords.x /= boxdim.x;
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
+
+        // Calcul de l'excentricité du point
         vec3 centre = vec3(0.5);
-        float delta = 1 - (distance(centre, texcoords));
+        float delta = max(1 - 2*distance(centre, texcoords), 0);
+
+        // Calcul de densité par sampling des bruits mixés
+        vec4 tex = texture(texture1, texcoords);
+        float local_density = mix(tex.y, tex.x, 0.75) * delta;
+
+        // Calcul du vecteur point->lumière
         to_light = normalize(lightpos - true_pos);
-        float local_density = mix(worley(texcoords, false, false, false).x, texture(texture1, texcoords).x, 0.35) * delta;
+        // Puis de la transmission le long du rayon par le point
+        float transmission = rayleighPhase(angle_between_normed_vec3(raydir, to_light)) * local_density;
+        
+        local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
+        if(local_density == 0) rS--;
         density += local_density;
-        light += getIlluminationAtPoint(true_pos)*rayleighPhase(dot(raydir, to_light))*local_density*exp(-density);
+        // Lumière transmise depuis le point =
+        light += getIlluminationAtPoint(true_pos)     // Illumination au point
+               * transmission
+               * local_density                        // Densité locale (modifie la portion de lumière renvoyée)
+               * exp(-density);                       // Dispersion depuis le point le long du rayon
     }
     density /= float(steps);
     light /= float(steps);
-    float d = density;
-    float density_offset = 0.25;
-    density = max(density - density_offset, 0) / (1.0 - density_offset);
-    if (density == 0) light = 0;
+    
     return vec2(density, light);
 }
 
@@ -217,8 +190,10 @@ void main()
     vec2 itrsect = cloudBoxIntersection(o,d);
     float T_in = itrsect.x;
     float T_out = itrsect.y;
-    
-    vec4 bgcolor = vec4(0.4, 0.4, 0.8, 1.);
+        
+    float lum = lightpower / 25.0;
+    vec4 bgcolor = vec4(vec3(0.4, 0.4, 0.8) * lum, 1);
+    vec4 lightcolor = vec4(1,1,0,1);
 
     // Si intersection:
     if (T_out >= 0)
@@ -228,7 +203,7 @@ void main()
         //TODO Vrai calcul de densité à partir de la texture3D
         vec3 entry = o + T_in * d;
         vec3 exit = o + T_out * d;
-        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 10);
+        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 64);
         float density = density_light.x;
         float light = density_light.y;
 
@@ -237,10 +212,17 @@ void main()
         // // Une densité inférieure à density_offset donnera un espace vide
         // float density_offset = 0.25;
         // density = max(density - density_offset, 0) / (1.0 - density_offset);
-        fragment_color = (bgcolor * exp(-density)) * (1-light) + vec4(1.0) * light;
+        fragment_color = vec4(bgcolor.xyz, exp(-density)) * (1-light) + lightcolor * light;
     }
     // Si pas d'intersection:
-    else  fragment_color = bgcolor;
+    else    fragment_color = bgcolor;
     
-    
+    // Affichage lumière
+    vec3 dir_to_light = normalize(lightpos - o);
+    float angle = angle_between_normed_vec3(d, dir_to_light);
+    // 0.03490658503988659rad ~= 2deg
+    if ( angle < 0.03490658503988659 && angle > -0.03490658503988659) {
+        fragment_color = fragment_color + lightcolor * lum;
+        return;
+    } 
 }

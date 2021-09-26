@@ -5,8 +5,14 @@
 #include "stb_image.h"
 #include <vector>
 #include "FastNoise.h"
-#include <thread>
-#include <mutex>
+#include "Worley.h"
+
+#include "stb_image.h"
+#include "glad.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 /** @class Textures
  * @brief Contient toutes les textures du projet
  * */
@@ -23,9 +29,7 @@ class Textures
     /** @brief Initialise toutes les textures */
     void initAtlas();
 
-    std::mutex m;
-
-    void fillPoint(int width, int height, int i, int x, int y, int z, FastNoise & F, std::vector<unsigned char> & tab);
+    void fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & tab);
 
     /** @brief Définit la texture a utiliser pour déssinner
      * @param texture uint contenant l'id de la texture
@@ -38,6 +42,7 @@ class Textures
     uint nesCafey;
     /// Valeur de référence de la texture de nicolas cage
     uint cage;
+    
     uint tex3D;
     /** @brief Charge une texture dans la CG
      * @param texture uint qui va contenir l'ID de la texture

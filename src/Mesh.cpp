@@ -10,7 +10,7 @@ Mesh::Mesh()
     };
 }
 
-void Mesh::setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
+/*void Mesh::setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
 {
     indices = indicesArray;
 
@@ -37,7 +37,54 @@ void Mesh::setPolygon(const Textures& texture, std::vector<float> vertexArray, s
         }
     }
     init();
+}*/
+
+void Mesh::setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
+{
+    indices = indicesArray;
+
+
+    for(int i = 0; i < indicesArray.size(); i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
+        }
+        for(int j = 0; j < 3; j++)
+        {
+            if(!c.empty())
+            {
+                vertex.push_back(c[uI[i] * 3 + j]);
+            }
+            else
+            {
+                vertex.push_back(1.f);
+            }
+        }
+        for(int j = 0; j < 2; j++)
+        {
+            if(!u.empty())
+            {
+                int val;
+                if(j == 0)
+                {
+                    val = texture.blockTextures[id][i/6]%4;
+                }
+                else
+                {
+                    val = (3 - texture.blockTextures[id][i/6]/4);
+                }
+                vertex.push_back((float)val/4 + 0.25f * u[uI[i] * 2 + j]);
+            }
+            else
+            {
+                vertex.push_back(1.f);
+            }
+        }
+    }
+    init();
 }
+
 
 
 void Mesh::setCube(const Textures & texture, uint id, std::vector<float> u, std::vector<uint> uI, std::vector<float> c)
@@ -109,13 +156,13 @@ void Mesh::initVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // Lie le buffer de data aux attribues du VAO
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex.size(), &vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO VAO
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, /*9*/ 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, /*9*/ 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2/*3*/, GL_FLOAT, GL_FALSE, /*9*/ 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 }
 
@@ -142,7 +189,7 @@ void Mesh::draw(Shader * shaderToUse, glm::mat4& projection, glm::mat4& view)
     glBindVertexArray(VAO);
     //std::cout<<vertex.size()/8<<std::endl;
     //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glDrawArrays(GL_TRIANGLES, 0, vertex.size()/9);
+    glDrawArrays(GL_TRIANGLES, 0, vertex.size()/8/*9*/);
     model = glm::mat4(1.f);
 }
 

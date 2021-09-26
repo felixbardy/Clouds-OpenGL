@@ -1,10 +1,11 @@
 #include "Textures.h"
-#include "stb_image.h"
-#include "glad.h"
 Textures::Textures()
 {
 
 }
+
+
+
 
 void Textures::initAtlas()
 {
@@ -21,21 +22,16 @@ void Textures::useTexture(const uint& texture)
 {
     glBindTexture(GL_TEXTURE_3D, texture);
 }
-void Textures::fillPoint(int width, int height, int i, int x, int y, int z, FastNoise & F, std::vector<unsigned char> & data)
+
+
+
+void Textures::fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & data)
 {
-    
-    float noise = (F.GetNoise(x, y, z) + 1)/2;
-    data[i] = noise * 255;
-    if((rand() % width * height * width) < width * height)
-    {
-        data[i+1] = 255;
-    }
-    else
-    {
-        data[i+1] = 0;
-    }
-    
+    data.push_back(((F.GetNoise(x, y, z) + 1)/2) * 255);
+    data.push_back(W.get3d(x, y, z) *  255);
 }
+
+
 
 bool Textures::loadTexture(uint& textures, std::string path)
 {
@@ -44,22 +40,24 @@ bool Textures::loadTexture(uint& textures, std::string path)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     int width, height, depth, nrChannels;
     //stbi_set_flip_vertically_on_load(true);
-    width = height = depth = 256;
+    width = height = depth = 64;
     nrChannels = 2;
     FastNoise F;
     F.SetNoiseType(FastNoise::NoiseType::Perlin);
     F.SetSeed(42);
     F.SetFractalOctaves(3);
-    F.SetFrequency(0.05);
-    std::vector<unsigned char> data(width * height * depth * nrChannels);
+    F.SetFrequency(0.15);
+    
+    Worley W = Worley(3, width, height, depth);
+
+    std::vector<unsigned char> data;
     int x, y, z;
     x = y = z = 0;
-    int c = 1;
     int i = 0;
 
     while(i < width * depth * height * nrChannels)
     {
-        fillPoint(width, height, i, x, y, z, F, data);
+        fillPoint(width, height, x, y, z, F, W, data);
         x++;
         if(x >= width)
         {
