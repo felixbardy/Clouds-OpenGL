@@ -15,6 +15,8 @@ uniform vec3 vmax;
 uniform vec3 lightpos;
 uniform float lightpower;
 
+uniform float lightMultiplicator;
+
 uniform float time;
 
 uniform float temperature; // Plus froid = plus dense
@@ -169,9 +171,15 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
                * transmission
                * local_density                        // Densité locale (modifie la portion de lumière renvoyée)
                * exp(-density);                       // Dispersion depuis le point le long du rayon
+
+        
     }
     density /= float(steps);
     light /= float(steps);
+
+    
+    light *= lightMultiplicator;
+    
     
     return vec2(density, light);
 }
@@ -191,9 +199,9 @@ void main()
     float T_in = itrsect.x;
     float T_out = itrsect.y;
         
-    float lum = lightpower / 50.0;
+    float lum = lightpower / 100.0;
     vec4 bgcolor = vec4(vec3(0.4, 0.4, 0.8) * lum, 1);
-    vec4 lightcolor = vec4(1,1,0,1);
+    vec4 lightcolor = vec4(1,1,1,1);
 
     // Si intersection:
     if (T_out >= 0)
