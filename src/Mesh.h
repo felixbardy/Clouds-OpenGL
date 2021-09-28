@@ -1,5 +1,11 @@
-#ifndef DEF_MESH
-#define DEF_MESH
+#ifndef MESH_H
+#define MESH_H
+
+
+
+
+
+
 
 #include "glad.h"
 #include <iostream>
@@ -14,18 +20,11 @@
 class Mesh
 {
     public:
-    /// Vecteur d'indices des sommets
-    std::vector<uint> indices;
     /** @brief Constructeur par défaut     */
     Mesh();
 
     /** @brief destructeur par défaut     */
     ~Mesh();
-
-    /// Matrice 4D de repère de l'objet
-    glm::mat4 model;
-    /// Vecteur 3D de position
-    std::vector<glm::vec3> position;
 
     /** @brief Tourne autour des axes données
      * @param angle Angle de la rotation
@@ -91,22 +90,31 @@ class Mesh
     */
     uint & getVAO();
 
-    /// Variable de référence du Vertex Array Object
-    unsigned int VAO;
-
-    /// Variable de référence du Vertex Buffer Object
-    unsigned int VBO;
-
-    /// Variable de référence de l'Element Buffer Object
-    unsigned int EBO;
+    
 
     /** @brief init le mesh    */
     void init();
 
+    /// Matrice 4D de repère de l'objet
+    glm::mat4 m_model;
+    /// Vecteur 3D de position
+    std::vector<glm::vec3> m_position;
+    /// Vecteur d'indices des sommets
+    std::vector<uint> m_indices;
+
     private:
 
     /// Tableau des vertexs à déssinner
-    std::vector<float> vertex;
+    std::vector<float> m_vertex;
+
+    /// Variable de référence du Vertex Array Object
+    unsigned int m_VAO;
+
+    /// Variable de référence du Vertex Buffer Object
+    unsigned int m_VBO;
+
+    /// Variable de référence de l'Element Buffer Object
+    unsigned int m_EBO;
 
     /** @brief init le Vertex Buffer Object    */
     void initVBO();
@@ -117,4 +125,4 @@ class Mesh
 
 };
 
-#endif
+#endif //MESH_H

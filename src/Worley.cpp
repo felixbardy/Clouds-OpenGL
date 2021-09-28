@@ -13,67 +13,67 @@ Worley::Worley(float s, int w, int h, int d)
 
 void Worley::setWidth(int w)
 {
-    width = w;
+    m_width = w;
 }
 
 int Worley::getWidth()
 {
-    return width;
+    return m_width;
 }
 
 void Worley::setHeight(int h)
 {
-    height = h;
+    m_height = h;
 }
 
 int Worley::getHeight()
 {
-    return height;
+    return m_height;
 }
 
 void Worley::setDepth(int d)
 {
-    depth = d;
+    m_depth = d;
 }
 
 int Worley::getDepth()
 {
-    return depth;
+    return m_depth;
 }
 
 void Worley::setScale(float s)
 {
-    scale = s;
+    m_scale = s;
 }
 
 float Worley::getScale()
 {
-    return scale;
+    return m_scale;
 }
 
 void Worley::enableGrid()
 {
-    drawGrid = true;
+    m_drawGrid = true;
 }
 void Worley::disableGrid()
 {
-    drawGrid = false;
+    m_drawGrid = false;
 }
 void Worley::enablePoint()
 {
-    drawPoint = true;
+    m_drawPoint = true;
 }
 void Worley::disablePoint()
 {
-    drawPoint = false;
+    m_drawPoint = false;
 }
 void Worley::enablePropagation()
 {
-    drawPropagation = true;
+    m_drawPropagation = true;
 }
 void Worley::disablePropagation()
 {
-    drawPropagation = false;
+    m_drawPropagation = false;
 }
 
 float Worley::get3d(glm::vec3 position)
@@ -84,10 +84,10 @@ float Worley::get3d(glm::vec3 position)
     //std::cout<<position.x<<" "<<position.y<<" "<<position.z<<std::endl;
     glm::vec3 st = position;
     st *= getScale();
-    glm::vec3 i_st = glm::vec3(glm::floor(st.x), glm::floor(st.y), glm::floor(st.z));
-    glm::vec3 f_st = glm::vec3(st.x - i_st.x, st.y - i_st.y, st.z  - i_st.z);
-    //std::cout<<" I : x = "<<i_st.x<<" y = "<<i_st.y<<" z = "<<i_st.z<<std::endl;
-    //std::cout<<" F : x = "<<f_st.x<<" y = "<<f_st.y<<" z = "<<f_st.z<<std::endl;
+    glm::vec3 intPos = glm::vec3(glm::floor(st.x), glm::floor(st.y), glm::floor(st.z));
+    glm::vec3 decimPos = glm::vec3(st.x - intPos.x, st.y - intPos.y, st.z  - intPos.z);
+    //std::cout<<" I : x = "<<intPos.x<<" y = "<<intPos.y<<" z = "<<intPos.z<<std::endl;
+    //std::cout<<" F : x = "<<decimPos.x<<" y = "<<decimPos.y<<" z = "<<decimPos.z<<std::endl;
     float color = 0;
 
     float minimalDistance = 1;
@@ -100,8 +100,8 @@ float Worley::get3d(glm::vec3 position)
             for(int z = -1; z <= 1; z++)
             {
                 glm::vec3 voisin = glm::vec3(float(x), float(y), float(z));
-                glm::vec3 point = random3(i_st + voisin);
-                glm::vec3 diff = (voisin + point) - f_st;
+                glm::vec3 point = random3(intPos + voisin);
+                glm::vec3 diff = (voisin + point) - decimPos;
                 float dist = glm::length(diff);
                 minimalDistance = glm::min(minimalDistance, dist);
             }
@@ -110,7 +110,7 @@ float Worley::get3d(glm::vec3 position)
 
     color += minimalDistance;
 
-    if(drawPropagation)
+    if(m_drawPropagation)
     {
         // Draw Propagation
         if(abs(sin(50.0*minimalDistance)) < 0.7)
@@ -123,7 +123,7 @@ float Worley::get3d(glm::vec3 position)
         }
     }
     
-    if(drawPoint)
+    if(m_drawPoint)
     {
         // Draw Points
         if(minimalDistance < 0.02)
@@ -136,10 +136,10 @@ float Worley::get3d(glm::vec3 position)
         }
     }
 
-    if(drawGrid)
+    if(m_drawGrid)
     {
         // Draw grid
-        if(f_st.x < 0.98)
+        if(decimPos.x < 0.98)
         {
             color += 0;
         }
@@ -148,7 +148,7 @@ float Worley::get3d(glm::vec3 position)
             color += 1;
         }
         
-        if(f_st.y < 0.98)
+        if(decimPos.y < 0.98)
         {
             color += 0;
         }
