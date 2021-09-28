@@ -20,19 +20,19 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
     yOffset = (Cam->getLastY() - yPos) * Cam->getMouseSensitivity();
     Cam->setLastX(xPos);
     Cam->setLastY(yPos);
-    Cam->yawD += xOffset;
-    Cam->pitchD += yOffset;
-    if(Cam->pitchD > 89.0f)
-        Cam->pitchD =  89.0f;
-    if(Cam->pitchD < -89.0f)
-        Cam->pitchD = -89.0f;
+    Cam->m_yawD += xOffset;
+    Cam->m_pitchD += yOffset;
+    if(Cam->m_pitchD > 89.0f)
+        Cam->m_pitchD =  89.0f;
+    if(Cam->m_pitchD < -89.0f)
+        Cam->m_pitchD = -89.0f;
 
     glm::vec3 FG;
-    FG.x = cos(glm::radians(Cam->yawD)); //* cos(glm::radians(Cam->pitchD));
-    FG.y = sin(glm::radians(Cam->pitchD));
-    FG.z = sin(glm::radians(Cam->yawD)); //* cos(glm::radians(Cam->pitchD));
-    Cam->frontMove = normalize(FG);
-    Cam->front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->pitchD)), FG.y, FG.z * cos(glm::radians(Cam->pitchD))));
+    FG.x = cos(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
+    FG.y = sin(glm::radians(Cam->m_pitchD));
+    FG.z = sin(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
+    Cam->m_frontMove = normalize(FG);
+    Cam->m_front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->m_pitchD)), FG.y, FG.z * cos(glm::radians(Cam->m_pitchD))));
 }
 void Engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint h)
 {
