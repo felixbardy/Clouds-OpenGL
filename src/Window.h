@@ -1,5 +1,5 @@
-#ifndef DEF_WINDOW
-#define DEF_WINDOW
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <GLFW/glfw3.h>
 #include <string>
@@ -10,6 +10,9 @@
 class Window
 {
     public:
+
+    /// Booléen de quittage de rendue
+    bool m_quit = false;
 
     /** @brief Constructeur par défaut */
     Window();
@@ -29,9 +32,6 @@ class Window
 
     /** @brief Actualisation de la fenêtre */
     void update();
-
-    /// Booléen de quittage de rendue
-    bool quit = false;
 
     /** @brief Gestion des inputs */
     void keyboardHandler();
@@ -55,20 +55,20 @@ class Window
     private:
 
     /// Largeur de la fenêtre
-    int width;
+    int m_width;
     /// Hauteur de la fenêtre
-    int height;
+    int m_height;
 
     /// Titre de la fenêtre
-    std::string title;
+    std::string m_title;
 
     /// Pointeur GLFW de la fenêtre
-    GLFWwindow* window;
+    GLFWwindow* m_window;
 
     /// Position X de la souris
-    double xPos;
+    double m_xPos;
     /// Position Y de la souris
-    double yPos;
+    double m_yPos;
 
 
     /** @brief Initialisation de la librairie GLFW
@@ -93,4 +93,4 @@ class Window
 
 };
 
-#endif
+#endif // WINDOW_H

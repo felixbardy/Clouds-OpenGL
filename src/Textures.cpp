@@ -12,7 +12,7 @@ void Textures::initAtlas()
    
     //F.SetSeed(42);
     glEnable(GL_TEXTURE_3D);
-    loadTexture(blockAtlas, "./data/blockAtlas.png");
+    loadTexture(m_blockAtlas, "./data/blockAtlas.png");
     //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
     //loadTexture(cage, "./data/Scage.jpg");
 

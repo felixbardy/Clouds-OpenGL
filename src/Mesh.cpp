@@ -4,36 +4,36 @@
 
 Mesh::Mesh()
 {
-    model = glm::mat4(1.f);
-    position = {
+    m_model = glm::mat4(1.f);
+    m_position = {
         glm::vec3(0.f, 0.f, 0.f)
     };
 }
 
 /*void Mesh::setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
 {
-    indices = indicesArray;
+    m_indices = indicesArray;
 
     for(int i = 0; i < indicesArray.size(); i++)
     {
         for(int j = 0; j < 3; j++)
         {
-            vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
+            m_vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
         }
         for(int j = 0; j < 3; j++)
         {
             if(!c.empty())
             {
-                vertex.push_back(c[uI[i] * 3 + j]);
+                m_vertex.push_back(c[uI[i] * 3 + j]);
             }
             else
             {
-                vertex.push_back(1.f);
+                m_vertex.push_back(1.f);
             }
         }
         for(int j = 0; j < 3; j++)
         {
-            vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
+            m_vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
         }
     }
     init();
@@ -41,44 +41,35 @@ Mesh::Mesh()
 
 void Mesh::setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uI, std::vector<float> c, std::vector<uint> indicesArray, uint id)
 {
-    indices = indicesArray;
+    m_indices = indicesArray;
 
 
     for(int i = 0; i < indicesArray.size(); i++)
     {
         for(int j = 0; j < 3; j++)
         {
-            vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
+            m_vertex.push_back(vertexArray[indicesArray[i] * 3 + j]);
         }
         for(int j = 0; j < 3; j++)
         {
             if(!c.empty())
             {
-                vertex.push_back(c[uI[i] * 3 + j]);
+                m_vertex.push_back(c[uI[i] * 3 + j]);
             }
             else
             {
-                vertex.push_back(1.f);
+                m_vertex.push_back(1.f);
             }
         }
         for(int j = 0; j < 2; j++)
         {
             if(!u.empty())
             {
-                int val;
-                if(j == 0)
-                {
-                    val = texture.blockTextures[id][i/6]%4;
-                }
-                else
-                {
-                    val = (3 - texture.blockTextures[id][i/6]/4);
-                }
-                vertex.push_back((float)val/4 + 0.25f * u[uI[i] * 2 + j]);
+                m_vertex.push_back(u[uI[i] * 2 + j]);
             }
             else
             {
-                vertex.push_back(1.f);
+                m_vertex.push_back(1.f);
             }
         }
     }
@@ -151,10 +142,10 @@ void Mesh::init()
 
 void Mesh::initVAO()
 {
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);// Bind l'objet a la CG
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); // Lie le buffer de data aux attribues du VAO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex.size(), &vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO VAO
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);// Bind l'objet a la CG
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO); // Lie le buffer de data aux attribues du m_VAO
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_vertex.size(), &m_vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO m_VAO
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, /*9*/ 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -168,72 +159,72 @@ void Mesh::initVAO()
 
 void Mesh::rotate(float angle, glm::vec3 vAxis)
 {
-    model = glm::rotate(model, angle, vAxis);
+    m_model = glm::rotate(m_model, angle, vAxis);
 }
 void Mesh::scale(glm::vec3 vScale)
 {
-    model =  glm::scale(model, vScale);
+    m_model =  glm::scale(m_model, vScale);
 }
 void Mesh::translate(glm::vec3 vTranslate)
 {
-    model = glm::translate(model, vTranslate);
+    m_model = glm::translate(m_model, vTranslate);
 }
 void Mesh::resetModel()
 {
-    model = glm::mat4(1.f);
+    m_model = glm::mat4(1.f);
 }
 
 void Mesh::draw(Shader * shaderToUse, glm::mat4& projection, glm::mat4& view)
 {
-    shaderToUse->setMat4("model", model);
-    glBindVertexArray(VAO);
-    //std::cout<<vertex.size()/8<<std::endl;
-    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glDrawArrays(GL_TRIANGLES, 0, vertex.size()/8/*9*/);
-    model = glm::mat4(1.f);
+    shaderToUse->setMat4("model", m_model);
+    glBindVertexArray(m_VAO);
+    //std::cout<<m_vertex.size()/8<<std::endl;
+    //glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, m_vertex.size()/8/*9*/);
+    m_model = glm::mat4(1.f);
 }
 
 void Mesh::initVBO()
 {
     // Permet de créer une zone mémoire dans la CG pour stocker le vertice;
-    glGenBuffers(1, &VBO); // Genere l'ID du buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); // Attribution de son type
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex.size(), &vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO VAO
+    glGenBuffers(1, &m_VBO); // Genere l'ID du buffer
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO); // Attribution de son type
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_vertex.size(), &m_vertex[0], GL_STATIC_DRAW); // Lie les VAOdata auVAO m_VAO
 }
 
 void Mesh::initEBO()
 {
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * indices.size(), &indices[0], GL_STATIC_DRAW);
+    glGenBuffers(1, &m_EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * m_indices.size(), &m_indices[0], GL_STATIC_DRAW);
 }
 
 uint& Mesh::getVAO()
 {
-    return VAO;
+    return m_VAO;
 }
 
 void Mesh::render(float angle, Shader & Shader, glm::mat4& projection, glm::mat4& view)
 {
-    for(int i = 0; i < position.size(); i++)
+    for(int i = 0; i < m_position.size(); i++)
     {
         resetModel();
-        //rotate(angle/10.f, glm::vec3(glm::cos(position[i].x), log2(position[i].y), sin(position[i].z)));
-        translate(position[i] + glm::vec3(-8, -8, -8));
+        //rotate(angle/10.f, glm::vec3(glm::cos(m_position[i].x), log2(m_position[i].y), sin(m_position[i].z)));
+        translate(m_position[i] + glm::vec3(-8, -8, -8));
         scale(glm::vec3(16, 16, 16));
-        //rotate(position[i].length, glm::vec3(1.f));
+        //rotate(m_position[i].length, glm::vec3(1.f));
         draw(&Shader, projection, view);
     }
 }
 
 void Mesh::setPosition(std::vector<glm::vec3> positions)
 {
-    position = positions;
+    m_position = positions;
 }
 
 Mesh::~Mesh()
 {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &m_VAO);
+    glDeleteBuffers(1, &m_VBO);
+    glDeleteBuffers(1, &m_EBO);
 }
