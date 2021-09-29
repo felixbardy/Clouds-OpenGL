@@ -1,6 +1,7 @@
-# Ignorer les .o et les .a
+# Ignorer les .o et les .a et les textures 3D
 *.o
 *.a
+*.3DT
 
 # Ignorer le contenu de ces dossiers
 bin/*
