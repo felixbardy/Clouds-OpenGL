@@ -171,7 +171,7 @@ void Engine::run()
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        m_textureAltas.useTexture(m_textureAltas.m_blockAtlas);
+        m_textureAltas.use3D(m_textureAltas.m_blockAtlas);
         m_world->m_projection = glm::perspective(glm::radians(70.f), (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight(), 0.1f, 1000.f);
 
         m_shader.use();
