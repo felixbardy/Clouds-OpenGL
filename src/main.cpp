@@ -1,8 +1,8 @@
 #include "Engine.h"
+#include "Textures.h"
 
 
-
-int main()
+int main(int argc, char*argv[])
 {
     Engine test;
     test.init("./shaders/nuage.vs", "./shaders/nuage.fs", 500, 500);
