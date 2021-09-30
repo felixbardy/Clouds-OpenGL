@@ -20,9 +20,9 @@ else #is Linux
 	GL = -ldl -lglfw -pthread ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a
 endif
 
-.PHONY: all doc lib
+.PHONY: all main generator doc lib clean pentaclean 
 
-default: lib ./$(BINDIR)/run
+default: lib main generator
 
 all: lib ./$(BINDIR)/run doc
 
@@ -33,7 +33,13 @@ generate : lib ./$(BINDIR)/generate
 # *EXECUTABLES* #
 # * * * * * * * #
 
-# debug
+# Règles de convenience
+main: ./$(BINDIR)/run
+
+generator: ./$(BINDIR)/generate
+
+# Règles de compilation
+
 ./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 

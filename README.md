@@ -28,16 +28,19 @@ Librairie de fonctions mathématiques pour openGL
 
 La compilation se fait à l'aide d'un Makefile.
 
-* `make` compile le projet
+* `make` compile les librairies et exécutables
+* `make main` compile l'exécutable principal
+* `make generator` compile l'exécutable de génération de textures
 * `make doc` génère la documentation à l'aide de [Doxygen](https://www.doxygen.nl/index.html)
 
 * `make all` compile le projet ET génère la documentation
 * `make clean` nettoie les dossiers `bin/` et `obj/`
-* `make pentaclean` nettoie `bin/` `obj/` et `doc/`
+* `make pentaclean` nettoie `bin/`, `obj/`, `lib/` et `doc/`
 
 ## Lancement
 
-L'exécutable principal se lance avec `bin/run` à la racine du projet
+L'exécutable principal se lance avec `bin/run` à la racine du projet. \
+`bin/generate` se lance aussi à la racine et permet de générer les textures 3D représentant les nuages.
 
 ## Équipe
 
