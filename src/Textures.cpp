@@ -4,20 +4,17 @@ Textures::Textures()
 
 }
 
-
-
-
 void Textures::initAtlas()
 {
     glEnable(GL_TEXTURE_3D);
     //createAndLoad3D(m_blockAtlas);
-    Load3D(m_blockAtlas, "./soos.3DT");
+    Load3D(m_blockAtlas, "./data/texture3D/so7.3DT");
     //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
     //loadTexture(cage, "./data/Scage.jpg");
 
 }
 
-bool Textures::write3D(int WDH, int WR, int O, int S, int Fr)
+bool Textures::write3D(int WDH, int WR, int O, int S, int Fr, std::string name)
 {
     int width, height, depth, nrChannels;
     width = height = depth = WDH;
@@ -35,13 +32,22 @@ bool Textures::write3D(int WDH, int WR, int O, int S, int Fr)
     Worley W = Worley(WorleyRes, width, height, depth);
 
     std::ofstream data;
-    std::string path = 
-    "WHD=" + std::to_string(width) + 
-    "_WR=" + std::to_string(WorleyRes) + 
-    "_O=" + std::to_string(Octaves) + 
-    "_S=" + std::to_string(Seed)+ 
-    "_F=" + std::to_string(frequency) + 
-    ".3DT";
+    std::string path;
+    std::cout<<name<<std::endl;
+    if(name == "")
+    {
+        path = 
+        "./data/texture3D/WHD=" + std::to_string(width) + 
+        "_WR=" + std::to_string(WorleyRes) + 
+        "_O=" + std::to_string(Octaves) + 
+        "_S=" + std::to_string(Seed)+ 
+        "_F=" + std::to_string(frequency) + 
+        ".3DT";
+    }
+    else
+    {
+        path = "./data/texture3D/" + name + ".3DT";
+    }
 
     data.open(path);
     if(!data.is_open())
