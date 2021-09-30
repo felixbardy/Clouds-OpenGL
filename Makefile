@@ -31,6 +31,8 @@ default: lib ./$(BINDIR)/run
 
 all: lib ./$(BINDIR)/run doc
 
+generate : lib ./$(BINDIR)/generate
+
 
 # exécutables
 
@@ -38,7 +40,16 @@ all: lib ./$(BINDIR)/run doc
 ./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 
-#compilable
+./$(BINDIR)/generate : ./$(OBJDIR)/generate.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Worley.o ./$(LIBDIR)/glad.a
+	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
+
+# * * * * * * * * * #
+# *FICHIERS OBJETS* #
+# * * * * * * * * * #
+
+lib/%.a: lib
+
+# Compilation des librairies
 lib:
 	@make --no-print-directory -f ./$(LIBDIR)/Makefile
 
@@ -70,6 +81,12 @@ lib:
 ./$(OBJDIR)/Worley.o : ./$(SRCDIR)/Worley.cpp ./$(SRCDIR)/Worley.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
+
+
+./$(OBJDIR)/generate.o : ./$(SRCDIR)/generate.cpp ./$(SRCDIR)/Textures.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
+
+./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/Engine.h
 
 # documentation doxygen
 doc:

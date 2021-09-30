@@ -50,11 +50,11 @@ class Engine
     float lastTime = 0;
 
     /// Instance de l'objet contenant toutes les textures
-    Textures* tabTextures;
+    Textures* m_tabTextures;
 
     private:
     /// Instance de l'objet contenant la fenêtre
-    Window engineWindow;
+    Window m_window;
 
     /// Instance du shader
     Shader shader;

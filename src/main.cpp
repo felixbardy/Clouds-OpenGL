@@ -1,8 +1,8 @@
 #include "Engine.h"
+#include "Textures.h"
 
 
-
-int main()
+int main(int argc, char*argv[])
 {
     Engine Test;
     Test.init("./shaders/basic2D.vs", "./shaders/basic2D.fs", 500, 500);

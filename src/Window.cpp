@@ -94,4 +94,5 @@ void Window::update()
 
 Window::~Window()
 {
+    
 }
