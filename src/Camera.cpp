@@ -2,61 +2,61 @@
 
 Camera::Camera()
 {
-    m_position   = glm::vec3(0.0f, 0.0f,  3.0f);
-    m_front = glm::vec3(0.0f, 0.0f, -1.0f);
-    m_up    = glm::vec3(0.0f, 1.0f,  0.0f);
-    m_view = glm::mat4(1.f);
-    m_view = glm::lookAt(m_position, m_position + m_front, m_up);
+    position   = glm::vec3(0.0f, 0.0f,  3.0f);
+    front = glm::vec3(0.0f, 0.0f, -1.0f);
+    up    = glm::vec3(0.0f, 1.0f,  0.0f);
+    view = glm::mat4(1.f);
+    view = glm::lookAt(position, position + front, up);
 }
 
 void Camera::setLastX(float newX)
 {
-    m_lastX = newX;
+    lX = newX;
 }
 
 void Camera::setLastY(float newY)
 {
-    m_lastY = newY;
+    lY = newY;
 }
 
 void Camera::setMouseSensitivity(float nS)
 {
-    m_mouseSensitivity = nS;
+    mouseSensitivity = nS;
 }
 
 float Camera::getMouseSensitivity()
 {
-    return m_mouseSensitivity;
+    return mouseSensitivity;
 }
 
 float Camera::getLastX()
 {
-    return m_lastX;
+    return lX;
 }
 
 float Camera::getLastY()
 {
-    return m_lastY;
+    return lY;
 }
 
 Camera::Camera(int x, int y, int z)
 {
-    m_position = glm::vec3(0.0f, 0.0f,  0.0f);
-    m_front = glm::vec3(0.0f, 0.0f, 0.0f);
-    m_up = glm::vec3(0.0f, 1.0f,  0.0f);
-    m_view = glm::mat4(1.f);
-    m_view = glm::lookAt(m_position, m_position + m_front, m_up);
+    position = glm::vec3(0.0f, 0.0f,  0.0f);
+    front = glm::vec3(0.0f, 0.0f, 0.0f);
+    up = glm::vec3(0.0f, 1.0f,  0.0f);
+    view = glm::mat4(1.f);
+    view = glm::lookAt(position, position + front, up);
 }
 
 float Camera::getSpeed()
 {
-    return m_speed;
+    return speed;
 }
 
-void Camera::move(Movement m, float speed)
+void Camera::move(movement m, float speed)
 {
-    float prevY = m_position.y;
-    glm::vec3 F = m_front;
+    float prevY = position.y;
+    glm::vec3 F = front;
     if(F.x < 0) F.x = -1;
     else F.x = 1;
 
@@ -67,31 +67,31 @@ void Camera::move(Movement m, float speed)
     switch (m)
     {
     case FORWARD:
-        m_position += m_frontMove * speed;
-        m_position.y = prevY;
+        position += frontMove * speed;
+        position.y = prevY;
         break;
 
     case BACKWARD:
-        m_position -= m_frontMove * speed;
-        m_position.y = prevY;
+        position -= frontMove * speed;
+        position.y = prevY;
         break;
 
     case LEFT:
-        m_position -= m_right * speed;
-        m_position.y = prevY;
+        position -= right * speed;
+        position.y = prevY;
         break;
 
     case RIGHT:
-        m_position += m_right * speed;
-        m_position.y = prevY;
+        position += right * speed;
+        position.y = prevY;
         break;
 
     case UP:
-        m_position.y += speed;
+        position.y += speed;
         break;
 
     case BOTTOM:
-        m_position.y -= speed;
+        position.y -= speed;
         break;
 
     default:
@@ -107,7 +107,7 @@ void Camera::printView()
     {
         for(int j = 0; j < 4; j++)
         {
-            std::cout<<m_view[i][j];
+            std::cout<<view[i][j];
         }
         std::cout<<std::endl;
     }
@@ -115,18 +115,18 @@ void Camera::printView()
 
 void Camera::update()
 {
-    m_view = glm::lookAt(m_position, m_position + m_front, m_up);
-    m_right = glm::normalize(glm::cross(m_front, m_up));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    view = glm::lookAt(position, position + front, up);
+    right = glm::normalize(glm::cross(front, up));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
 }
 
 
 
 glm::mat4 Camera::getView()
 {
-    return m_view;
+    return view;
 }
 
 glm::mat4 & Camera::getViewRef()
 {
-    return m_view;
+    return view;
 }

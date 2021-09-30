@@ -9,52 +9,55 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
 {
     void *data = glfwGetWindowUserPointer(window);
     Camera * Cam = static_cast<Camera *>(data);
-    if (Cam->m_initMouse)
+    if (Cam->initMouse)
     {
         Cam->setLastX(xPos);
         Cam->setLastY(yPos);
-        Cam->m_initMouse = false;
+        Cam->initMouse = false;
     }
     float xOffset, yOffset;
     xOffset = (xPos - Cam->getLastX()) * Cam->getMouseSensitivity();
     yOffset = (Cam->getLastY() - yPos) * Cam->getMouseSensitivity();
     Cam->setLastX(xPos);
     Cam->setLastY(yPos);
-    Cam->m_yawD += xOffset;
-    Cam->m_pitchD += yOffset;
-    if(Cam->m_pitchD > 89.0f)
-        Cam->m_pitchD =  89.0f;
-    if(Cam->m_pitchD < -89.0f)
-        Cam->m_pitchD = -89.0f;
+    Cam->yawD += xOffset;
+    Cam->pitchD += yOffset;
+    if(Cam->pitchD > 89.0f)
+        Cam->pitchD =  89.0f;
+    if(Cam->pitchD < -89.0f)
+        Cam->pitchD = -89.0f;
 
     glm::vec3 FG;
-    FG.x = cos(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
-    FG.y = sin(glm::radians(Cam->m_pitchD));
-    FG.z = sin(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
-    Cam->m_frontMove = normalize(FG);
-    Cam->m_front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->m_pitchD)), FG.y, FG.z * cos(glm::radians(Cam->m_pitchD))));
+    FG.x = cos(glm::radians(Cam->yawD)); //* cos(glm::radians(Cam->pitchD));
+    FG.y = sin(glm::radians(Cam->pitchD));
+    FG.z = sin(glm::radians(Cam->yawD)); //* cos(glm::radians(Cam->pitchD));
+    Cam->frontMove = normalize(FG);
+    Cam->front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->pitchD)), FG.y, FG.z * cos(glm::radians(Cam->pitchD))));
 }
 void Engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint h)
 {
-    m_engineWindow = Window(w, h, "suus");
-    m_engineWindow.init();
+    engineWindow = Window(w, h, "suus");
+    engineWindow.init();
     initGLAD();
 
-    m_world = new World;
-    m_world->getCam()->setLastX(w / 2.f);
-    m_world->getCam()->setLastY(h / 2.f);
-    m_world->m_projection = mat4(1.f);
+    zaWarudo = new World;
+    zaWarudo->Cam->setLastX(w / 2.f);
+    zaWarudo->Cam->setLastY(h / 2.f);
+    zaWarudo->projection = mat4(1.f);
 
-    glfwSetFramebufferSizeCallback(m_engineWindow.getWindow(), resetCamerawindow);
-    glfwSetWindowUserPointer(m_engineWindow.getWindow(), m_world->getCam());
-    glfwSetCursorPosCallback(m_engineWindow.getWindow(), cursorCallback);
-    m_textureAltas.initAtlas();
+    glfwSetFramebufferSizeCallback(engineWindow.getWindow(), resetCamerawindow);
+    glfwSetWindowUserPointer(engineWindow.getWindow(), zaWarudo->Cam);
+    glfwSetCursorPosCallback(engineWindow.getWindow(), cursorCallback);
+
+		tabTextures = new Textures();
+		//tabTextures->generate3DWorley();
+    tabTextures->loadTexture("./data/blockAtlas.png");
 
     r = g = b = 0.f;
     a = 1.f;
-    m_inputPrevent = 0;
+    inputPrevent = 0;
 
-    m_shader.init(vertexPath, fragmentPath);
+    shader.init(vertexPath, fragmentPath);
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -76,75 +79,75 @@ int Engine::initGLAD()
 }
 void Engine::keyboardHandler(Camera * Cam)
 {
-    float deltaTime = glfwGetTime() - m_lastTime;
-    m_lastTime = glfwGetTime();
+    float deltaTime = glfwGetTime() - lastTime;
+    lastTime = glfwGetTime();
     float speed = Cam->getSpeed() * deltaTime;
-    if(m_inputPrevent <= 0)
+    if(inputPrevent <= 0)
     {
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(m_engineWindow.getWindow(), true);
-            m_inputPrevent = 10;
+            glfwSetWindowShouldClose(engineWindow.getWindow(), true);
+            inputPrevent = 10;
         }
 
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_P) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_P) == GLFW_PRESS)
         {
-            m_isWireframe = !m_isWireframe;
-            if(m_isWireframe)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            isWireframe = !isWireframe;
+            if(isWireframe)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            m_inputPrevent = 10;
+            inputPrevent = 10;
         }
 
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_F11) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_F11) == GLFW_PRESS)
         {
-            if(m_isFullscreen)
+            if(isFullscreen)
             {
-                glfwSetWindowMonitor(m_engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 0);
+                glfwSetWindowMonitor(engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 0);
             }
             else
             {
-                glfwSetWindowMonitor(m_engineWindow.getWindow(), NULL, 710, 290, 500, 500, 0);
+                glfwSetWindowMonitor(engineWindow.getWindow(), NULL, 710, 290, 500, 500, 0);
             }
 
-            m_isFullscreen = !m_isFullscreen;
-            m_inputPrevent = 10;
-                //glfwSetWindowMonitor(m_engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 60);
+            isFullscreen = !isFullscreen;
+            inputPrevent = 10;
+                //glfwSetWindowMonitor(engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 60);
         }
 
-        
 
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
         {
-            if(m_isCursorLocked)
-                glfwSetInputMode(m_engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            if(isCursorLocked)
+                glfwSetInputMode(engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             else
-                glfwSetInputMode(m_engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                glfwSetInputMode(engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-            m_isCursorLocked = !m_isCursorLocked;
-            m_inputPrevent = 10;
+            isCursorLocked = !isCursorLocked;
+            inputPrevent = 10;
         }
     }
-     if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+     if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         {
             Cam->move(FORWARD, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
         {
             Cam->move(BACKWARD, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
         {
             Cam->move(LEFT, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
         {
             Cam->move(RIGHT, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {
             Cam->move(UP, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        if(glfwGetKey(engineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
             Cam->move(BOTTOM, speed);
         }
@@ -153,64 +156,67 @@ void Engine::keyboardHandler(Camera * Cam)
 }
 Shader* Engine::getShader()
 {
-    return &m_shader;
+    return &shader;
 }
 
 void Engine::run()
 {
-    glfwSetInputMode(m_engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    m_world->addNewMeshCube(m_textureAltas);
-    std::cout<<"Nombre de mesh : "<<m_world->m_meshs.size()<<std::endl;
-    while(!m_engineWindow.m_quit)
+		//glEnable(GL_CULL_FACE); //uncomment to activate culling
+    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    zaWarudo->addNewMeshCube(tabTextures);
+    std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
+    while(!engineWindow.quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        m_textureAltas.useTexture(m_textureAltas.m_blockAtlas);
-        m_world->m_projection = glm::perspective(glm::radians(70.f), (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight(), 0.1f, 1000.f);
+        tabTextures->useTexture();
+        zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)engineWindow.getWidth() / (float)engineWindow.getHeight(), 0.1f, 1000.f);
 
-        m_shader.use();
+        shader.use();
 
         // Définition des uniforms
         //FIXME Intégrer correctement la définition de la "boite à nuage"
-        vec3 box_vmin = vec3(-50.0f, -50.0f, -50.0f);
-        vec3 box_vmax = vec3(50.0f, 50.0f, 50.0f);
+        vec3 box_vmin = vec3(-50.0f, -25.0f, -50.0f);
+        vec3 box_vmax = vec3(50.0f, 25.0f, 50.0f);
 
         mat4 model = mat4(1.f);
-        mat4 view = m_world->getCam()->getView();
-        mat4 projection = m_world->m_projection;
+        mat4 view = zaWarudo->Cam->getView();
+        mat4 projection = zaWarudo->projection;
 
         mat4 mvp = projection * view * model;
         mat4 mvpInv = glm::inverse(mvp);
 
-        m_shader.setVec3("vmin", box_vmin);
-        m_shader.setVec3("vmax", box_vmax);
-        m_shader.setVec3("lightpos", vec3(0, cos(time) * 70, 0)
+        shader.setVec3("vmin", box_vmin);
+        shader.setVec3("vmax", box_vmax);
+        shader.setVec3("lightpos", vec3(
+                            cos(time) * 60,
+                            0,
+                            sin(time) * 60
+                            )
                         );
-        m_shader.setFloat("lightpower", 100 * ((cos(time / 3.0)/2)+0.5));
-        m_shader.setFloat("lightMultiplicator", 2.5);
+        shader.setFloat("lightpower", 100);
 
-        m_shader.setMat4("view", m_world->getCam()->getViewRef());
-        m_shader.setMat4("projection", m_world->m_projection);
-        m_shader.setMat4("mvpMatrix", mvp);
-        m_shader.setMat4("mvpInvMatrix", mvpInv);
+        shader.setMat4("view", zaWarudo->Cam->getViewRef());
+        shader.setMat4("projection", zaWarudo->projection);
+        shader.setMat4("mvpMatrix", mvp);
+        shader.setMat4("mvpInvMatrix", mvpInv);
 
-        m_shader.setFloat("time", time);
-        m_shader.setFloat("temperature", 10);
-        
+        shader.setFloat("time", time);
+        shader.setFloat("temperature", 10);
 
 
-        m_world->update();
-        m_world->render(m_shader, glfwGetTime());
+        zaWarudo->update();
+        zaWarudo->render(shader, glfwGetTime());
 
-        m_engineWindow.update();
-        keyboardHandler(m_world->getCam());
-        if(m_inputPrevent >= 0) m_inputPrevent--;
+        engineWindow.update();
+        keyboardHandler(zaWarudo->Cam);
+        if(inputPrevent >= 0) inputPrevent--;
         time+=0.01;
     }
 }

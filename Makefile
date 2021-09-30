@@ -1,4 +1,5 @@
 FLAGS = -g
+GL = -ldl -lglfw -pthread -I $(HEADDIR) ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a
 LIB = -I $(HEADDIR)
 
 SRCDIR=src
@@ -14,10 +15,14 @@ export LIBDIR HEADDIR
 OS=`uname`
 
 #detecting Operating system
-ifeq ( $(OS), Darwin ) # is MacOS
-	GL = -ldl -lglfw
-else #is Linux
-	GL = -ldl -lglfw -pthread ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a
+ifeq ( $(OS), Windows_NT )     # is Windows
+    #TODO Fais ton truc Mattéo
+else
+  ifeq ( $(OS), Darwin ) # is MacOS
+    GL = -ldl -lglfw
+  else #is Linux
+    #TODO à compléter
+  endif
 endif
 
 .PHONY: all doc lib
@@ -27,31 +32,30 @@ default: lib ./$(BINDIR)/run
 all: lib ./$(BINDIR)/run doc
 
 
-# * * * * * * * #
-# *EXECUTABLES* #
-# * * * * * * * #
+# exécutables
 
 # debug
 ./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 
-# * * * * * * * * * #
-# *FICHIERS OBJETS* #
-# * * * * * * * * * #
-
-lib/%.a: lib
-
-# Compilation des librairies
+#compilable
 lib:
 	@make --no-print-directory -f ./$(LIBDIR)/Makefile
 
-# Règle par défaut de compilation des sources
-./$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.h
+# partie jeu
+./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/Engine.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
-# Règles avec dépendances spécifiques
+./$(OBJDIR)/Window.o : ./$(SRCDIR)/Window.cpp ./$(SRCDIR)/Window.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
-./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/Engine.h
+./$(OBJDIR)/Shader.o : ./$(SRCDIR)/Shader.cpp ./$(SRCDIR)/Shader.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
+
+./$(OBJDIR)/Mesh.o : ./$(SRCDIR)/Mesh.cpp ./$(SRCDIR)/Mesh.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
+
+./$(OBJDIR)/Camera.o : ./$(SRCDIR)/Camera.cpp ./$(SRCDIR)/Camera.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Engine.o : ./$(SRCDIR)/Engine.cpp ./$(SRCDIR)/Engine.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
@@ -61,6 +65,9 @@ lib:
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Textures.o : ./$(SRCDIR)/Textures.cpp ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Worley.h#./$(SRCDIR)/stb_image.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
+
+./$(OBJDIR)/Worley.o : ./$(SRCDIR)/Worley.cpp ./$(SRCDIR)/Worley.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 

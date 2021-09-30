@@ -1,8 +1,5 @@
-#ifndef SHADER_H
-#define SHADER_H
-
-
-
+#ifndef DEF_SHADER
+#define DEF_SHADER
 
 #include "glad.h"
 #include <string>
@@ -107,29 +104,29 @@ class Shader
 
     private:
     /// Variable de référence du vertex shader
-    uint m_vertexShader;
+    uint vertexShader;
     /// Variable de référence du fragment shader
-    uint m_fragmentShader;
+    uint fragmentShader;
 
     /// Variable de référence du programme de shader
-    uint m_shaderProgram;
+    uint shaderProgram;
 
     /// String du code source du vertex shader
-    const char* m_vertexShaderSource;
+    const char* vertexShaderSource;
     /// String du code source du fragment shader
-    const char* m_fragmentShaderSource;
+    const char* fragmentShaderSource;
 
     /// string pour récuperer le code du vertex shader
-    std::string m_vertexCode;
+    std::string vertexCode;
 
     /// string pour récupérer le code du fragment shader
-    std::string m_fragmentCode;
+    std::string fragmentCode;
 
     /// Entier représentant le succés d'une étape de compilation
-    int m_success;
+    int success;
 
     /// Tableau ou sont stocker les rapports d'erreur en cas de compilation du shader
-    char m_infolog[512];
+    char infolog[512];
 
     /** @brief Compile le shader de fragment */
     void compileFragment();
@@ -154,4 +151,5 @@ class Shader
 
 };
 
-#endif //SHADER_H
+
+#endif

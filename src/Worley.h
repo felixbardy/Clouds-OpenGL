@@ -1,5 +1,5 @@
-#ifndef WORLEY_H
-#define WORLEY_H
+#ifndef DEF_UTILITY
+#define DEF_UTILITY
 
 #include <string>
 #include <iostream>
@@ -19,7 +19,7 @@ class Worley
     float get3d(float x, float y, float z);
     float get3d(glm::vec3 position);
 
-    void setScale(float s);
+    void setScale(float scale);
     float getScale();
 
     void setWidth(int w);
@@ -40,12 +40,12 @@ class Worley
 
     private:
 
-    float m_scale;
-    bool m_drawPropagation, m_drawGrid, m_drawPoint;
+    float scale;
+    bool drawPropagation, drawGrid, drawPoint;
 
-    int m_width, m_height, m_depth;
+    int width, height, depth;
 
     glm::vec3 random3(glm::vec3 p);
 };
 
-#endif // WORLEY_H
+#endif

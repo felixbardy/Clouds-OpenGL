@@ -1,11 +1,5 @@
-#ifndef MESH_H
-#define MESH_H
-
-
-
-
-
-
+#ifndef DEF_MESH
+#define DEF_MESH
 
 #include "glad.h"
 #include <iostream>
@@ -20,11 +14,18 @@
 class Mesh
 {
     public:
+    /// Vecteur d'indices des sommets
+    std::vector<uint> indices;
     /** @brief Constructeur par défaut     */
     Mesh();
 
     /** @brief destructeur par défaut     */
     ~Mesh();
+
+    /// Matrice 4D de repère de l'objet
+    glm::mat4 model;
+    /// Vecteur 3D de position
+    std::vector<glm::vec3> position;
 
     /** @brief Tourne autour des axes données
      * @param angle Angle de la rotation
@@ -47,7 +48,7 @@ class Mesh
      * @param projection matrice 4 dimension du monde
      * @param view matrice 4 dimension de vue
      */
-    void draw(Shader * shaderToUse, glm::mat4& projection, glm::mat4& view);
+    void draw(Shader* shaderToUse, glm::mat4& projection, glm::mat4& view);
 
     /** @brief affiche le mesh
      * @param angle angle de rotation
@@ -71,8 +72,8 @@ class Mesh
      * @param indiceArray indices de l'ordre ou utiliser les vertices
      * @param id id du block a afficher
      */
-    void setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray, uint id);
-    
+    void setPolygon(std::vector<float> vertices, std::vector<uint> verticesOrder, std::vector<float> uvArray = {}, std::vector<uint> uvOrder = {});
+
     /** @brief remplit les vertices du Cube
      * @param texture texture du jeu
      * @param id id du block a afficher
@@ -80,8 +81,8 @@ class Mesh
      * @param uvIndex Vecteur contenant les indices de l'odre ou utiliser les uvs
      * @param c vecteur de couleur
      */
-    void setCube(const Textures & texture, uint id = 0, std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
-     
+    void setCube();
+
     /** @brief retire les transformation     */
     void resetModel();
 
@@ -90,31 +91,22 @@ class Mesh
     */
     uint & getVAO();
 
-    
+    /// Variable de référence du Vertex Array Object
+    unsigned int VAO;
+
+    /// Variable de référence du Vertex Buffer Object
+    unsigned int VBO;
+
+    /// Variable de référence de l'Element Buffer Object
+    unsigned int EBO;
 
     /** @brief init le mesh    */
     void init();
 
-    /// Matrice 4D de repère de l'objet
-    glm::mat4 m_model;
-    /// Vecteur 3D de position
-    std::vector<glm::vec3> m_position;
-    /// Vecteur d'indices des sommets
-    std::vector<uint> m_indices;
-
     private:
 
-    /// Tableau des vertexs à déssinner
-    std::vector<float> m_vertex;
-
-    /// Variable de référence du Vertex Array Object
-    unsigned int m_VAO;
-
-    /// Variable de référence du Vertex Buffer Object
-    unsigned int m_VBO;
-
-    /// Variable de référence de l'Element Buffer Object
-    unsigned int m_EBO;
+    /// Tableau des vertexs à dessiner
+    std::vector<float> vertex;
 
     /** @brief init le Vertex Buffer Object    */
     void initVBO();
@@ -125,4 +117,4 @@ class Mesh
 
 };
 
-#endif //MESH_H
+#endif

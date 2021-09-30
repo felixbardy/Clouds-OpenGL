@@ -1,18 +1,18 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef DEF_CAMERA
+#define DEF_CAMERA
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
-/** @enum Movement
+/** @enum movement
  * @brief
  * 
  * Gère les Direction pour déplacer la caméra
  * 
  */
-enum Movement{FORWARD, BACKWARD, LEFT, RIGHT, UP, BOTTOM};
+enum movement{FORWARD, BACKWARD, LEFT, RIGHT, UP, BOTTOM};
 
 /** @class Camera
  * @brief
@@ -22,28 +22,7 @@ enum Movement{FORWARD, BACKWARD, LEFT, RIGHT, UP, BOTTOM};
  */
 class Camera
 {
-
-public:
-    /// @brief Constructeur par défaut
-    Camera();
-
-    /** @brief Constructeur par paramètre
-     *  @param x position en x de la caméra
-     *  @param y position en y de la caméra
-     *  @param z position en z de la caméra
-     */
-    Camera(int x, int y, int z);
-
-    glm::vec3 m_position; //!< Vecteur de position dans l'espace 
-    glm::vec3 m_up;       //!< Vecteur d'axe Y pour le regard
-    glm::vec3 m_right;    //!< Vecteur d'axe x pour le regard
-    
-    bool m_initMouse = true; /// Indique s'il faut initialiser la souris
-
-    float m_yawD = -90.f; //!< Angle Euler Vertical
-    float m_pitchD = 0.f; //!< Angle Euler Horizontal
-    glm::vec3 m_front = glm::vec3(0.f, 0.f, -1.f);    //!< Vecteur de regard
-    glm::vec3 m_frontMove = m_front;    //!< Vecteur de regard sans Y pour le déplacement (pour ne pas qu'il dépende de la hauteur)
+    public:
 
     /** @brief accesseur référence matrice de vue
      *  @return reference matrice 4 dim
@@ -55,6 +34,15 @@ public:
      */
     glm::mat4 getView();
 
+    /** @brief Constructeur par paramètre
+     *  @param x position en x de la caméra
+     *  @param y position en y de la caméra
+     *  @param z position en z de la caméra
+     */
+    Camera(int x, int y, int z);
+
+    /// @brief Constructeur par défaut
+    Camera();
 
     /** @brief Actualise les vecteurs / matrice de la caméra
      */
@@ -69,7 +57,16 @@ public:
      *  @param m le type de déplacement
      *  @param speed vitesse de déplacement
      */
-    void move(Movement m, float speed);
+    void move(movement m, float speed);
+
+    /// Vecteur de position dans l'espace 
+    glm::vec3 position;
+
+    /// Vecteur d'axe Y pour le regard
+    glm::vec3 up;
+
+    /// Vecteur d'axe x pour le regard
+    glm::vec3 right;
 
     /** @brief Accesseur position X souris précédente
      *  @return float
@@ -102,16 +99,38 @@ public:
      */
     void setMouseSensitivity(float newSensitivity);
 
-private:
-    float m_lastX = 0;                   //!< Derniere position en X de la souris
-    float m_lastY = 0;                   //!< Derniere position en Y de la souris
-    float m_mouseSensitivity = 0.1f;  //!< Multiplicateur de sensibilité pour la souris
-    /// matrice 4D de vue
-    glm::mat4 m_view;
-    /// Vitesse de déplacement de la caméra
-    float m_speed = 10.f;
+    /// Vrai si il faut initialisé la souris
+    bool initMouse = true;
 
+    /// Angle Euler Vertical
+    float yawD = -90.f;
+
+    /// Angle Euler Horizontal
+    float pitchD = 0.f;
+
+    /// Vecteur de regard
+    glm::vec3 front = glm::vec3(0.f, 0.f, -1.f);
+
+    /// Vecteur de regard sans Y pour le déplacement (pour ne pas qu'il dépende de la hauteur)
+    glm::vec3 frontMove = front;
+
+    private:
+
+    /// Derniere position en X de la souris
+    float lX = 0;
+
+    /// Derniere position en Y de la souris
+    float lY = 0;
+
+    /// Multiplicateur de sensibilité pour la souris
+    float mouseSensitivity = 0.1f;
+
+    /// matrice 4D de vue
+    glm::mat4 view;
+
+    /// Vitesse de déplacement
+    float speed = 10.f;
 
 };
 
-#endif //CAMERA_H
+#endif

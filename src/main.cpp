@@ -4,9 +4,9 @@
 
 int main()
 {
-    Engine test;
-    test.init("./shaders/nuage.vs", "./shaders/nuage.fs", 500, 500);
-    test.setBackgroundColor(0.4f, 0.4f, 0.8f, 1.f);
-    test.run();
+    Engine Test;
+    Test.init("./shaders/basic2D.vs", "./shaders/basic2D.fs", 500, 500);
+    Test.setBackgroundColor(0.4f, 0.4f, 0.8f, 1.f);
+    Test.run();
     return 0;
 }

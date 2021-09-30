@@ -1,5 +1,5 @@
-#ifndef TEXTURES_H
-#define TEXTURES_H
+#ifndef DEF_TEXTURES
+#define DEF_TEXTURES
 #include <string>
 #include <iostream>
 #include "stb_image.h"
@@ -26,36 +26,27 @@ class Textures
     /** @brief Destructeur par défaut */
     ~Textures();
 
-    /** @brief Initialise toutes les textures */
-    void initAtlas();
 
     void fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & tab);
 
     /** @brief Définit la texture a utiliser pour déssinner
      * @param texture uint contenant l'id de la texture
     */
-    void useTexture(const uint& texture);
+    void useTexture();
 
 
+
+    uint texUint;
     /** @brief Charge une texture dans la CG
      * @param texture uint qui va contenir l'ID de la texture
      * @param path string qui contient le chemin de la texture
     */
-    bool loadTexture(uint& texture, std::string path);
-    
-    /// Variable de référence de la texture blockAtlas
-    uint m_blockAtlas;
-    /// Variable de référence de Nescafey, what else ?
-    uint m_nesCafey;
-    /// Valeur de référence de la texture de nicolas cage
-    uint m_cage;
-    uint m_tex3D;
-    
-   
+    bool loadTexture(std::string path);
+		bool generate3DWorley();
 
     private:
 
 };
 
 
-#endif // TEXTURE_H
+#endif
