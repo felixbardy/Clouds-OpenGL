@@ -56,7 +56,8 @@ class Textures
     /** @brief Ecrit une texture dans un fichier texte
      * @param path string qui contient le chemin du fichier ou écrire
     */
-    bool write3D(int WDH, int WR, int O, int S, int F, std::string name);
+    bool write3D3Chan(int WDH, int WR[3], std::string name);
+    bool write3D4Chan(int WDH, int WR[3], int O, int S, int F, std::string name);
     
     /// Variable de référence de la texture blockAtlas
     uint m_blockAtlas;

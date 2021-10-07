@@ -22,9 +22,9 @@ endif
 
 .PHONY: all main generator doc lib clean pentaclean 
 
-default: lib main generator
+default: lib main generator generate
 
-all: lib ./$(BINDIR)/run doc
+all: lib ./$(BINDIR)/run doc generate
 
 generate : lib ./$(BINDIR)/generate
 

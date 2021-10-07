@@ -91,7 +91,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         vec3 centre = vec3(0.5);
         float delta = 1 - (distance(centre, texcoords));
         vec4 tex = texture(texture1, texcoords);
-        density += mix(tex.y, tex.x, 0.45) * delta;
+        density +=  mix(tex.x, tex.z, 0.25) * delta;
     }
 
     return density / float(steps);
@@ -156,7 +156,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
 
         // Calcul de densité par sampling des bruits mixés
         vec4 tex = texture(texture1, texcoords);
-        float local_density = mix(tex.y, tex.x, 0.75) * delta;
+        float local_density = mix(tex.x, tex.z, 0.25) * delta;
 
         // Calcul du vecteur point->lumière
         to_light = normalize(lightpos - true_pos);
