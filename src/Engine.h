@@ -28,7 +28,7 @@ class Engine
      * @param vertexPath chemin vers le shader de vertex
      * @param fragmentPath chemin vers le shader de fragment
      */
-    void init(std::string vertexPath, std::string fragmentPath, uint w = 500, uint h = 500);
+    void init(uint w = 500, uint h = 500);
 
     /** @brief Demarre le rendu      */
     void run();
@@ -57,7 +57,7 @@ class Engine
     Window m_window;
 
     /// Instance du shader
-    Shader shader;
+    Shader* m_tabShader;
 
     /// Variable de prévetion pour éviter les multiples input
     int inputPrevent;

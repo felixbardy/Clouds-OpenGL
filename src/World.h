@@ -33,7 +33,7 @@ class World
      * @param Shader les shaders à utiliser
      * @param time le temps actuel du monde
      */
-    void render(Shader & Shader, float time);
+    void render(Shader* Shader, float time);
 
     /** @brief Fait la mise à jour physique du monde
      */

@@ -202,7 +202,7 @@ uint& Mesh::getVAO()
     return VAO;
 }
 
-void Mesh::render(float angle, Shader &Shader, glm::mat4& projection, glm::mat4& view)
+void Mesh::render(float angle, Shader* Shader, glm::mat4& projection, glm::mat4& view)
 {
     for(int i = 0; i < position.size(); i++)
     {
@@ -211,7 +211,7 @@ void Mesh::render(float angle, Shader &Shader, glm::mat4& projection, glm::mat4&
         translate(position[i] + glm::vec3(-8, -8, -8));
         scale(glm::vec3(16, 16, 16));
         //rotate(position[i].length, glm::vec3(1.f));
-        draw(&Shader, projection, view);
+        draw(Shader, projection, view);
     }
 }
 

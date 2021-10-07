@@ -34,7 +34,7 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
     Cam->frontMove = normalize(FG);
     Cam->front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->pitchD)), FG.y, FG.z * cos(glm::radians(Cam->pitchD))));
 }
-void Engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint h)
+void Engine::init(uint w, uint h)
 {
     m_window = Window(w, h, "suus");
     m_window.init();
@@ -50,14 +50,14 @@ void Engine::init(std::string vertexPath, std::string fragmentPath, uint w, uint
     glfwSetCursorPosCallback(m_window.getWindow(), cursorCallback);
 
 		m_tabTextures = new Textures();
-		//m_tabTextures->generate3DWorley();
-    m_tabTextures->loadTexture("./data/blockAtlas.png");
+		m_tabTextures->generate3DWorley();
+    //m_tabTextures->loadTexture("./data/blockAtlas.png");
 
     r = g = b = 0.f;
     a = 1.f;
     inputPrevent = 0;
 
-    shader.init(vertexPath, fragmentPath);
+    m_tabShader->init("./shaders/basic2D.vs", "./shaders/basic2D.fs");
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -156,19 +156,19 @@ void Engine::keyboardHandler(Camera * Cam)
 }
 Shader* Engine::getShader()
 {
-    return &shader;
+    return m_tabShader;
 }
 
 void Engine::run()
 {
     glfwSetInputMode(m_window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
-		//glEnable(GL_CULL_FACE); //uncomment to activate culling
-    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glEnable(GL_CULL_FACE); //uncomment to activate culling
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     zaWarudo->addNewMeshCube(m_tabTextures);
     std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
     while(!m_window.quit)
@@ -178,7 +178,8 @@ void Engine::run()
         m_tabTextures->useTexture();
         zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)m_window.getWidth() / (float)m_window.getHeight(), 0.1f, 1000.f);
 
-        shader.use();
+        m_tabShader->use();
+				Shader* shader = m_tabShader;
 
         // Définition des uniforms
         //FIXME Intégrer correctement la définition de la "boite à nuage"
@@ -192,23 +193,23 @@ void Engine::run()
         mat4 mvp = projection * view * model;
         mat4 mvpInv = glm::inverse(mvp);
 
-        shader.setVec3("vmin", box_vmin);
-        shader.setVec3("vmax", box_vmax);
-        shader.setVec3("lightpos", vec3(
+        shader->setVec3("vmin", box_vmin);
+        shader->setVec3("vmax", box_vmax);
+        shader->setVec3("lightpos", vec3(
                             cos(time) * 60,
                             0,
                             sin(time) * 60
                             )
                         );
-        shader.setFloat("lightpower", 100);
+        shader->setFloat("lightpower", 100);
 
-        shader.setMat4("view", zaWarudo->Cam->getViewRef());
-        shader.setMat4("projection", zaWarudo->projection);
-        shader.setMat4("mvpMatrix", mvp);
-        shader.setMat4("mvpInvMatrix", mvpInv);
+        shader->setMat4("view", zaWarudo->Cam->getViewRef());
+        shader->setMat4("projection", zaWarudo->projection);
+        shader->setMat4("mvpMatrix", mvp);
+        shader->setMat4("mvpInvMatrix", mvpInv);
 
-        shader.setFloat("time", time);
-        shader.setFloat("temperature", 10);
+        shader->setFloat("time", time);
+        shader->setFloat("temperature", 10);
 
 
         zaWarudo->update();

@@ -133,7 +133,7 @@ bool Textures::generate3DWorley()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     int width, height, depth, nrChannels;
     //stbi_set_flip_vertically_on_load(true);
-    width = height = depth = 256;
+    width = height = depth = 16;
     nrChannels = 2;
     FastNoise F;
     F.SetNoiseType(FastNoise::NoiseType::Perlin);

@@ -21,7 +21,7 @@ void World::addMesh(Mesh * mesh)
     Meshs.push_back(mesh);
 }
 
-void World::render(Shader & Shader, float time)
+void World::render(Shader* Shader, float time)
 {
     for(int i = 0; i < Meshs.size(); i++)
     {

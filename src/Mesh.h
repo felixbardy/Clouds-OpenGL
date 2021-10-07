@@ -56,7 +56,7 @@ class Mesh
      * @param projection matrice 4 dimension du monde
      * @param view matrice 4 dimension de vue
      */
-    void render(float angle, Shader & Shader, glm::mat4 & projection, glm::mat4 & view);
+    void render(float angle, Shader* Shader, glm::mat4 & projection, glm::mat4 & view);
 
     /** @brief remplit les positions ou afficher le mesh
      * @param positions
