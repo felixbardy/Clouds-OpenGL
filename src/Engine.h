@@ -51,7 +51,7 @@ class Engine
     float lastTime = 0;
 
     /// Instance de l'objet contenant toutes les textures
-    Textures* m_tabTextures;
+    std::map<std::string, Textures*> m_dictTextures;
 
     private:
     /// Instance de l'objet contenant la fenêtre

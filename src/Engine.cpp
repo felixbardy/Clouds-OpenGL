@@ -49,9 +49,15 @@ void Engine::init(uint w, uint h)
     glfwSetWindowUserPointer(m_window.getWindow(), zaWarudo->Cam);
     glfwSetCursorPosCallback(m_window.getWindow(), cursorCallback);
 
-		m_tabTextures = new Textures();
-		m_tabTextures->generate3DWorley();
-    //m_tabTextures->loadTexture("./data/blockAtlas.png");
+		Textures* texWorley = new Textures();
+ 		Textures* texTest = new Textures();
+
+		texWorley->generate3DWorley();
+    texTest->loadTexture("./data/blockAtlas.png");
+
+
+		m_dictTextures.insert({"worley", texWorley});
+		m_dictTextures.insert({"test", texTest});
 
     r = g = b = 0.f;
     a = 1.f;
@@ -62,9 +68,10 @@ void Engine::init(uint w, uint h)
 		Shader* shader2D = new Shader("./shaders/basic2D.vs", "./shaders/basic2D.fs");
 		Shader* shaderNuage = new Shader("./shaders/nuage.vs", "./shaders/nuage.fs");
 
-		m_dictShader.insert({{"basic3D", shader3D}});
-		m_dictShader.insert({{"basic2D", shader2D}});
-		m_dictShader.insert({{"nuage", shaderNuage}});
+		m_dictShader.insert({"basic3D", shader3D});
+		m_dictShader.insert({"basic2D", shader2D});
+		m_dictShader.insert({"nuage", shaderNuage});
+//m_dictShader.insert({{"basic3D", shader3D}, {"basic2D", shader2D}, {"nuage", shaderNuage}});
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -176,13 +183,13 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    zaWarudo->addNewMeshCube(m_tabTextures);
+    zaWarudo->addNewMeshCube(m_dictTextures["worley"]);
     std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
     while(!m_window.quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        m_tabTextures->useTexture();
+        m_dictTextures["worley"]->useTexture();
         zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)m_window.getWidth() / (float)m_window.getHeight(), 0.1f, 1000.f);
 
 
