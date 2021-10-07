@@ -8,6 +8,7 @@
 #include "Textures.h"
 #include "World.h"
 #include <random>
+#include <map>
 
 using namespace glm;
 
@@ -57,7 +58,7 @@ class Engine
     Window m_window;
 
     /// Instance du shader
-    Shader* m_tabShader;
+    std::map<std::string, Shader*> m_tabShader;
 
     /// Variable de prévetion pour éviter les multiples input
     int inputPrevent;

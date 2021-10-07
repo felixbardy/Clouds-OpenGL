@@ -57,7 +57,10 @@ void Engine::init(uint w, uint h)
     a = 1.f;
     inputPrevent = 0;
 
-    m_tabShader->init("./shaders/basic2D.vs", "./shaders/basic2D.fs");
+		Shader* shader3D = new Shader;
+    shader3D->init("./shaders/basic3D.vs", "./shaders/basic3D.fs");
+
+		m_tabShader.insert({{"basic3D", shader3D}});
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -156,14 +159,14 @@ void Engine::keyboardHandler(Camera * Cam)
 }
 Shader* Engine::getShader()
 {
-    return m_tabShader;
+    //return m_tabShader;
 }
 
 void Engine::run()
 {
     glfwSetInputMode(m_window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
-		glEnable(GL_CULL_FACE); //uncomment to activate culling
+		//glEnable(GL_CULL_FACE); //uncomment to activate culling
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
@@ -178,8 +181,9 @@ void Engine::run()
         m_tabTextures->useTexture();
         zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)m_window.getWidth() / (float)m_window.getHeight(), 0.1f, 1000.f);
 
-        m_tabShader->use();
-				Shader* shader = m_tabShader;
+
+				Shader* shader = m_tabShader["basic3D"];
+				shader->use();
 
         // Définition des uniforms
         //FIXME Intégrer correctement la définition de la "boite à nuage"
