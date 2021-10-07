@@ -61,31 +61,12 @@ void Shader::linkProgram()
 
 
 
-Shader::Shader()
+Shader::Shader(std::string vertexPath, std::string fragmentPath)
 {
-    std::cout<<"Initialisation code Shader"<<std::endl;
-
-    vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
-    "out vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n"
-    "   ourColor = aColor;\n"
-    "}\0";
-
-    fragmentShaderSource =
-
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "in vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(ourColor, 1.0);\n"
-    "}\0";
-    std::cout<<"Fin initialisation code Shader"<<std::endl;
+    readShaderFile(vertexPath, fragmentPath);
+    compileVertex();
+    compileFragment();
+    linkProgram();
 }
 
 void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
@@ -101,7 +82,7 @@ void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
         // open files
         vShaderFile.open(vertexPath);
         fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream; 
+        std::stringstream vShaderStream, fShaderStream;
         // read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
@@ -121,20 +102,6 @@ void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
 }
 
 
-
-
-
-
-
-
-
-void Shader::init(std::string vertexPath, std::string fragmentPath)
-{
-    readShaderFile(vertexPath, fragmentPath);
-    compileVertex();
-    compileFragment();
-    linkProgram();
-}
 
 
 void Shader::use()

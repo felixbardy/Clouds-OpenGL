@@ -58,7 +58,7 @@ class Engine
     Window m_window;
 
     /// Instance du shader
-    std::map<std::string, Shader*> m_tabShader;
+    std::map<std::string, Shader*> m_dictShader;
 
     /// Variable de prévetion pour éviter les multiples input
     int inputPrevent;

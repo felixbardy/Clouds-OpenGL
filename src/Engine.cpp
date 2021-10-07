@@ -57,10 +57,14 @@ void Engine::init(uint w, uint h)
     a = 1.f;
     inputPrevent = 0;
 
-		Shader* shader3D = new Shader;
-    shader3D->init("./shaders/basic3D.vs", "./shaders/basic3D.fs");
+		//init Shader
+		Shader* shader3D = new Shader("./shaders/basic3D.vs", "./shaders/basic3D.fs");
+		Shader* shader2D = new Shader("./shaders/basic2D.vs", "./shaders/basic2D.fs");
+		Shader* shaderNuage = new Shader("./shaders/nuage.vs", "./shaders/nuage.fs");
 
-		m_tabShader.insert({{"basic3D", shader3D}});
+		m_dictShader.insert({{"basic3D", shader3D}});
+		m_dictShader.insert({{"basic2D", shader2D}});
+		m_dictShader.insert({{"nuage", shaderNuage}});
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -159,7 +163,7 @@ void Engine::keyboardHandler(Camera * Cam)
 }
 Shader* Engine::getShader()
 {
-    //return m_tabShader;
+    //return m_dictShader;
 }
 
 void Engine::run()
@@ -182,7 +186,7 @@ void Engine::run()
         zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)m_window.getWidth() / (float)m_window.getHeight(), 0.1f, 1000.f);
 
 
-				Shader* shader = m_tabShader["basic3D"];
+				Shader* shader = m_dictShader["nuage"];
 				shader->use();
 
         // Définition des uniforms

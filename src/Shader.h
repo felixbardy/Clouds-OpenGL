@@ -16,13 +16,13 @@
 class Shader
 {
     public:
-    /** @brief Constructeur par défaut   */
-    Shader();
-
-    /** @brief initialise (compile et link) le shader
+		/** @brief initialise (compile et link) le shader
      * @param vertexPath string du chemin vers le fichier texte ou est stocker le shader de vertex
      * @param fragmentPath string du chemin vers le fichier texte ou est stocker le shader de fragment
      */
+    Shader(std::string vertexPath, std::string fragmentPath);
+
+
     void init(std::string vertexPath, std::string fragmentPath);
     /** @brief Utilise le shader pour openGL */
     void use();
@@ -137,7 +137,7 @@ class Shader
     /** @brief Link le shader de vertex et de fragment au programme */
     void linkProgram();
 
-    /** @brief Stock dans les variable (vertex/fragment)ShaderCodeSource 
+    /** @brief Stock dans les variable (vertex/fragment)ShaderCodeSource
      * @param vertexPath string chemin shader de vertex
      * @param fragmentPath string chemin shader de fragment
     */
