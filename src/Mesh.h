@@ -72,7 +72,7 @@ class Mesh
      * @param indiceArray indices de l'ordre ou utiliser les vertices
      * @param id id du block a afficher
      */
-    void setPolygon(std::vector<float> vertices, std::vector<uint> verticesOrder, std::vector<float> uvArray = {}, std::vector<uint> uvOrder = {});
+    void setPolygon(std::vector<float> vertices, std::vector<uint> verticesOrder, std::vector<float> uvArray = {}, std::vector<uint> uvOrder = {}, std::vector<float> color = {}, std::vector<uint> colorOrder = {});
 
     /** @brief remplit les vertices du Cube
      * @param texture texture du jeu

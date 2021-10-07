@@ -11,7 +11,7 @@ Mesh::Mesh()
 }
 
 
-void Mesh::setPolygon(std::vector<float> vertices, std::vector<uint> verticesOrder, std::vector<float> uvArray, std::vector<uint> uvOrder)
+void Mesh::setPolygon(std::vector<float> vertices, std::vector<uint> verticesOrder, std::vector<float> uvArray, std::vector<uint> uvOrder, std::vector<float> color, std::vector<uint> colorOrder)
 {
 		// On s'assure que uvOrder et verticesOrder font la même taille
 		assert(!(uvOrder.empty() && uvOrder.size() == verticesOrder.size()));
@@ -24,9 +24,9 @@ void Mesh::setPolygon(std::vector<float> vertices, std::vector<uint> verticesOrd
         }
         for(int j = 0; j < 3; j++)
         {
-            if(!uvOrder.empty())
+            if(!colorOrder.empty())
             {
-                vertex.push_back(uvOrder[i] * 3 + j);
+                vertex.push_back(color[colorOrder[i] * 3 + j]);
             }
             else
             {
@@ -85,8 +85,8 @@ void Mesh::setCube()
         1, 5, 3,
         3, 5, 7,
 
-        4, 6, 0,
-        0, 6, 2,
+        4, 0, 6,
+        6, 0, 2,
 
         // HAUT BAS
         4, 5, 0,
@@ -96,36 +96,70 @@ void Mesh::setCube()
         7, 2, 3
     };
 
-		std::vector<float> uv =
-		{
-			0.f, 0.f,
-			0.f, 1.f,
-			1.f, 1.f,
-			1.f, 0.f
-		};
+    std::vector<float> uv =
+    {
+        0.f, 0.f,
+        0.f, 1.f,
+        1.f, 1.f,
+        1.f, 0.f
+    };
 
-		std::vector<uint> uvIndex
-		{
-				1, 2, 0,
-				0, 2, 3,
+    std::vector<uint> uvIndex
+    {
+        1, 2, 0,
+        0, 2, 3,
 
-				1, 2, 0,
-				0, 2, 3,
+        1, 2, 0,
+        0, 2, 3,
 
-				1, 2, 0,
-				0, 2, 3,
+        1, 2, 0,
+        0, 2, 3,
 
-				1, 2, 0,
-				0, 2, 3,
+        1, 2, 0,
+        0, 2, 3,
 
-				1, 2, 0,
-				0, 2, 3,
+        1, 2, 0,
+        0, 2, 3,
 
-				1, 2, 0,
-				0, 2, 3
-		};
+        1, 2, 0,
+        0, 2, 3
+    };
 
-    setPolygon(vertices, verticesOrder, uv, uvIndex);
+    /*std::vector<float> color
+    {
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1,
+        1, 1, 0,
+        0, 1, 1,
+        1, 0, 1
+    };
+
+    std::vector<uint> colorId =
+    {
+        // AVANT ARRIERE
+        0, 1, 2,
+        2, 1, 3,
+
+        5, 4, 7,
+        7, 4, 6,
+
+        // DROITE GAUCHE
+        1, 5, 3,
+        3, 5, 7,
+
+        4, 0, 6,
+        6, 0, 2,
+
+        // HAUT BAS
+        4, 5, 0,
+        0, 5, 1,
+
+        6, 2, 7,
+        7, 2, 3
+    };*/
+
+    setPolygon(vertices, verticesOrder, uv, uvIndex/*, color, colorId*/);
 }
 
 void Mesh::init()

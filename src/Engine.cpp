@@ -49,28 +49,28 @@ void Engine::init(uint w, uint h)
     glfwSetWindowUserPointer(m_window.getWindow(), zaWarudo->Cam);
     glfwSetCursorPosCallback(m_window.getWindow(), cursorCallback);
 
-		Textures* texWorley = new Textures();
- 		Textures* texTest = new Textures();
+    Textures* texWorley = new Textures();
+    Textures* texTest = new Textures();
 
-		texWorley->generate3DWorley();
+    texWorley->generate3DWorley();
     texTest->loadTexture("./data/blockAtlas.png");
 
 
-		m_dictTextures.insert({"worley", texWorley});
-		m_dictTextures.insert({"test", texTest});
+    m_dictTextures.insert({"worley", texWorley});
+    m_dictTextures.insert({"test", texTest});
 
     r = g = b = 0.f;
     a = 1.f;
     inputPrevent = 0;
 
-		//init Shader
-		Shader* shader3D = new Shader("./shaders/basic3D.vs", "./shaders/basic3D.fs");
-		Shader* shader2D = new Shader("./shaders/basic2D.vs", "./shaders/basic2D.fs");
-		Shader* shaderNuage = new Shader("./shaders/nuage.vs", "./shaders/nuage.fs");
+    //init Shader
+    Shader* shader3D = new Shader("./shaders/basic3D.vs", "./shaders/basic3D.fs");
+    Shader* shader2D = new Shader("./shaders/basic2D.vs", "./shaders/basic2D.fs");
+    Shader* shaderNuage = new Shader("./shaders/nuage.vs", "./shaders/nuage.fs");
 
-		m_dictShader.insert({"basic3D", shader3D});
-		m_dictShader.insert({"basic2D", shader2D});
-		m_dictShader.insert({"nuage", shaderNuage});
+    m_dictShader.insert({"basic3D", shader3D});
+    m_dictShader.insert({"basic2D", shader2D});
+    m_dictShader.insert({"nuage", shaderNuage});
 //m_dictShader.insert({{"basic3D", shader3D}, {"basic2D", shader2D}, {"nuage", shaderNuage}});
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
@@ -177,12 +177,17 @@ void Engine::run()
 {
     glfwSetInputMode(m_window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
-		//glEnable(GL_CULL_FACE); //uncomment to activate culling
+    glEnable(GL_CULL_FACE); //uncomment to activate culling
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     zaWarudo->addNewMeshCube(m_dictTextures["worley"]);
     std::cout<<"Nombre de mesh : "<<zaWarudo->Meshs.size()<<std::endl;
     while(!m_window.quit)
@@ -193,8 +198,8 @@ void Engine::run()
         zaWarudo->projection = glm::perspective(glm::radians(70.f), (float)m_window.getWidth() / (float)m_window.getHeight(), 0.1f, 1000.f);
 
 
-				Shader* shader = m_dictShader["nuage"];
-				shader->use();
+        Shader* shader = m_dictShader["basic3D"];
+        shader->use();
 
         // Définition des uniforms
         //FIXME Intégrer correctement la définition de la "boite à nuage"
