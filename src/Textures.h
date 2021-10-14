@@ -12,6 +12,7 @@
 
 #include "stb_image.h"
 #include "glad.h"
+#include <cmath>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -58,7 +59,7 @@ class Textures
     */
     bool write3D3Chan(int WDH, int WR[3], std::string name);
     bool write3D4Chan(int WDH, int WR[3], int O, int S, int F, std::string name);
-    
+    bool write3DCurl();
     /// Variable de référence de la texture blockAtlas
     uint m_blockAtlas;
     /// Variable de référence de Nescafey, what else ?

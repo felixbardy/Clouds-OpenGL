@@ -8,7 +8,7 @@ void Textures::initAtlas()
 {
     glEnable(GL_TEXTURE_3D);
     //createAndLoad3D(m_blockAtlas);
-    Load3D(m_blockAtlas, "./data/texture3D/suus.3DT");
+    Load3D(m_blockAtlas, "./data/texture3D/Test_3CHAN.3DT");
     //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
     //loadTexture(cage, "./data/Scage.jpg");
 
@@ -25,7 +25,52 @@ void Textures::fillPoint(int width, int height, int x, int y, int z, FastNoise &
     data.push_back(((F.GetNoise(x, y, z) + 1)/2) * 255);
     data.push_back(W.get3d(x, y, z) *  255);
 }
+glm::vec2 curlNoise2D(double x, double y, FastNoise & F)
+{
+    const float eps = 0.01;
+    double n1 = F.GetNoise(x + eps, y);
+    double n2 = F.GetNoise(x - eps, y); 
 
+    //Average to find approximate derivative
+    double a = (n1 - n2)/(2 * eps);
+
+    //Find rate of change in Y direction
+    n1 = F.GetNoise(x, y + eps); 
+    n2 = F.GetNoise(x, y - eps); 
+
+    //Average to find approximate derivative
+    double b = (n1 - n2)/(2 * eps);
+
+    return glm::vec2(b, -a);
+}
+
+double myLerp(double x, double y, double ratio)
+{
+    return ratio * x + (1-ratio) * y;
+}
+void writeTexture(std::ofstream & file, unsigned char data[], const uint & length)
+{   
+    for(int i = 0; i < length; i++)
+    {
+        file.write((char *)&data[i], sizeof(unsigned char));
+    }
+}
+void nextStepTexture(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i)
+{
+    x++;
+    if(x >= resolution)
+    {
+        x = 0;
+        y++;
+    }
+    if(y >= resolution)
+    {
+        y = 0;
+        z++;
+        std::cout<<"etape : "<<z<<" / "<<resolution<<std::endl;
+    }
+    i+=nChan;
+}
 bool Textures::createAndLoad3D(uint& textures)
 {
     glEnable(GL_BLEND);
@@ -33,37 +78,31 @@ bool Textures::createAndLoad3D(uint& textures)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     int width, height, depth, nrChannels;
     //stbi_set_flip_vertically_on_load(true);
-    width = height = depth = 256;
+    width = height = depth = 128;
     nrChannels = 2;
     FastNoise F;
-    F.SetNoiseType(FastNoise::NoiseType::Perlin);
+    F.SetNoiseType(FastNoise::NoiseType::Simplex);
     F.SetSeed(42);
     F.SetFractalOctaves(3);
-    F.SetFrequency(0.15);
+    F.SetFrequency(0.05);
     
-    Worley W = Worley(3, width, height, depth);
-
     std::vector<unsigned char> data;
-    int x, y, z;
+    uint x, y, z;
     x = y = z = 0;
-    int i = 0;
-
+    uint i = 0;
+    float perlin = (F.GetPerlin(x, y)+1.0)/2.0;
+    float angle = (perlin * M_PI * 2);  
     while(i < width * depth * height * nrChannels)
     {
-        fillPoint(width, height, x, y, z, F, W, data);
-        x++;
-        if(x >= width)
-        {
-            x = 0;
-            y++;
-        }
-        if(y >= height)
-        {
-            y = 0;
-            z++;
-            std::cout<<"step : "<<z<<" / "<<width<<std::endl;
-        }
-        i+=2;  
+        glm::vec2 curl = (curlNoise2D(x, y, F) + glm::vec2(1, 1))/glm::vec2(2.0, 2.0);
+        
+        glm::vec2 curlP = curl;
+        
+        curl.x = curlP.x * cos(angle) - curlP.y * sin(angle);
+        curl.y = curlP.x * sin(angle) + curlP.y * cos(angle);
+        data.push_back((curl.x + 1)/2.f * 255);
+        data.push_back((curl.y + 1)/2.f * 255);
+        nextStepTexture(width, nrChannels, x, y, z, i);
     }
 
     std::cout<<data.size()<<std::endl;
@@ -90,8 +129,6 @@ bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::strin
     F.SetFractalOctaves(O);
     F.SetFrequency((float)Fr/(float)100);
 
-    //Worley W = Worley(WorleyRes, width, height, depth);
-
     Worley W[3] = 
     {
         Worley(WR[0], WDH, WDH, WDH),
@@ -99,7 +136,6 @@ bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::strin
         Worley(WR[2], WDH, WDH, WDH),
     };
 
-    std::ofstream data;
     std::string path;
     std::cout<<name<<std::endl;
     if(name == "")
@@ -119,51 +155,29 @@ bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::strin
         path = "./data/texture3D/" + name + ".3DT";
     }
 
-    data.open(path);
+    std::ofstream data(path, std::ios::out | std::ios::binary);
     if(!data.is_open())
     {
         std::cerr<<"Erreur ouverture fichier"<<std::endl;
         return false;
     }
 
-    int x, y, z;
+    uint x, y, z;
     x = y = z = 0;
-    int i = 0;
+    uint i = 0;
 
-    std::string option =
-                                  "4CHAN\n"+
-        std::to_string(WDH)          + "\n" +
-        std::to_string(WR[0])       + "\n" +
-        std::to_string(WR[1])       + "\n" +
-        std::to_string(WR[2])       + "\n" +
-        std::to_string(O)           + "\n" +    
-        std::to_string(S)           + "\n" +
-        std::to_string(Fr)          + "\n";
-
-    data.write(option.c_str(), option.size());
-    std::string str = "";
     while(i < WDH * WDH * WDH * nrChannels)
     {
-        data
-        <<(int)(((F.GetNoise(x, y, z) + 1)/2) * 255)<<" " // Injection Perlin
-        <<(int)(W[0].get3d(x, y, z) *  255) << " "   // Injection Worley petite Res
-        <<(int)(W[1].get3d(x, y, z) *  255) << " "   // Injection Worley moyenne Res 
-        <<(int)(W[2].get3d(x, y, z) *  255) << " "   // Injection Worley grande Res
-        <<std::endl;
-        x++;
-        if(x >= WDH)
-        {
-            x = 0;
-            y++;
-        }
-        if(y >= WDH)
-        {
-            y = 0;
-            z++;
-            std::cout<<"Step : "<<z<<" / "<<WDH<<std::endl;
-        }
-        i+=nrChannels;
+        unsigned char toFile[4] = {
+        (unsigned char)(((1+F.GetNoise(x, y, z))/2.0) * 255),
+        (unsigned char)(W[0].get3d(x, y, z) *  255),
+        (unsigned char)(W[1].get3d(x, y, z) *  255),
+        (unsigned char)(W[2].get3d(x, y, z) *  255)};
+        writeTexture(data, toFile, 4);
+        nextStepTexture(WDH, nrChannels, x, y, z, i);
     }
+    data.write((char * )&WDH, sizeof(char));
+    data.write((char * )&nrChannels, sizeof(char));
     data.close();
     return true;
 }
@@ -181,21 +195,40 @@ const std::vector<std::string> explode(const std::string& s, const char& c)
 	
 	return v;
 }
+glm::vec3 curlNoise(glm::vec3 p, FastNoise & fast)
+{  
+    const float e = 1;
+    glm::vec3 dx = glm::vec3( e   , 0.0 , 0.0 );
+    glm::vec3 dy = glm::vec3( 0.0 , e   , 0.0 );
+    glm::vec3 dz = glm::vec3( 0.0 , 0.0 , e   );  
+
+    glm::vec3 pV0 = glm::vec3(  fast.GetNoise(p.x - e, p.y, p.z), 
+                                fast.GetNoise(p.x, p.y - e, p.z), 
+                                fast.GetNoise(p.x, p.y, p.z - e));
+
+    glm::vec3 pV1 = glm::vec3(  fast.GetNoise(p.x + e, p.y, p.z), 
+                                fast.GetNoise(p.x, p.y + e, p.z), 
+                                fast.GetNoise(p.x, p.y, p.z + e));
+
+    float x = pV1.z - pV0.z - pV1.y + pV0.y;
+    float y = pV1.x - pV0.x - pV1.z + pV0.z;
+    float z = pV1.y - pV0.y - pV1.x + pV0.x;
+
+    const float divisor = 1.0 / ( 2.0 * e );
+    return glm::normalize( glm::vec3( x , y , z ) * divisor );
+
+}
 
 bool Textures::write3D3Chan(int WDH, int WR[3], std::string name)
 {
     int nrChannels = 3;
-
     Worley W[3] = 
     {
         Worley(WR[0], WDH, WDH, WDH),
         Worley(WR[1], WDH, WDH, WDH),
         Worley(WR[2], WDH, WDH, WDH),
     };
-
-    std::ofstream data;
     std::string path;
-    std::cout<<name<<std::endl;
     if(name == "")
     {
         path =
@@ -210,47 +243,29 @@ bool Textures::write3D3Chan(int WDH, int WR[3], std::string name)
         path = "./data/texture3D/" + name + ".3DT";
     }
 
-    data.open(path);
+    std::ofstream data(path, std::ios::out | std::ios::binary);
+    
     if(!data.is_open())
     {
         std::cerr<<"Erreur ouverture fichier"<<std::endl;
         return false;
     }
 
-    int x, y, z;
+    uint x, y, z;
     x = y = z = 0;
-    int i = 0;
+    uint i = 0;
 
-    std::string option =
-                                  "3CHAN\n"+
-        std::to_string(WDH)         + "\n" +
-        std::to_string(WR[0])       + "\n" +
-        std::to_string(WR[1])       + "\n" +
-        std::to_string(WR[2])       + "\n";
-
-    data.write(option.c_str(), option.size());
-    std::string str = "";
-    while(i < WDH * WDH * WDH * nrChannels)
+  while(i < WDH * WDH * WDH * nrChannels)
     {
-        data
-        <<(int)(W[0].get3d(x, y, z) *  255) << " "   // Injection Worley petite Res
-        <<(int)(W[1].get3d(x, y, z) *  255) << " "   // Injection Worley moyenne Res 
-        <<(int)(W[2].get3d(x, y, z) *  255) << " "   // Injection Worley grande Res
-        <<std::endl;
-        x++;
-        if(x >= WDH)
-        {
-            x = 0;
-            y++;
-        }
-        if(y >= WDH)
-        {
-            y = 0;
-            z++;
-            std::cout<<"Step : "<<z<<" / "<<WDH<<std::endl;
-        }
-        i+=nrChannels;
+        unsigned char toFile[3] = {
+        (unsigned char)(W[0].get3d(x, y, z) *  255),
+        (unsigned char)(W[1].get3d(x, y, z) *  255),
+        (unsigned char)(W[2].get3d(x, y, z) *  255)};
+        writeTexture(data, toFile, 3);
+        nextStepTexture(WDH, nrChannels, x, y, z, i);
     }
+    data.write((char * )&WDH, sizeof(char));
+    data.write((char * )&nrChannels, sizeof(char));
     data.close();
     return true;
 }
@@ -261,90 +276,42 @@ bool Textures::Load3D(uint& textures, std::string path)
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    std::fstream file;
-
-
-    file.open(path);
-
+    std::ifstream file(path, std::ios::binary);
     if(!file.is_open())
     {
         std::cerr<<" Fichier Introuvable"<<std::endl;
         return false;
     }
-    std::vector<unsigned char> data;
-    std::string line, type;
-    getline(file, line);
-    type = line;
-    GLenum format = GL_RG;
+    std::vector<unsigned char> data(std::istreambuf_iterator<char>(file), {});
+    uint nChan = data.back();
+    data.pop_back();
+    uint WDH = data.back();
+    data.pop_back();
 
-   
-    int nChan = 0;
-    if(type == "4CHAN" )
-    {
-        nChan = 4;
-        format = GL_RGBA;
-    }
-    else if(type == "3CHAN")
-    {
-        nChan = 3;
-        format = GL_RGB;
-    }
-
-
-    getline(file, line);
-    int WDH = std::stoi(line); // On recupere la largeur/hauteur/profondeur
-    getline(file, line);
-    int WR0 = std::stoi(line);
-    getline(file, line);
-    int WR1 = std::stoi(line);
-    getline(file, line);
-    int WR2 = std::stoi(line);
-
-    if(type != "3CHAN")
-    {
-        getline(file, line);
-        //int Octaves = std::stoi(line);
-        getline(file, line);
-        //int Seed = std::stoi(line);
-        getline(file, line);
-        //int Frequency = std::stoi(line);
-        
-    }
-    line = "";
-    int nbS = 0;
-    while(std::getline(file, line))
-    {
-        int nbS = 0;
-        int p,w0, w1, w2;
-        if(type == "4CHAN")
-        {
-            while(file>>p>>w0>>w1>>w2)
-            {
-                data.push_back(p);
-                data.push_back(w0);
-                data.push_back(w1);
-                data.push_back(w2);
-            }
-        }
-        else if(type == "3CHAN")
-        {
-            while(file>>w0>>w1>>w2)
-            {
-                data.push_back(w0);
-                data.push_back(w1);
-                data.push_back(w2);
-            }
-        }
-        
-
-    }
+    std::cout<<WDH<<std::endl;
+    
 
     file.close();
-
-    std::cout<<nbS<<std::endl;
-
-    std::cout<<data.size()<<std::endl;
+    GLenum format = GL_RG;
+    switch(nChan)
+    {
+        case 3: 
+            format = GL_RGB;
+            break;
+        case 4:
+            format = GL_RGBA;
+            break;
+    }
+    if(nChan == 4 )
+    {
+        format = GL_RGBA;
+    }
+    else if(nChan == 3)
+    {
+        format = GL_RGB;
+    }
+    
+    std::cout<<data.size()/4<<std::endl;
     if(!data.empty())
     {
         glGenTextures(1, &textures);
@@ -359,6 +326,10 @@ bool Textures::Load3D(uint& textures, std::string path)
         return false;
     }
 }
+
+
+
+
 
 Textures::~Textures()
 {
