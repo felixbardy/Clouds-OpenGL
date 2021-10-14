@@ -8,7 +8,7 @@ void Textures::initAtlas()
 {
     glEnable(GL_TEXTURE_3D);
     //createAndLoad3D(m_blockAtlas);
-    Load3D(m_blockAtlas, "./data/texture3D/Test_3CHAN.3DT");
+    Load3D(m_blockAtlas, "./data/texture3D/Test_4CHAN.3DT");
     //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
     //loadTexture(cage, "./data/Scage.jpg");
 
