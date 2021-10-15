@@ -199,8 +199,6 @@ void Engine::run()
 
         glm::translate(m_world->getCam()->getView(), glm::vec3(-15, 0, 0));
 
-        vec3 box_vmin = vec3(-50.0f, -50.0f, -50.0f);
-        vec3 box_vmax = vec3(50.0f, 50.0f, 50.0f);
         vec3 box_vmin = vec3(-10.0f, -10.0f, -10.0f);
         vec3 box_vmax = vec3(10.0f, 10.0f, 10.0f);
 
@@ -211,47 +209,32 @@ void Engine::run()
         mat4 mvp = projection * view * model;
         mat4 mvpInv = glm::inverse(mvp);
 
-        m_shader.setVec3("nuage", "vmin", box_vmin);
-        m_shader.setVec3("nuage","vmax", box_vmax);
-        m_shader.setVec3("nuage","lightpos", vec3(0, cos(time) * 70, 0));
-        m_shader.setFloat("nuage","lightpower", 100 * ((cos(time / 3.0)/2)+0.5));
-        m_shader.setFloat("nuage","lightMultiplicator", 2.5);
-        shader.setVec3("vmin", box_vmin);
-        shader.setVec3("vmax", box_vmax);
+        m_shader.setVec3(  "nuage", "vmin",     box_vmin        );
+        m_shader.setVec3(  "nuage", "vmax",     box_vmax        );
+        m_shader.setVec3(  "nuage", "SunPos",   vec3(0,100,100) );
+        m_shader.setFloat( "nuage", "SunPower", 1               );
+        m_shader.setVec3(  "nuage", "SunColor", vec3(1,1,1)     );
 
-        shader.setVec3("SunPos", vec3(0,100,100));
-        shader.setFloat("SunPower", 1);
-        shader.setVec3("SunColor", vec3(1,1,1));
+        m_shader.setMat4(  "nuage", "view",         m_world->getCam()->getViewRef() );
+        m_shader.setMat4(  "nuage", "projection",   m_world->m_projection           );
+        m_shader.setMat4(  "nuage", "mvpMatrix",    mvp                             );
+        m_shader.setMat4(  "nuage", "mvpInvMatrix", mvpInv                          );
 
-        m_shader.setMat4("nuage","view", m_world->getCam()->getViewRef());
-        m_shader.setMat4("nuage","projection", m_world->m_projection);
-        m_shader.setMat4("nuage","mvpMatrix", mvp);
-        m_shader.setMat4("nuage","mvpInvMatrix", mvpInv);
-
-        m_shader.setFloat("nuage","time", glfwGetTime());
-        m_shader.setFloat("nuage","temperature", 10);
+        m_shader.setFloat( "nuage", "time",         glfwGetTime()   );
+        m_shader.setFloat( "nuage", "temperature",  10              );
         
 
-        shader.setInt("CloudSamples", 32);
-        shader.setInt("LightingSamples", 3);
+        m_shader.setInt(   "nuage", "CloudSamples",         32);
+        m_shader.setInt(   "nuage", "LightingSamples",      3);
         // Propention du nuage à dévier la lumière
-        shader.setFloat("ScatteringFactor", 0.0001); //TODO Ajuster la valeur
+        m_shader.setFloat( "nuage", "ScatteringFactor",     0.0001); //TODO Ajuster la valeur
         // Propention du nuage à absorber la lumière
-        shader.setFloat("AbsoptionFactor", 0.0001); //TODO Ajuster la valeur
+        m_shader.setFloat( "nuage", "AbsoptionFactor",      0.0001); //TODO Ajuster la valeur
         // Propention du nuage à absorber+dévier la lumière
-        shader.setFloat("ExtinctionFactor", 0.0002); //! extinction = scattering + absorption
+        m_shader.setFloat( "nuage", "ExtinctionFactor",     0.0002); //! extinction = scattering + absorption
 
-        shader.setInt("CloudSamples", 32);
-        shader.setInt("LightingSamples", 3);
-        // Propention du nuage à dévier la lumière
-        shader.setFloat("ScatteringFactor", 0.0001); //TODO Ajuster la valeur
-        // Propention du nuage à absorber la lumière
-        shader.setFloat("AbsoptionFactor", 0.0001); //TODO Ajuster la valeur
-        // Propention du nuage à absorber+dévier la lumière
-        shader.setFloat("ExtinctionFactor", 0.0002); //! extinction = scattering + absorption
-
-        shader.setVec3("IsotropicLightBottom", vec3(0.7));
-        shader.setVec3("IsotropicLightTop", vec3(0.7));
+        m_shader.setVec3(  "nuage", "IsotropicLightBottom", vec3(0.7));
+        m_shader.setVec3(  "nuage", "IsotropicLightTop",    vec3(0.7));
 
 
 
@@ -264,5 +247,6 @@ void Engine::run()
         m_engineWindow.update();
         keyboardHandler(m_world->getCam());
         if(m_inputPrevent >= 0) m_inputPrevent--;
+        time += 0.01;
     }
 }
