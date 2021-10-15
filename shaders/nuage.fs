@@ -17,8 +17,6 @@ uniform vec3 SunPos;
 uniform float SunPower;
 uniform vec3 SunColor;
 
-uniform float lightMultiplicator;
-
 uniform float time;
 
 uniform float temperature; // Plus froid = plus dense
