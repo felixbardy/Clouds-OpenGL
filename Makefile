@@ -17,7 +17,7 @@ OS=`uname`
 ifeq ( $(OS), Darwin ) # is MacOS
 	GL = -ldl -lglfw
 else #is Linux
-	GL = -ldl -lglfw -pthread ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a
+	GL = -ldl -lglfw -pthread ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a ./$(LIBDIR)/lodepng.a
 endif
 
 .PHONY: all main generator doc lib clean pentaclean 

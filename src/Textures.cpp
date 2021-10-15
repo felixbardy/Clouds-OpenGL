@@ -4,20 +4,51 @@ Textures::Textures()
 
 }
 
-void Textures::initAtlas()
+void Textures::init()
 {
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_TEXTURE_3D);
-    //createAndLoad3D(m_blockAtlas);
-    Load3D(m_blockAtlas, "./data/texture3D/default_4chan.3DT");
-    //loadTexture(nesCafey, "./data/coffeeSquare.jpg");
-    //loadTexture(cage, "./data/Scage.jpg");
-
 }
 
-
-void Textures::use3D(const uint& texture)
+void Textures::use3D(const std::string& key, uint texNumb)
 {
-    glBindTexture(GL_TEXTURE_3D, texture);
+    glActiveTexture(GL_TEXTURE0+texNumb);
+    //std::cout<<"GL_TEXTURE"<<texNumb<<std::endl;
+    glBindTexture(GL_TEXTURE_3D, m_texId[key]);
+}
+
+void Textures::use2D(const std::string& key, uint texNumb)
+{
+    glActiveTexture(GL_TEXTURE0+texNumb);
+    //std::cout<<"GL_TEXTURE"<<texNumb<<std::endl;
+    glBindTexture(GL_TEXTURE_2D, m_texId[key]);
+}
+
+void Textures::Load2D(const std::string & key, const std::string & path)
+{
+    std::vector<unsigned char> data;
+    uint width, height;
+
+
+    //decode
+    unsigned error = lodepng::decode(data, width, height, path.c_str());
+
+    
+    for(int i = 0; i < data.size(); i+=4)
+    {
+        std::reverse(data.begin()+i, data.begin()+i+4);
+    }
+
+    std::reverse(data.begin(), data.end());
+
+    //if there's an error, display it
+    if(error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+
+    m_texId.insert({key, 0});
+    glGenTextures(1, &m_texId[key]);
+    glBindTexture(GL_TEXTURE_2D, m_texId[key]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void Textures::fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & data)
@@ -25,6 +56,7 @@ void Textures::fillPoint(int width, int height, int x, int y, int z, FastNoise &
     data.push_back(((F.GetNoise(x, y, z) + 1)/2) * 255);
     data.push_back(W.get3d(x, y, z) *  255);
 }
+
 glm::vec2 curlNoise2D(double x, double y, FastNoise & F)
 {
     const float eps = 0.01;
@@ -48,14 +80,16 @@ double myLerp(double x, double y, double ratio)
 {
     return ratio * x + (1-ratio) * y;
 }
-void writeTexture(std::ofstream & file, unsigned char data[], const uint & length)
+
+void Textures::writeTexture(std::ofstream & file, unsigned char data[], const uint & length)
 {   
     for(int i = 0; i < length; i++)
     {
         file.write((char *)&data[i], sizeof(unsigned char));
     }
 }
-void nextStepTexture(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i)
+
+void Textures::nextStepTexture(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i)
 {
     x++;
     if(x >= resolution)
@@ -71,7 +105,8 @@ void nextStepTexture(const uint & resolution, const uint & nChan, uint & x, uint
     }
     i+=nChan;
 }
-bool Textures::createAndLoad3D(uint& textures)
+
+bool Textures::createAndLoad3D(const std::string& key)
 {
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH);
@@ -108,8 +143,9 @@ bool Textures::createAndLoad3D(uint& textures)
     std::cout<<data.size()<<std::endl;
     if(!data.empty())
     {
-        glGenTextures(1, &textures);
-        glBindTexture(GL_TEXTURE_3D, textures);
+        m_texId.insert({key, 0});
+        glGenTextures(1, &m_texId[key]);
+        glBindTexture(GL_TEXTURE_3D, m_texId[key]);
         glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, 0, GL_RG, GL_UNSIGNED_BYTE, &data[0]);
         glGenerateMipmap(GL_TEXTURE_3D);
         return true;
@@ -120,6 +156,7 @@ bool Textures::createAndLoad3D(uint& textures)
         return false;
     }
 }
+
 bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::string name)
 {
     int nrChannels = 4;
@@ -181,6 +218,7 @@ bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::strin
     data.close();
     return true;
 }
+
 const std::vector<std::string> explode(const std::string& s, const char& c)
 {
 	std::string buff{""};
@@ -195,6 +233,7 @@ const std::vector<std::string> explode(const std::string& s, const char& c)
 	
 	return v;
 }
+
 glm::vec3 curlNoise(glm::vec3 p, FastNoise & fast)
 {  
     const float e = 1;
@@ -270,7 +309,7 @@ bool Textures::write3D3Chan(int WDH, int WR[3], std::string name)
     return true;
 }
 
-bool Textures::Load3D(uint& textures, std::string path)
+bool Textures::Load3D(const std::string & key, const std::string & path)
 {
 
     glEnable(GL_BLEND);
@@ -314,8 +353,10 @@ bool Textures::Load3D(uint& textures, std::string path)
     std::cout<<data.size()/4<<std::endl;
     if(!data.empty())
     {
-        glGenTextures(1, &textures);
-        glBindTexture(GL_TEXTURE_3D, textures);
+        
+        m_texId.insert({key, 0});
+        glGenTextures(1, &m_texId[key]);
+        glBindTexture(GL_TEXTURE_3D, m_texId[key]);
         glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, WDH, WDH, WDH, 0, format, GL_UNSIGNED_BYTE, &data[0]);
         glGenerateMipmap(GL_TEXTURE_3D);
         return true;
@@ -326,10 +367,6 @@ bool Textures::Load3D(uint& textures, std::string path)
         return false;
     }
 }
-
-
-
-
 
 Textures::~Textures()
 {

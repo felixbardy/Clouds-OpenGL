@@ -22,7 +22,7 @@ class World
     /** @brief Ajoute un cube a la scene
      * @param textures Les textures à appliquer au mesh 
      */
-    void addNewMeshCube(const Textures& textures);
+    void addNewMeshCube(const std::string & shaderKey, std::vector<std::string> textureKeys, bool is2D = false);
 
     Camera* getCam();
     
@@ -35,7 +35,7 @@ class World
      * @param Shader les shaders à utiliser
      * @param time le temps actuel du monde
      */
-    void render(Shader & shader, float time);
+    void render(Shader & shaderManager, Textures & textureManager, float time);
 
     /** @brief Fait la mise à jour physique du monde
      */
