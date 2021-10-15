@@ -241,8 +241,18 @@ void Engine::run()
         // Propention du nuage à absorber+dévier la lumière
         shader.setFloat("ExtinctionFactor", 0.0002); //! extinction = scattering + absorption
 
+        shader.setInt("CloudSamples", 32);
+        shader.setInt("LightingSamples", 3);
+        // Propention du nuage à dévier la lumière
+        shader.setFloat("ScatteringFactor", 0.0001); //TODO Ajuster la valeur
+        // Propention du nuage à absorber la lumière
+        shader.setFloat("AbsoptionFactor", 0.0001); //TODO Ajuster la valeur
+        // Propention du nuage à absorber+dévier la lumière
+        shader.setFloat("ExtinctionFactor", 0.0002); //! extinction = scattering + absorption
+
         shader.setVec3("IsotropicLightBottom", vec3(0.7));
         shader.setVec3("IsotropicLightTop", vec3(0.7));
+
 
 
         m_world->update();
