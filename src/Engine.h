@@ -8,6 +8,7 @@
 #include "Textures.h"
 #include "World.h"
 #include <random>
+#include <map>
 
 using namespace glm;
 
@@ -28,7 +29,7 @@ public:
      * @param vertexPath chemin vers le shader de vertex
      * @param fragmentPath chemin vers le shader de fragment
      */
-    void init(std::string vertexPath, std::string fragmentPath, uint w = 500, uint h = 500);
+    void init(uint w = 500, uint h = 500);
 
     /** @brief Demarre le rendu      */
     void run();
@@ -50,7 +51,7 @@ public:
     float m_lastTime = 0;
 
     /// Instance de l'objet contenant toutes les textures
-    Textures m_textureAltas;
+    Textures m_texturesManager;
 
 private:
     
@@ -60,6 +61,8 @@ private:
     bool m_isWireframe = false;   //!< Booléen, si oui le rendu passe en wireframe
     bool m_isCursorLocked = true; //!< Booléen, si non le curseur n'est plus bloqué par la fenêtre
     bool m_isFullscreen = false;  //!< Indique si la fenêtre est en plein écran
+    std::map<std::string, Shader*> m_dictShader;
+    
 
     /** @brief Gère les inputs
      * @param cam adresse memoire de la camera

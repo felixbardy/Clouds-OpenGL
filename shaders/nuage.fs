@@ -7,6 +7,7 @@ uniform mat4 mvpInvMatrix;
 uniform mat4 mvMatrix;
 
 uniform sampler3D texture1;
+uniform sampler3D texture2;
 
 // coordonées de la boîte à nuages
 uniform vec3 vmin;
@@ -155,7 +156,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         float delta = max(1 - 2*distance(centre, texcoords), 0);
 
         // Calcul de densité par sampling des bruits mixés
-        vec4 tex = texture(texture1, texcoords);
+        vec4 tex = mix(texture(texture1, texcoords), texture(texture2, texcoords), (cos(time)+1)/2);
         float local_density = mix(tex.x, tex.z, 0.25) * delta;
 
         // Calcul du vecteur point->lumière

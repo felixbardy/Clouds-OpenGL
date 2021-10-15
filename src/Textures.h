@@ -7,8 +7,11 @@
 #include "FastNoise.h"
 #include "Worley.h"
 #include <algorithm>
+#include <map>
 
 #include <fstream>
+
+#include "lodepng.h"
 
 #include "stb_image.h"
 #include "glad.h"
@@ -33,45 +36,44 @@ class Textures
     ~Textures();
 
     /** @brief Initialise toutes les textures */
-    void initAtlas();
+    void init();
 
     void fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & tab);
 
     /** @brief Définit la texture a utiliser pour déssinner
      * @param texture uint contenant l'id de la texture
     */
-    void use3D(const uint& texture);
+    void use3D(const std::string& key, uint texNumb = 0);
+    void use2D(const std::string& key, uint texNumb = 0);
 
 
     /** @brief Genere et charge une texture 3D dans la CG
      * @param texture uint qui va contenir l'ID de la texture
     */
-    bool createAndLoad3D(uint& textures);
+    bool createAndLoad3D(const std::string& key);
 
     /** @brief Charge une texture 3D dans la CG
      * @param texture uint qui va contenir l'ID de la texture
      * @param path string qui contient le chemin de la texture
     */
-    bool Load3D(uint& textures, std::string path);
+    bool Load3D(const std::string & key, const std::string & path);
+    void Load2D(const std::string & key, const std::string & path);
+    
 
     /** @brief Ecrit une texture dans un fichier texte
      * @param path string qui contient le chemin du fichier ou écrire
     */
     bool write3D3Chan(int WDH, int WR[3], std::string name);
     bool write3D4Chan(int WDH, int WR[3], int O, int S, int F, std::string name);
-    bool write3DCurl();
-    /// Variable de référence de la texture blockAtlas
-    uint m_blockAtlas;
-    /// Variable de référence de Nescafey, what else ?
-    uint m_nesCafey;
-    /// Valeur de référence de la texture de nicolas cage
-    uint m_cage;
-    uint m_tex3D;
+    bool write2DCurl();
+
     
-   
 
+    void writeTexture(std::ofstream & file, unsigned char data[], const uint & length);
+    void nextStepTexture(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i);
+    std::map<std::string, uint> m_texId;
     private:
-
+    
 };
 
 

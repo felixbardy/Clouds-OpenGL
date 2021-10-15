@@ -13,6 +13,7 @@
 #include "Shader.h"
 #include "Textures.h"
 
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -47,11 +48,8 @@ class Mesh
     void translate(glm::vec3 vTranslate);
 
     /** @brief Dessinne le mesh
-     * @param shaderToUse Pointeur vers le shader a utiliser
-     * @param projection matrice 4 dimension du monde
-     * @param view matrice 4 dimension de vue
      */
-    void draw(Shader * shaderToUse, glm::mat4& projection, glm::mat4& view);
+    void draw();
 
     /** @brief affiche le mesh
      * @param angle angle de rotation
@@ -59,32 +57,46 @@ class Mesh
      * @param projection matrice 4 dimension du monde
      * @param view matrice 4 dimension de vue
      */
-    void render(float angle, Shader & Shader, glm::mat4 & projection, glm::mat4 & view);
+    void render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection, float angle);
 
     /** @brief remplit les positions ou afficher le mesh
      * @param positions
      */
     void setPosition(std::vector<glm::vec3> positions);
 
+    /** @brief remplit la clé du shader du mesh
+     * @param key
+     */
+    void setShaderKey(const std::string & shaderKey);
+
+    /** @brief remplit la clé du shader du mesh
+     * @param keys vecteur de string
+     */
+    void setTextureKeys(std::vector<std::string> keys);
+
+      /** @brief obtient la clé du shader du mesh
+     * @param key
+     */
+    std::string getShaderKey();
+
+    void setTextureTypeTo3D();
+    void setTextureTypeTo2D();
+
     /** @brief remplit les vertices du mesh
-     * @param texture texture du jeu
      * @param vertexArray Vecteur contenant toutes les vertices
      * @param u Vecteur contenant toutes les uv
      * @param uvIndex Vecteur contenant les indices de l'odre ou utiliser les uvs
      * @param c vecteur de couleur
      * @param indiceArray indices de l'ordre ou utiliser les vertices
-     * @param id id du block a afficher
      */
-    void setPolygon(const Textures& texture, std::vector<float> vertexArray, std::vector<float> u, std::vector<uint> uvIndex, std::vector<float> c, std::vector<uint> indicesArray, uint id);
+    void setPolygon(std::vector<float> vertices, std::vector<uint> verticesOrder, std::vector<float> uvArray = {}, std::vector<uint> uvOrder = {}, std::vector<float> color = {}, std::vector<uint> colorOrder = {});
     
     /** @brief remplit les vertices du Cube
-     * @param texture texture du jeu
-     * @param id id du block a afficher
      * @param u Vecteur contenant toutes les uv
      * @param uvIndex Vecteur contenant les indices de l'odre ou utiliser les uvs
      * @param c vecteur de couleur
      */
-    void setCube(const Textures & texture, uint id = 0, std::vector<float> u = {},  std::vector<uint> uI = {}, std::vector<float> c = {});
+    void setCube();
      
     /** @brief retire les transformation     */
     void resetModel();
@@ -110,6 +122,10 @@ class Mesh
 
     /// Tableau des vertexs à déssinner
     std::vector<float> m_vertex;
+
+    std::string m_shaderKey;
+    std::vector<std::string> m_texturesKeys;
+    bool is2D = false;
 
     /// Variable de référence du Vertex Array Object
     unsigned int m_VAO;

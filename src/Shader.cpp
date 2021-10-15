@@ -47,13 +47,14 @@ void Shader::compileFragment()
     errorHandler(m_fragmentShader);
 }
 
-void Shader::linkProgram()
+void Shader::linkProgram(const std::string & programKey)
 {
-    m_shaderProgram = glCreateProgram(); // On crée le programme
-    glAttachShader(m_shaderProgram, m_vertexShader); // on attache les shaders au programme
-    glAttachShader(m_shaderProgram, m_fragmentShader);
-    glLinkProgram(m_shaderProgram); // on link le Shader a la CG
-    errorHandler(m_shaderProgram, true);
+    m_programId.insert({programKey, 0});
+    m_programId[programKey] = glCreateProgram(); // On crée le programme
+    glAttachShader(m_programId[programKey], m_vertexShader); // on attache les shaders au programme
+    glAttachShader(m_programId[programKey], m_fragmentShader);
+    glLinkProgram(m_programId[programKey]); // on link le Shader a la CG
+    errorHandler(m_programId[programKey], true);
     glDeleteShader(m_vertexShader); // on supprime les shaders inutile
     glDeleteShader(m_fragmentShader);
 }
@@ -128,76 +129,82 @@ void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
 
 
 
-void Shader::init(std::string vertexPath, std::string fragmentPath)
+void Shader::init(const std::string & programKey, const std::string & vertexPath, const std::string & fragmentPath)
 {
     readShaderFile(vertexPath, fragmentPath);
     compileVertex();
     compileFragment();
-    linkProgram();
+    linkProgram(programKey);
 }
 
 
-void Shader::use()
+void Shader::use(const std::string & programKey)
 {
-    glUseProgram(m_shaderProgram);
+    glUseProgram(m_programId[programKey]);
 }
 
 
-void Shader::setInt(const std::string& name, int value) const
+void Shader::setInt(const std::string & programKey, const std::string& name, int value) const
 {
-    glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glUniform1i(glGetUniformLocation(m_programId.at(programKey), name.c_str()), value);
 }
 
-void Shader::setFloat(const std::string& name, float value) const
+void Shader::setFloat(const std::string & programKey, const std::string& name, float value) const
 {
-    glUniform1f(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glUniform1f(glGetUniformLocation(m_programId.at(programKey), name.c_str()), value);
 }
 
-void Shader::setVec2(const std::string& name, const glm::vec2& value) const
+void Shader::setVec2(const std::string & programKey, const std::string& name, const glm::vec2& value) const
 {
-    glUniform2fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, &value[0]);
+    glUniform2fv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, &value[0]);
 }
-void Shader::setVec2(const std::string& name, float x, float y) const
+void Shader::setVec2(const std::string & programKey, const std::string& name, float x, float y) const
 {
-    glUniform2f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y);
-}
-
-void Shader::setVec3(const std::string& name, const glm::vec3& value) const
-{
-    glUniform3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, &value[0]);
-}
-void Shader::setVec3(const std::string& name, float x, float y, float z) const
-{
-    glUniform3f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y, z);
+    glUniform2f(glGetUniformLocation(m_programId.at(programKey), name.c_str()), x, y);
 }
 
-void Shader::setVec4(const std::string& name, const glm::vec4& value) const
+void Shader::setVec3(const std::string & programKey, const std::string& name, const glm::vec3& value) const
 {
-    glUniform4fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, &value[0]);
+    glUniform3fv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, &value[0]);
 }
-void Shader::setVec4(const std::string& name, float x, float y, float z, float w) const
+void Shader::setVec3(const std::string & programKey, const std::string& name, float x, float y, float z) const
 {
-    glUniform4f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y, z, w);
-}
-
-void Shader::setMat2(const std::string& name, const glm::mat2& mat) const
-{
-    glUniformMatrix2fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniform3f(glGetUniformLocation(m_programId.at(programKey), name.c_str()), x, y, z);
 }
 
-void Shader::setMat3(const std::string& name, const glm::mat3& mat) const
+void Shader::setVec4(const std::string & programKey, const std::string& name, const glm::vec4& value) const
 {
-    glUniformMatrix3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniform4fv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, &value[0]);
+}
+void Shader::setVec4(const std::string & programKey, const std::string& name, float x, float y, float z, float w) const
+{
+    glUniform4f(glGetUniformLocation(m_programId.at(programKey), name.c_str()), x, y, z, w);
 }
 
-void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
+void Shader::setMat2(const std::string & programKey, const std::string& name, const glm::mat2& mat) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix2fv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::setMat3(const std::string & programKey, const std::string& name, const glm::mat3& mat) const
+{
+    glUniformMatrix3fv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::setMat4(const std::string & programKey, const std::string& name, const glm::mat4& mat) const
+{
+    glUniformMatrix4fv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
 Shader::~Shader()
 {
     glDeleteShader(m_vertexShader);
     glDeleteShader(m_fragmentShader);
-    glDeleteProgram(m_shaderProgram);
+
+    std::map<std::string, uint>::iterator it = m_programId.begin();
+    while(it != m_programId.end())
+    {
+        glDeleteProgram(it->second);
+        it++;
+    }
 }
