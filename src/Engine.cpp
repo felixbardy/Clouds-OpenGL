@@ -201,6 +201,8 @@ void Engine::run()
 
         vec3 box_vmin = vec3(-50.0f, -50.0f, -50.0f);
         vec3 box_vmax = vec3(50.0f, 50.0f, 50.0f);
+        vec3 box_vmin = vec3(-10.0f, -10.0f, -10.0f);
+        vec3 box_vmax = vec3(10.0f, 10.0f, 10.0f);
 
         mat4 model = mat4(1.f);
         mat4 view = m_world->getCam()->getView();
@@ -214,6 +216,12 @@ void Engine::run()
         m_shader.setVec3("nuage","lightpos", vec3(0, cos(time) * 70, 0));
         m_shader.setFloat("nuage","lightpower", 100 * ((cos(time / 3.0)/2)+0.5));
         m_shader.setFloat("nuage","lightMultiplicator", 2.5);
+        shader.setVec3("vmin", box_vmin);
+        shader.setVec3("vmax", box_vmax);
+
+        shader.setVec3("SunPos", vec3(0,100,100));
+        shader.setFloat("SunPower", 1);
+        shader.setVec3("SunColor", vec3(1,1,1));
 
         m_shader.setMat4("nuage","view", m_world->getCam()->getViewRef());
         m_shader.setMat4("nuage","projection", m_world->m_projection);
@@ -223,6 +231,18 @@ void Engine::run()
         m_shader.setFloat("nuage","time", glfwGetTime());
         m_shader.setFloat("nuage","temperature", 10);
         
+
+        shader.setInt("CloudSamples", 32);
+        shader.setInt("LightingSamples", 3);
+        // Propention du nuage à dévier la lumière
+        shader.setFloat("ScatteringFactor", 0.0001); //TODO Ajuster la valeur
+        // Propention du nuage à absorber la lumière
+        shader.setFloat("AbsoptionFactor", 0.0001); //TODO Ajuster la valeur
+        // Propention du nuage à absorber+dévier la lumière
+        shader.setFloat("ExtinctionFactor", 0.0002); //! extinction = scattering + absorption
+
+        shader.setVec3("IsotropicLightBottom", vec3(0.7));
+        shader.setVec3("IsotropicLightTop", vec3(0.7));
 
 
         m_world->update();
