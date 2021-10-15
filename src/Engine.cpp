@@ -55,7 +55,7 @@ void Engine::init(uint w, uint h)
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
-    m_shader.init("nuage", "./shaders/nuage.vs", "./shaders/nuage.fs");
+    m_shader.init("nuage", "./shaders/default.vs", "./shaders/nuage.fs");
 
 
     m_shader.use("basic2D");
@@ -182,7 +182,7 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    m_world->addNewMeshCube("basic3D", {"nuage1", "nuage2"});
+    m_world->addNewMeshCube("nuage", {"nuage1", "nuage2"});
     m_world->addNewMeshCube("basic2D", {"cage", "ulfricZemmour"}, true);
 
     std::cout<<"Nombre de mesh : "<<m_world->m_meshs.size()<<std::endl;
