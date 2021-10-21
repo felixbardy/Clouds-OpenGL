@@ -22,6 +22,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iomanip>
+
+//Typedef pour s'épargner les longs "unsigned char x = ..."
+typedef unsigned char uchar;
+
 /** @class Textures
  * @brief Contient toutes les textures du projet
  * */
@@ -69,8 +73,7 @@ class Textures
 
     
 
-    void writeTexture(std::ofstream & file, unsigned char data[], const uint & length);
-    void nextStepTexture(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i);
+    void updateStepValues(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i);
     std::map<std::string, uint> m_texId;
     private:
     
