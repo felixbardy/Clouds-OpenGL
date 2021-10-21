@@ -224,43 +224,11 @@ void Engine::run()
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-        m_world->m_projection = glm::perspective(glm::radians(70.f), (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight(), 0.1f, 1000.f);
 
+        float ratioScreen = (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight();
+        m_world->update(time, ratioScreen);
 
-        // Définition des uniforms
-        //FIXME Intégrer correctement la définition de la "boite à nuage"
-
-        glm::translate(m_world->getCam()->getView(), glm::vec3(-15, 0, 0));
-
-        vec3 box_vmin = vec3(-50.0f, -50.0f, -50.0f);
-        vec3 box_vmax = vec3(50.0f, 50.0f, 50.0f);
-
-        mat4 model = mat4(1.f);
-        mat4 view = m_world->getCam()->getView();
-        mat4 projection = m_world->m_projection;
-
-        mat4 vpInv = glm::inverse(view*projection);
-
-        mat4 mvp = projection * view * model;
-        mat4 mvpInv = glm::inverse(mvp);
-
-        m_shader.setVec3("nuage", "vmin", box_vmin);
-        m_shader.setVec3("nuage","vmax", box_vmax);
-        m_shader.setVec3("nuage","lightpos", vec3(0, cos(time) * 70, 0));
-        m_shader.setFloat("nuage","lightpower", 100 * ((cos(time / 3.0)/2)+0.5));
-        m_shader.setFloat("nuage","lightMultiplicator", 2.5);
-
-        m_shader.setMat4("nuage","view", m_world->getCam()->getViewRef());
-        m_shader.setMat4("nuage","projection", m_world->m_projection);
-        m_shader.setMat4("nuage","mvpMatrix", mvp);
-        m_shader.setMat4("nuage","mvpInvMatrix", mvpInv);
-
-        m_shader.setFloat("nuage","time", glfwGetTime());
-        m_shader.setFloat("nuage","temperature", 10);
-        
-        m_world->update();
-
-        m_world->render(glfwGetTime());
+        m_world->render();
 
 
 

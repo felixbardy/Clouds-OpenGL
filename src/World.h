@@ -35,11 +35,11 @@ class World
      * @param Shader les shaders à utiliser
      * @param time le temps actuel du monde
      */
-    void render(Shader & shaderManager, Textures & textureManager, float time);
+    void render();
 
     /** @brief Fait la mise à jour physique du monde
      */
-    void update();
+    void update(float time, float ratioScreen);
 
     /** @brief Constructeur par défaut, initialise la caméra et la matrice de projection
      */
@@ -53,6 +53,8 @@ class World
   private:
     Textures m_textures;
     Shader m_shader;
+
+    float m_time;
 
 };
 
