@@ -149,7 +149,7 @@ bool Textures::createAndLoad3D(const std::string& key)
     }
 }
 
-bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::string name)
+bool Textures::write3D4Chan(int WDH, int WR[3], int WorleySeed, int O, int S, int Fr, std::string name)
 {
     int nrChannels = 4;
     FastNoise F;
@@ -157,6 +157,8 @@ bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::strin
     F.SetSeed(S);
     F.SetFractalOctaves(O);
     F.SetFrequency((float)Fr/(float)100);
+
+    srand(WorleySeed);
 
     Worley W[3] = 
     {
@@ -253,7 +255,7 @@ glm::vec3 curlNoise(glm::vec3 p, FastNoise & fast)
 
 }
 
-bool Textures::write3D3Chan(int WDH, int WR[3], std::string name)
+bool Textures::write3D3Chan(int WDH, int WR[3], int WorleySeed, std::string name)
 {
     int nrChannels = 3;
     Worley W[3] = 
@@ -262,6 +264,7 @@ bool Textures::write3D3Chan(int WDH, int WR[3], std::string name)
         Worley(WR[1], WDH, WDH, WDH),
         Worley(WR[2], WDH, WDH, WDH),
     };
+    srand(WorleySeed);
     std::string path;
     if(name == "")
     {

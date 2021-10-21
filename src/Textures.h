@@ -67,8 +67,8 @@ class Textures
     /** @brief Ecrit une texture dans un fichier texte
      * @param path string qui contient le chemin du fichier ou écrire
     */
-    bool write3D3Chan(int WDH, int WR[3], std::string name);
-    bool write3D4Chan(int WDH, int WR[3], int O, int S, int F, std::string name);
+    bool write3D3Chan(int WDH, int WR[3], int worleySeed, std::string name);
+    bool write3D4Chan(int WDH, int WR[3], int worleySeed,  int O, int S, int F, std::string name);
     bool write2DCurl();
 
     
