@@ -81,15 +81,7 @@ double myLerp(double x, double y, double ratio)
     return ratio * x + (1-ratio) * y;
 }
 
-void Textures::writeTexture(std::ofstream & file, unsigned char data[], const uint & length)
-{   
-    for(int i = 0; i < length; i++)
-    {
-        file.write((char *)&data[i], sizeof(unsigned char));
-    }
-}
-
-void Textures::nextStepTexture(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i)
+void Textures::updateStepValues(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i)
 {
     x++;
     if(x >= resolution)
@@ -137,7 +129,7 @@ bool Textures::createAndLoad3D(const std::string& key)
         curl.y = curlP.x * sin(angle) + curlP.y * cos(angle);
         data.push_back((curl.x + 1)/2.f * 255);
         data.push_back((curl.y + 1)/2.f * 255);
-        nextStepTexture(width, nrChannels, x, y, z, i);
+        updateStepValues(width, nrChannels, x, y, z, i);
     }
 
     std::cout<<data.size()<<std::endl;
@@ -202,16 +194,19 @@ bool Textures::write3D4Chan(int WDH, int WR[3], int O, int S, int Fr, std::strin
     uint x, y, z;
     x = y = z = 0;
     uint i = 0;
-
+    uchar toFile[4];
     while(i < WDH * WDH * WDH * nrChannels)
     {
-        unsigned char toFile[4] = {
-        (unsigned char)(((1+F.GetNoise(x, y, z))/2.0) * 255),
-        (unsigned char)(W[0].get3d(x, y, z) *  255),
-        (unsigned char)(W[1].get3d(x, y, z) *  255),
-        (unsigned char)(W[2].get3d(x, y, z) *  255)};
-        writeTexture(data, toFile, 4);
-        nextStepTexture(WDH, nrChannels, x, y, z, i);
+        toFile[0] = (uchar)(((1+F.GetNoise(x, y, z))/2.0) * 255); // channel 0
+        toFile[1] = (uchar)(W[0].get3d(x, y, z) *  255);          // channel 1
+        toFile[2] = (uchar)(W[1].get3d(x, y, z) *  255);          // channel 2
+        toFile[3] = (uchar)(W[2].get3d(x, y, z) *  255);          // channel 3
+
+        //Écrit la couleur du voxel dans le buffer
+        data.write((char *)toFile, sizeof(char)*4);
+
+        //Met à jour les variables de coordonées
+        updateStepValues(WDH, nrChannels, x, y, z, i);
     }
     data.write((char * )&WDH, sizeof(char));
     data.write((char * )&nrChannels, sizeof(char));
@@ -293,15 +288,16 @@ bool Textures::write3D3Chan(int WDH, int WR[3], std::string name)
     uint x, y, z;
     x = y = z = 0;
     uint i = 0;
-
-  while(i < WDH * WDH * WDH * nrChannels)
+    uchar toFile[3];
+    while(i < WDH * WDH * WDH * nrChannels)
     {
-        unsigned char toFile[3] = {
-        (unsigned char)(W[0].get3d(x, y, z) *  255),
-        (unsigned char)(W[1].get3d(x, y, z) *  255),
-        (unsigned char)(W[2].get3d(x, y, z) *  255)};
-        writeTexture(data, toFile, 3);
-        nextStepTexture(WDH, nrChannels, x, y, z, i);
+        toFile[0] = (uchar)(W[0].get3d(x, y, z) *  255);
+        toFile[1] = (uchar)(W[1].get3d(x, y, z) *  255);
+        toFile[2] = (uchar)(W[2].get3d(x, y, z) *  255);
+        
+        data.write((char *)toFile, sizeof(char)*3);
+
+        updateStepValues(WDH, nrChannels, x, y, z, i);
     }
     data.write((char * )&WDH, sizeof(char));
     data.write((char * )&nrChannels, sizeof(char));
