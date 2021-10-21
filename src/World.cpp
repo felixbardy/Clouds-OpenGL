@@ -1,9 +1,12 @@
 #include "World.h"
 
-World::World()
+World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
 {
     m_cam = new Camera();
     m_projection = glm::mat4(1.f);
+
+    addNewMeshCube("basic3D", {"nuage1", "nuage2"});
+    addNewMeshCube("basic2D", {"cage", "ulfricZemmour"}, true);
 }
 
 void World::addObject(Object * obj)

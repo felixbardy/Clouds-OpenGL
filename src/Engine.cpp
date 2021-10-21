@@ -80,6 +80,14 @@ void Engine::init(uint w, uint h)
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
 
+    m_world = new World(m_texturesManager, m_shader);
+    m_world->getCam()->setLastX(w / 2.f);
+    m_world->getCam()->setLastY(h / 2.f);
+    m_world->m_projection = mat4(1.f);
+
+    glfwSetFramebufferSizeCallback(m_engineWindow.getWindow(), resetCamerawindow);
+    glfwSetWindowUserPointer(m_engineWindow.getWindow(), m_world->getCam());
+    glfwSetCursorPosCallback(m_engineWindow.getWindow(), cursorCallback);
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -136,7 +144,7 @@ void Engine::keyboardHandler(Camera * Cam)
                 //glfwSetWindowMonitor(m_engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 60);
         }
 
-        
+
 
         if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
         {
@@ -215,9 +223,9 @@ void Engine::run()
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        
+
         m_world->m_projection = glm::perspective(glm::radians(70.f), (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight(), 0.1f, 1000.f);
-        
+
 
         // Définition des uniforms
         //FIXME Intégrer correctement la définition de la "boite à nuage"
@@ -252,9 +260,9 @@ void Engine::run()
         
         m_world->update();
 
-        m_world->render(m_shader, m_texturesManager, glfwGetTime());
+        m_world->render(glfwGetTime());
 
-        
+
 
         m_engineWindow.update();
         keyboardHandler(m_world->getCam());

@@ -20,14 +20,14 @@ class World
     glm::mat4 m_projection;
 
     /** @brief Ajoute un cube a la scene
-     * @param textures Les textures à appliquer au mesh 
+     * @param textures Les textures à appliquer au mesh
      */
     void addNewCube(const std::string & shaderKey, std::vector<std::string> textureKeys, bool is2D = false);
 
     Camera* getCam();
-    
+
     /** @brief Ajoute un cube a la scene
-     * @param textures Les textures à appliquer au mesh 
+     * @param textures Les textures à appliquer au mesh
      */
     void addObject(Object * obj);
 
@@ -43,13 +43,16 @@ class World
 
     /** @brief Constructeur par défaut, initialise la caméra et la matrice de projection
      */
-    World();
+    World(Textures &tex, Shader &shad);
 
-    /// 
+    ///
     /** @brief Destructeur, détruit la caméra et les meshs avant l'objet
      */
     ~World();
 
+  private:
+    Textures m_textures;
+    Shader m_shader;
 
 };
 
