@@ -3,7 +3,7 @@
 
 #include <string>
 #include <iostream>
-
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -75,43 +75,12 @@ class Worley
      * @return Profondeur du worley
      */
     int getDepth();
-    
-    /** @brief Active la grille  en calcul
-     */
-    void enableGrid();
-
-    /** @brief Active les points en calcul
-     */
-    void enablePoint();
-
-
-    /** @brief Active la propagation en calcul
-     */
-    void enablePropagation();
-
-
-    /** @brief Desactive la grille  en calcul
-     */
-    void disableGrid();
-
-
-    /** @brief Desactive les points en calcul
-     */
-    void disablePoint();
-
-
-    /** @brief Desactive la propagation en calcul
-     */
-    void disablePropagation();
-
     private:
     
     float m_scale;
-    bool m_drawPropagation, m_drawGrid, m_drawPoint;
-
+    void iniPoint();
     int m_width, m_height, m_depth;
-
-    glm::vec3 random3(glm::vec3 p);
+    std::vector<std::vector<std::vector<glm::vec3>>> m_points;
 };
 
 #endif // WORLEY_H

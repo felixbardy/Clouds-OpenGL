@@ -67,8 +67,8 @@ void Engine::init(uint w, uint h)
     m_shader.setInt("basic3D", "texture2", 1);
 
     m_texturesManager.init();
-    m_texturesManager.Load3D("nuage1", "./data/texture3D/default_4chan.3DT");
-    m_texturesManager.Load3D("nuage2", "./data/texture3D/Test_3CHAN.3DT");
+    m_texturesManager.Load3D("nuage1", "./data/texture3D/highres.3DT");
+    m_texturesManager.Load3D("nuage2", "./data/texture3D/lowres.3DT");
     m_texturesManager.Load2D("ulfricZemmour", "./data/zem.png");
     m_texturesManager.Load2D("cage", "./data/Cage.png");
 
