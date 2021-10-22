@@ -55,7 +55,7 @@ void Engine::init(uint w, uint h)
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
-    m_shader.init("nuage", "./shaders/nuage.vs", "./shaders/nuage.fs");
+    m_shader.init("nuage", "./shaders/default.vs", "./shaders/nuage.fs");
 
 
     m_shader.use("basic2D");
@@ -65,6 +65,10 @@ void Engine::init(uint w, uint h)
     m_shader.use("basic3D");
     m_shader.setInt("basic3D", "texture1", 0);
     m_shader.setInt("basic3D", "texture2", 1);
+
+    m_shader.use("nuage");
+    m_shader.setInt("nuage", "texture1", 0);
+    m_shader.setInt("nuage", "texture2", 1);
 
     m_texturesManager.init();
     m_texturesManager.Load3D("nuage1", "./data/texture3D/highres.3DT");
@@ -182,8 +186,21 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    m_world->addNewMeshCube("basic3D", {"nuage1", "nuage2"});
+
     m_world->addNewMeshCube("basic2D", {"cage", "ulfricZemmour"}, true);
+
+    //Création du conteneur de nuage
+    Mesh& cloud_container = *(new Mesh());
+    cloud_container.setCube()
+                   .setTextureTypeTo3D()
+                   .setTextureKeys({"nuage1", "nuage2"})
+                   .setShaderKey("nuage")
+                   .setFaceCulling(false);
+    
+    cloud_container.m_position.push_back(glm::vec3(2,0,2));
+
+    m_world->addMesh(&cloud_container);
+
 
     std::cout<<"Nombre de mesh : "<<m_world->m_meshs.size()<<std::endl;
     while(!m_engineWindow.m_quit)
