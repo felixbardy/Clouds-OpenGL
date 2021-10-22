@@ -73,8 +73,8 @@ void Engine::init(uint w, uint h)
     m_texturesManager.init();
     m_texturesManager.Load3D("nuage1", "./data/texture3D/highres.3DT");
     m_texturesManager.Load3D("nuage2", "./data/texture3D/lowres.3DT");
-    m_texturesManager.Load2D("ulfricZemmour", "./data/zem.png");
-    m_texturesManager.Load2D("cage", "./data/Cage.png");
+    m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
+    m_texturesManager.Load2D("sonc", "./data/sonc.png");
 
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
@@ -187,7 +187,8 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    m_world->addNewMeshCube("basic2D", {"cage", "ulfricZemmour"}, true);
+
+    m_world->addNewMeshCube("basic2D", {"sonc", "kirbo"}, true);
 
     //Création du conteneur de nuage
     Mesh& cloud_container = *(new Mesh());
