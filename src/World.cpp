@@ -6,6 +6,7 @@ World::World()
     m_projection = glm::mat4(1.f);
 }
 
+//TODO Se débarasser des reliques du code Minecraft (typiquement cette fonction)
 void World::addNewMeshCube(const std::string & shaderKey, std::vector<std::string> textureKeys, bool is2D)
 {
     Mesh * nM = new Mesh();
