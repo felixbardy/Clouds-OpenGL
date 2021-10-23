@@ -189,6 +189,7 @@ void Engine::run()
 
 
     m_world->addNewMeshCube("basic2D", {"sonc", "kirbo"}, true);
+    m_world->addNewMeshCube("nuage", {"nuage1", "nuage2"});
 
     //Création du conteneur de nuage
     Mesh& cloud_container = *(new Mesh());
@@ -208,7 +209,8 @@ void Engine::run()
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        
+        glDisable(GL_CULL_FACE);
+
         m_world->m_projection = glm::perspective(glm::radians(70.f), (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight(), 0.1f, 1000.f);
         
 
