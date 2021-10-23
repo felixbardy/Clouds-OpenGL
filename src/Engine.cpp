@@ -258,7 +258,6 @@ void Engine::run()
 
 
 
-
         m_world->update();
 
         m_world->render(m_shader, m_texturesManager, glfwGetTime());
