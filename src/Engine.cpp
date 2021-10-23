@@ -66,6 +66,10 @@ void Engine::init(uint w, uint h)
     m_shader.setInt("basic3D", "texture1", 0);
     m_shader.setInt("basic3D", "texture2", 1);
 
+    m_shader.use("nuage");
+    m_shader.setInt("nuage", "texture1", 0);
+    m_shader.setInt("nuage", "texture2", 1);
+
     m_texturesManager.init();
     m_texturesManager.Load3D("nuage1", "./data/texture3D/highres.3DT");
     m_texturesManager.Load3D("nuage2", "./data/texture3D/lowres.3DT");
@@ -182,15 +186,16 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    m_world->addNewMeshCube("basic3D", {"nuage1", "nuage2"});
     m_world->addNewMeshCube("basic2D", {"sonc", "kirbo"}, true);
+    m_world->addNewMeshCube("nuage", {"nuage1", "nuage2"});
 
     std::cout<<"Nombre de mesh : "<<m_world->m_meshs.size()<<std::endl;
     while(!m_engineWindow.m_quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        
+        glDisable(GL_CULL_FACE);
+
         m_world->m_projection = glm::perspective(glm::radians(70.f), (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight(), 0.1f, 1000.f);
         
 
