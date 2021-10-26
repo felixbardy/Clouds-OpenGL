@@ -40,7 +40,7 @@ generator: ./$(BINDIR)/generate
 
 # Règles de compilation
 
-./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
+./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Object.o ./$(OBJDIR)/Shapes.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 
 ./$(BINDIR)/generate : ./$(OBJDIR)/generate.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Worley.o ./$(LIBDIR)/glad.a 
@@ -68,13 +68,19 @@ lib:
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/Engine.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
-./$(OBJDIR)/Engine.o : ./$(SRCDIR)/Engine.cpp ./$(SRCDIR)/Engine.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
+./$(OBJDIR)/Engine.o : ./$(SRCDIR)/Engine.cpp ./$(SRCDIR)/Engine.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/World.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
-./$(OBJDIR)/World.o : ./$(SRCDIR)/World.cpp ./$(SRCDIR)/World.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Mesh.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
+./$(OBJDIR)/World.o : ./$(SRCDIR)/World.cpp ./$(SRCDIR)/World.h ./$(SRCDIR)/Camera.h ./$(SRCDIR)/Object.h ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Window.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 ./$(OBJDIR)/Textures.o : ./$(SRCDIR)/Textures.cpp ./$(SRCDIR)/Textures.h ./$(SRCDIR)/Worley.h#./$(SRCDIR)/stb_image.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
+	
+./$(OBJDIR)/Object.o : ./$(SRCDIR)/Object.cpp ./$(SRCDIR)/Object.h $(SRCDIR)/Shapes.h
+	g++ $(FLAGS) -c -o $@ $< $(LIB)
+	
+./$(OBJDIR)/Shapes.o : ./$(SRCDIR)/Shapes.cpp ./$(SRCDIR)/Shapes.h $(SRCDIR)/Mesh.h
 	g++ $(FLAGS) -c -o $@ $< $(LIB)
 
 

@@ -43,6 +43,12 @@ class Shader
      */
     void setFloat(const std::string & programKey, const std::string& name, float value) const;
 
+    /** @brief Ajoute un uniform de type ivec2
+     * @param name le nom de l'uniform
+     * @param value la valeur de l'uniform
+     */
+    void setiVec2(const std::string & programKey, const std::string& name, const glm::ivec2& value) const;
+
     /** @brief Ajoute un uniform de type vec2
      * @param name le nom de l'uniform
      * @param value la valeur de l'uniform

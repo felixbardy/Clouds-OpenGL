@@ -6,33 +6,16 @@ World::World()
     m_projection = glm::mat4(1.f);
 }
 
-//TODO Se débarasser des reliques du code Minecraft (typiquement cette fonction)
-void World::addNewMeshCube(const std::string & shaderKey, std::vector<std::string> textureKeys, bool is2D)
+void World::addObject(Object * obj)
 {
-    Mesh * nM = new Mesh();
-    nM->setCube();
-    if(is2D)
-        nM->setTextureTypeTo2D();
-    else
-        nM->setTextureTypeTo3D();
-    nM->setShaderKey(shaderKey);
-    nM->setTextureKeys(textureKeys);
-    glm::vec3 pos = glm::vec3(m_meshs.size()%16, 0.f, (m_meshs.size()/16)%16);
-    pos.y = m_meshs.size()/256;
-    nM->m_position.push_back(pos);
-    m_meshs.push_back(nM);
-}
-
-void World::addMesh(Mesh * mesh)
-{
-    m_meshs.push_back(mesh);
+    m_objects.push_back(obj);
 }
 
 void World::render(Shader & Shader, Textures& textureManager, float time)
 {
-    for(int i = 0; i < m_meshs.size(); i++)
+    for(int i = 0; i < m_objects.size(); i++)
     {
-        m_meshs[i]->render(Shader, textureManager, m_cam->getView(), m_projection, time);
+        m_objects[i]->render(Shader, textureManager, m_cam->getView(), m_projection, time);
     }
 }
 
@@ -51,9 +34,9 @@ World::~World()
     m_cam->~Camera();
     delete m_cam;
 
-    for(int i = 0; i < m_meshs.size(); i++)
+    for(int i = 0; i < m_objects.size(); i++)
     {
-        m_meshs[i]->~Mesh();
-        delete m_meshs[i];
+        m_objects[i]->~Object();
+        delete m_objects[i];
     }
 }
