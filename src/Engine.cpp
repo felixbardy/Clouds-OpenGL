@@ -42,7 +42,7 @@ void Engine::init(uint w, uint h)
 
     Shapes::initShapes();
 
-    m_world = new World;
+    m_world = new World(m_texturesManager, m_shader);
     m_world->getCam()->setLastX(w / 2.f);
     m_world->getCam()->setLastY(h / 2.f);
     m_world->m_projection = mat4(1.f);
@@ -71,15 +71,23 @@ void Engine::init(uint w, uint h)
     m_shader.setInt("basic3D", "texture2", 1);
 
     m_shader.use("nuage");
-    m_shader.setInt("nuage", "texture1", 0);
-    m_shader.setInt("nuage", "texture2", 1);
+    m_shader.setInt("nuage", "shape", 0);
+    m_shader.setInt("nuage", "detail", 1);
 
     m_texturesManager.init();
-    m_texturesManager.Load3D("nuage1", "./data/texture3D/highres.3DT");
-    m_texturesManager.Load3D("nuage2", "./data/texture3D/lowres.3DT");
+    m_texturesManager.Load3D("shape", "./data/texture3D/highres.3DT");
+    m_texturesManager.Load3D("detail", "./data/texture3D/lowres.3DT");
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
 
+    m_world = new World(m_texturesManager, m_shader);
+    m_world->getCam()->setLastX(w / 2.f);
+    m_world->getCam()->setLastY(h / 2.f);
+    m_world->m_projection = mat4(1.f);
+
+    glfwSetFramebufferSizeCallback(m_engineWindow.getWindow(), resetCamerawindow);
+    glfwSetWindowUserPointer(m_engineWindow.getWindow(), m_world->getCam());
+    glfwSetCursorPosCallback(m_engineWindow.getWindow(), cursorCallback);
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -136,7 +144,7 @@ void Engine::keyboardHandler(Camera * Cam)
                 //glfwSetWindowMonitor(m_engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 60);
         }
 
-        
+
 
         if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
         {
@@ -191,71 +199,14 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-
-    Cube defaultCube = Cube();
-    defaultCube.setShaderKey("basic2D")
-               .setTextureKeys({"sonc", "kirbo"});
-
-    m_world->addObject(&defaultCube);
-
-    // //Création du conteneur de nuage
-    // Object & cloud_container = *(new Cube());
-    // cloud_container.setTextureTypeTo3D()
-    //                 .setTextureKeys({"nuage1", "nuage2"})
-    //                 .setShaderKey("nuage")
-    //                 .setFaceCulling(false);
-
-    // cloud_container.m_position.push_back(glm::vec3(2,0,2));
-
-    // m_world->addMesh(&cloud_container);
-
-
-    std::cout<<"Nombre d'objets dans le rendu : "<<m_world->m_objects.size()<<std::endl;
     while(!m_engineWindow.m_quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        
-        m_world->m_projection = glm::perspective(glm::radians(70.f), (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight(), 0.1f, 1000.f);
-        
+        float ratioScreen = (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight();
 
-        // Définition des uniforms
-        //FIXME Intégrer correctement la définition de la "boite à nuage"
-
-        glm::translate(m_world->getCam()->getView(), glm::vec3(-15, 0, 0));
-
-        vec3 box_vmin = vec3(-50.0f, -50.0f, -50.0f);
-        vec3 box_vmax = vec3(50.0f, 50.0f, 50.0f);
-
-        mat4 model = mat4(1.f);
-        mat4 view = m_world->getCam()->getView();
-        mat4 projection = m_world->m_projection;
-
-        mat4 vpInv = glm::inverse(view*projection);
-
-        mat4 mvp = projection * view * model;
-        mat4 mvpInv = glm::inverse(mvp);
-
-        m_shader.setVec3("nuage", "vmin", box_vmin);
-        m_shader.setVec3("nuage","vmax", box_vmax);
-        m_shader.setVec3("nuage","lightpos", vec3(0, cos(time) * 70, 0));
-        m_shader.setFloat("nuage","lightpower", 100 * ((cos(time / 3.0)/2)+0.5));
-        m_shader.setFloat("nuage","lightMultiplicator", 2.5);
-
-        m_shader.setMat4("nuage","view", m_world->getCam()->getViewRef());
-        m_shader.setMat4("nuage","projection", m_world->m_projection);
-        m_shader.setMat4("nuage","mvpMatrix", mvp);
-        m_shader.setMat4("nuage","mvpInvMatrix", mvpInv);
-
-        m_shader.setFloat("nuage","time", glfwGetTime());
-        m_shader.setFloat("nuage","temperature", 10);
-        
-        m_world->update();
-
-        m_world->render(m_shader, m_texturesManager, glfwGetTime());
-
-        
-
+        m_world->update(time, ratioScreen);
+        m_world->render();
         m_engineWindow.update();
         keyboardHandler(m_world->getCam());
         if(m_inputPrevent >= 0) m_inputPrevent--;

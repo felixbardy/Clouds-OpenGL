@@ -68,7 +68,7 @@ public:
      * @param projection matrice 4 dimension du monde
      * @param view matrice 4 dimension de vue
      */
-    void render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection, float angle);
+    void render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection);
 
     /** @brief remplit les positions ou afficher le mesh
      * @param positions
