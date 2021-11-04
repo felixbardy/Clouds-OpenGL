@@ -154,6 +154,11 @@ void Shader::setFloat(const std::string & programKey, const std::string& name, f
     glUniform1f(glGetUniformLocation(m_programId.at(programKey), name.c_str()), value);
 }
 
+void Shader::setiVec2(const std::string & programKey, const std::string& name, const glm::ivec2& value) const
+{
+    glUniform2iv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, &value[0]);
+}
+
 void Shader::setVec2(const std::string & programKey, const std::string& name, const glm::vec2& value) const
 {
     glUniform2fv(glGetUniformLocation(m_programId.at(programKey), name.c_str()), 1, &value[0]);

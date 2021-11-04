@@ -40,6 +40,8 @@ void Engine::init(uint w, uint h)
     m_engineWindow.init();
     initGLAD();
 
+    Shapes::initShapes();
+
     m_world = new World;
     m_world->getCam()->setLastX(w / 2.f);
     m_world->getCam()->setLastY(h / 2.f);
@@ -53,9 +55,11 @@ void Engine::init(uint w, uint h)
     a = 1.f;
     m_inputPrevent = 0;
 
+
+
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
-    m_shader.init("nuage", "./shaders/default.vs", "./shaders/nuage.fs");
+    m_shader.init("nuage", "./shaders/nuage.vs", "./shaders/nuage.fs");
 
 
     m_shader.use("basic2D");
@@ -188,22 +192,25 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 
-    m_world->addNewMeshCube("basic2D", {"sonc", "kirbo"}, true);
+    Cube defaultCube = Cube();
+    defaultCube.setShaderKey("basic2D")
+               .setTextureKeys({"sonc", "kirbo"});
 
-    //Création du conteneur de nuage
-    Mesh& cloud_container = *(new Mesh());
-    cloud_container.setCube()
-                   .setTextureTypeTo3D()
-                   .setTextureKeys({"nuage1", "nuage2"})
-                   .setShaderKey("nuage")
-                   .setFaceCulling(false);
-    
-    cloud_container.m_position.push_back(glm::vec3(2,0,2));
+    m_world->addObject(&defaultCube);
 
-    m_world->addMesh(&cloud_container);
+    // //Création du conteneur de nuage
+    // Object & cloud_container = *(new Cube());
+    // cloud_container.setTextureTypeTo3D()
+    //                 .setTextureKeys({"nuage1", "nuage2"})
+    //                 .setShaderKey("nuage")
+    //                 .setFaceCulling(false);
+
+    // cloud_container.m_position.push_back(glm::vec3(2,0,2));
+
+    // m_world->addMesh(&cloud_container);
 
 
-    std::cout<<"Nombre de mesh : "<<m_world->m_meshs.size()<<std::endl;
+    std::cout<<"Nombre d'objets dans le rendu : "<<m_world->m_objects.size()<<std::endl;
     while(!m_engineWindow.m_quit)
     {
         glClearColor(r, g, b, a);
@@ -224,6 +231,8 @@ void Engine::run()
         mat4 view = m_world->getCam()->getView();
         mat4 projection = m_world->m_projection;
 
+        mat4 vpInv = glm::inverse(view*projection);
+
         mat4 mvp = projection * view * model;
         mat4 mvpInv = glm::inverse(mvp);
 
@@ -241,8 +250,6 @@ void Engine::run()
         m_shader.setFloat("nuage","time", glfwGetTime());
         m_shader.setFloat("nuage","temperature", 10);
         
-
-
         m_world->update();
 
         m_world->render(m_shader, m_texturesManager, glfwGetTime());
