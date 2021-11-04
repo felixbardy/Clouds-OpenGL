@@ -63,12 +63,14 @@ void Engine::init(uint w, uint h)
     m_shader.use("nuage");
     m_shader.setInt("nuage", "shape", 0);
     m_shader.setInt("nuage", "detail", 1);
+    m_shader.setInt("nuage", "gradient", 2);
 
     m_texturesManager.init();
     m_texturesManager.Load3D("shape", "./data/texture3D/highres.3DT");
     m_texturesManager.Load3D("detail", "./data/texture3D/lowres.3DT");
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
+    m_texturesManager.Load2D("cumulonimbus", "./data/cumulonimbus.png");
 
     m_world = new World(m_texturesManager, m_shader);
     m_world->getCam()->setLastX(w / 2.f);

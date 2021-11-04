@@ -8,6 +8,7 @@ uniform mat4 mvMatrix;
 
 uniform sampler3D shape;
 uniform sampler3D detail;
+uniform sampler2D gradient;
 
 // coordonées de la boîte à nuages
 uniform vec3 vmin;
@@ -151,13 +152,18 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
 
+        float scale = 1.0/3.0;
+        texcoords *= scale;
+
+
         // Calcul de l'excentricité du point
         vec3 centre = vec3(0.5);
-        float delta = max(1 - 2*distance(centre, texcoords), 0);
+        float cloudCoverage = 1;//max(1 - 2*distance(centre, texcoords), 0);
 
         // Calcul de densité par sampling des bruits mixés
-        vec4 tex = texture(shape, texcoords);
-        float local_density = mix(tex.x, tex.z, 0.25) * delta;
+        vec4 tex = mix(texture(shape, texcoords), texture(detail, texcoords), 0.25);
+        vec4 grad = texture(gradient, (texcoords.xy)/scale);
+        float local_density = mix(tex.x, tex.z, 1) * cloudCoverage * grad.x;
 
         // Calcul du vecteur point->lumière
         to_light = normalize(lightpos - true_pos);
