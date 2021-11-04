@@ -2,11 +2,27 @@
 #include <GLFW/glfw3.h>
 World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
 {
+    std::cout<<"____Initialisation du monde____"<<std::endl;
     m_cam = new Camera();
     m_projection = glm::mat4(1.f);
 
-    addNewMeshCube("basic3D", {"nuage1", "nuage2"});
-    addNewMeshCube("basic2D", {"cage", "ulfricZemmour"}, true);
+    Cube * defaultCube = new Cube();
+    defaultCube->setShaderKey("nuage");
+    defaultCube->setTextureKeys({"nuage1", "nuage2"});
+
+    addObject(defaultCube);
+
+    // //Création du conteneur de nuage
+    // Object & cloud_container = *(new Cube());
+    // cloud_container.setTextureTypeTo3D()
+    //                 .setTextureKeys({"nuage1", "nuage2"})
+    //                 .setShaderKey("nuage")
+    //                 .setFaceCulling(false);
+
+    // cloud_container.m_position.push_back(glm::vec3(2,0,2));
+
+    // m_world->addMesh(&cloud_container);
+    std::cout<<"Fin de l'initialisation du monde"<<std::endl;
 }
 
 void World::addObject(Object * obj)
@@ -14,11 +30,11 @@ void World::addObject(Object * obj)
     m_objects.push_back(obj);
 }
 
-void World::render(Shader & Shader, Textures& textureManager, float time)
+void World::render()
 {
     for(int i = 0; i < m_objects.size(); i++)
     {
-        m_objects[i]->render(Shader, textureManager, m_cam->getView(), m_projection, time);
+        m_objects[i]->render(m_shader, m_textures, m_cam->getView(), m_projection);
     }
 }
 

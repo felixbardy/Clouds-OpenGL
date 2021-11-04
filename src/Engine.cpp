@@ -42,7 +42,7 @@ void Engine::init(uint w, uint h)
 
     Shapes::initShapes();
 
-    m_world = new World;
+    m_world = new World(m_texturesManager, m_shader);
     m_world->getCam()->setLastX(w / 2.f);
     m_world->getCam()->setLastY(h / 2.f);
     m_world->m_projection = mat4(1.f);
@@ -71,12 +71,12 @@ void Engine::init(uint w, uint h)
     m_shader.setInt("basic3D", "texture2", 1);
 
     m_shader.use("nuage");
-    m_shader.setInt("nuage", "texture1", 0);
-    m_shader.setInt("nuage", "texture2", 1);
+    m_shader.setInt("nuage", "shape", 0);
+    m_shader.setInt("nuage", "detail", 1);
 
     m_texturesManager.init();
-    m_texturesManager.Load3D("nuage1", "./data/texture3D/highres.3DT");
-    m_texturesManager.Load3D("nuage2", "./data/texture3D/lowres.3DT");
+    m_texturesManager.Load3D("shape", "./data/texture3D/highres.3DT");
+    m_texturesManager.Load3D("detail", "./data/texture3D/lowres.3DT");
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
 
@@ -199,39 +199,14 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-
-    Cube defaultCube = Cube();
-    defaultCube.setShaderKey("basic2D")
-               .setTextureKeys({"sonc", "kirbo"});
-
-    m_world->addObject(&defaultCube);
-
-    // //Création du conteneur de nuage
-    // Object & cloud_container = *(new Cube());
-    // cloud_container.setTextureTypeTo3D()
-    //                 .setTextureKeys({"nuage1", "nuage2"})
-    //                 .setShaderKey("nuage")
-    //                 .setFaceCulling(false);
-
-    // cloud_container.m_position.push_back(glm::vec3(2,0,2));
-
-    // m_world->addMesh(&cloud_container);
-
-
-    std::cout<<"Nombre d'objets dans le rendu : "<<m_world->m_objects.size()<<std::endl;
     while(!m_engineWindow.m_quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-
-
         float ratioScreen = (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight();
+
         m_world->update(time, ratioScreen);
-
         m_world->render();
-
-
-
         m_engineWindow.update();
         keyboardHandler(m_world->getCam());
         if(m_inputPrevent >= 0) m_inputPrevent--;

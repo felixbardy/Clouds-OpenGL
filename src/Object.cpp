@@ -81,12 +81,11 @@ Object& Object::setTextureTypeTo2D()
     return *this;
 }
 
-void Object::render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection, float angle)
+void Object::render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection)
 {
     Shader.use(m_shaderKey);
     Shader.setMat4(m_shaderKey, "view", view);
     Shader.setMat4(m_shaderKey, "projection", projection);
-    Shader.setFloat(m_shaderKey, "time", angle);
 
     // Si l'objet ne doit pas masquer l'environnement
     // activer puis désactiver le face culling
