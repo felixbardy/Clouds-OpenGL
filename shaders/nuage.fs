@@ -36,41 +36,41 @@ float angle_between_normed_vec3(vec3 u, vec3 v)
 vec2 cloudBoxIntersection(vec3 ray_o, vec3 ray_d)
 {
     float temp;
-    float tmin = (vmin.x - ray_o.x) / ray_d.x; 
-    float tmax = (vmax.x - ray_o.x) / ray_d.x; 
- 
-    if (tmin > tmax) {temp=tmin; tmin=tmax; tmax=temp;} 
- 
-    float tymin = (vmin.y - ray_o.y) / ray_d.y; 
-    float tymax = (vmax.y - ray_o.y) / ray_d.y; 
- 
+    float tmin = (vmin.x - ray_o.x) / ray_d.x;
+    float tmax = (vmax.x - ray_o.x) / ray_d.x;
+
+    if (tmin > tmax) {temp=tmin; tmin=tmax; tmax=temp;}
+
+    float tymin = (vmin.y - ray_o.y) / ray_d.y;
+    float tymax = (vmax.y - ray_o.y) / ray_d.y;
+
     if (tymin > tymax) {temp=tymin; tymin=tymax; tymax=temp;}
- 
-    if ((tmin > tymax) || (tymin > tmax)) 
+
+    if ((tmin > tymax) || (tymin > tmax))
         return vec2(-1,-1);
- 
-    if (tymin > tmin) 
-        tmin = tymin; 
- 
-    if (tymax < tmax) 
-        tmax = tymax; 
- 
-    float tzmin = (vmin.z - ray_o.z) / ray_d.z; 
-    float tzmax = (vmax.z - ray_o.z) / ray_d.z; 
- 
+
+    if (tymin > tmin)
+        tmin = tymin;
+
+    if (tymax < tmax)
+        tmax = tymax;
+
+    float tzmin = (vmin.z - ray_o.z) / ray_d.z;
+    float tzmax = (vmax.z - ray_o.z) / ray_d.z;
+
     if (tzmin > tzmax) {temp=tzmin; tzmin=tzmax; tzmax=temp;}
- 
-    if ((tmin > tzmax) || (tzmin > tmax)) 
-        return vec2(-1,-1); 
- 
-    if (tzmin > tmin) 
-        tmin = tzmin; 
- 
-    if (tzmax < tmax) 
-        tmax = tzmax; 
-    
+
+    if ((tmin > tzmax) || (tzmin > tmax))
+        return vec2(-1,-1);
+
+    if (tzmin > tmin)
+        tmin = tzmin;
+
+    if (tzmax < tmax)
+        tmax = tzmax;
+
     //FIXME Renvoyer Tmin et Tmax
-    return vec2(tmin,tmax); 
+    return vec2(tmin,tmax);
 }
 
 float computeCloudDensity(vec3 entry, vec3 exit, int steps)
@@ -103,9 +103,9 @@ float getIlluminationAtPoint(vec3 point)
 {
     vec3 dir = normalize(lightpos - point);
     vec2 intersect = cloudBoxIntersection(point, dir);
-    
+
     if (intersect.y < 0) return lightpower;
-    
+
     intersect.x = max(intersect.x, 0);
 
     vec3 entry = point + dir * intersect.x;
@@ -156,14 +156,14 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         float delta = max(1 - 2*distance(centre, texcoords), 0);
 
         // Calcul de densité par sampling des bruits mixés
-        vec4 tex = mix(texture(shape, texcoords), texture(detail, texcoords), (cos(time)+1)/2);
+        vec4 tex = texture(shape, texcoords);
         float local_density = mix(tex.x, tex.z, 0.25) * delta;
 
         // Calcul du vecteur point->lumière
         to_light = normalize(lightpos - true_pos);
         // Puis de la transmission le long du rayon par le point
         float transmission = rayleighPhase(angle_between_normed_vec3(raydir, to_light)) * local_density;
-        
+
         local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
         if(local_density == 0) rS--;
         density += local_density;
@@ -173,19 +173,19 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
                * local_density                        // Densité locale (modifie la portion de lumière renvoyée)
                * exp(-density);                       // Dispersion depuis le point le long du rayon
 
-        
+
     }
     density /= float(steps);
     light /= float(steps);
 
-    
+
     light *= lightMultiplicator;
-    
-    
+
+
     return vec2(density, light);
 }
 
-void main() 
+void main()
 {
     // construction du rayon pour le pixel
     vec4 origin_s = mvpInvMatrix * vec4(position, 0, 1); // origine sur near
@@ -195,11 +195,11 @@ void main()
     //? pas compris
     vec3 o = origin_s.xyz / origin_s.w;                         // origine
     vec3 d = normalize(end_s.xyz / end_s.w - origin_s.xyz / origin_s.w); // direction
-    
+
     vec2 itrsect = cloudBoxIntersection(o,d);
     float T_in = itrsect.x;
     float T_out = itrsect.y;
-        
+
     float lum = lightpower / 100.0;
     vec4 bgcolor = vec4(vec3(0.4, 0.4, 0.8) * lum, 1);
     vec4 lightcolor = vec4(1,1,1,1);
@@ -225,7 +225,7 @@ void main()
     }
     // Si pas d'intersection:
     else    fragment_color = bgcolor;
-    
+
     // Affichage lumière
     vec3 dir_to_light = normalize(lightpos - o);
     float angle = angle_between_normed_vec3(d, dir_to_light);
@@ -233,5 +233,5 @@ void main()
     if ( angle < 0.03490658503988659 && angle > -0.03490658503988659) {
         fragment_color = fragment_color + lightcolor * lum;
         return;
-    } 
+    }
 }
