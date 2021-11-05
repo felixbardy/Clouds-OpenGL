@@ -42,19 +42,9 @@ void Engine::init(uint w, uint h)
 
     Shapes::initShapes();
 
-    m_world = new World(m_texturesManager, m_shader);
-    m_world->getCam()->setLastX(w / 2.f);
-    m_world->getCam()->setLastY(h / 2.f);
-    m_world->m_projection = mat4(1.f);
-
-    glfwSetFramebufferSizeCallback(m_engineWindow.getWindow(), resetCamerawindow);
-    glfwSetWindowUserPointer(m_engineWindow.getWindow(), m_world->getCam());
-    glfwSetCursorPosCallback(m_engineWindow.getWindow(), cursorCallback);
-
     r = g = b = 0.f;
     a = 1.f;
     m_inputPrevent = 0;
-
 
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
