@@ -33,7 +33,7 @@ void Textures::Load2D(const std::string & key, const std::string & path)
     //decode
     unsigned error = lodepng::decode(data, width, height, path.c_str());
 
-    
+
     for(int i = 0; i < data.size(); i+=4)
     {
         std::reverse(data.begin()+i, data.begin()+i+4);
@@ -61,14 +61,14 @@ glm::vec2 curlNoise2D(double x, double y, FastNoise & F)
 {
     const float eps = 0.01;
     double n1 = F.GetNoise(x + eps, y);
-    double n2 = F.GetNoise(x - eps, y); 
+    double n2 = F.GetNoise(x - eps, y);
 
     //Average to find approximate derivative
     double a = (n1 - n2)/(2 * eps);
 
     //Find rate of change in Y direction
-    n1 = F.GetNoise(x, y + eps); 
-    n2 = F.GetNoise(x, y - eps); 
+    n1 = F.GetNoise(x, y + eps);
+    n2 = F.GetNoise(x, y - eps);
 
     //Average to find approximate derivative
     double b = (n1 - n2)/(2 * eps);
@@ -112,19 +112,19 @@ bool Textures::createAndLoad3D(const std::string& key)
     F.SetSeed(42);
     F.SetFractalOctaves(3);
     F.SetFrequency(0.05);
-    
+
     std::vector<unsigned char> data;
     uint x, y, z;
     x = y = z = 0;
     uint i = 0;
     float perlin = (F.GetPerlin(x, y)+1.0)/2.0;
-    float angle = (perlin * M_PI * 2);  
+    float angle = (perlin * M_PI * 2);
     while(i < width * depth * height * nrChannels)
     {
         glm::vec2 curl = (curlNoise2D(x, y, F) + glm::vec2(1, 1))/glm::vec2(2.0, 2.0);
-        
+
         glm::vec2 curlP = curl;
-        
+
         curl.x = curlP.x * cos(angle) - curlP.y * sin(angle);
         curl.y = curlP.x * sin(angle) + curlP.y * cos(angle);
         data.push_back((curl.x + 1)/2.f * 255);
@@ -160,7 +160,7 @@ bool Textures::write3D4Chan(int WDH, int WR[3], int WorleySeed, int O, int S, in
 
     srand(WorleySeed);
 
-    Worley W[3] = 
+    Worley W[3] =
     {
         Worley(WR[0], WDH, WDH, WDH),
         Worley(WR[1], WDH, WDH, WDH),
@@ -220,30 +220,30 @@ const std::vector<std::string> explode(const std::string& s, const char& c)
 {
 	std::string buff{""};
 	std::vector<std::string> v;
-	
+
 	for(auto n:s)
 	{
 		if(n != c) buff+=n; else
 		if(n == c && buff != "") { v.push_back(buff); buff = ""; }
 	}
 	if(buff != "") v.push_back(buff);
-	
+
 	return v;
 }
 
 glm::vec3 curlNoise(glm::vec3 p, FastNoise & fast)
-{  
+{
     const float e = 1;
     glm::vec3 dx = glm::vec3( e   , 0.0 , 0.0 );
     glm::vec3 dy = glm::vec3( 0.0 , e   , 0.0 );
-    glm::vec3 dz = glm::vec3( 0.0 , 0.0 , e   );  
+    glm::vec3 dz = glm::vec3( 0.0 , 0.0 , e   );
 
-    glm::vec3 pV0 = glm::vec3(  fast.GetNoise(p.x - e, p.y, p.z), 
-                                fast.GetNoise(p.x, p.y - e, p.z), 
+    glm::vec3 pV0 = glm::vec3(  fast.GetNoise(p.x - e, p.y, p.z),
+                                fast.GetNoise(p.x, p.y - e, p.z),
                                 fast.GetNoise(p.x, p.y, p.z - e));
 
-    glm::vec3 pV1 = glm::vec3(  fast.GetNoise(p.x + e, p.y, p.z), 
-                                fast.GetNoise(p.x, p.y + e, p.z), 
+    glm::vec3 pV1 = glm::vec3(  fast.GetNoise(p.x + e, p.y, p.z),
+                                fast.GetNoise(p.x, p.y + e, p.z),
                                 fast.GetNoise(p.x, p.y, p.z + e));
 
     float x = pV1.z - pV0.z - pV1.y + pV0.y;
@@ -258,7 +258,7 @@ glm::vec3 curlNoise(glm::vec3 p, FastNoise & fast)
 bool Textures::write3D3Chan(int WDH, int WR[3], int WorleySeed, std::string name)
 {
     int nrChannels = 3;
-    Worley W[3] = 
+    Worley W[3] =
     {
         Worley(WR[0], WDH, WDH, WDH),
         Worley(WR[1], WDH, WDH, WDH),
@@ -281,7 +281,7 @@ bool Textures::write3D3Chan(int WDH, int WR[3], int WorleySeed, std::string name
     }
 
     std::ofstream data(path, std::ios::out | std::ios::binary);
-    
+
     if(!data.is_open())
     {
         std::cerr<<"Erreur ouverture fichier"<<std::endl;
@@ -297,7 +297,7 @@ bool Textures::write3D3Chan(int WDH, int WR[3], int WorleySeed, std::string name
         toFile[0] = (uchar)(W[0].get3d(x, y, z) *  255);
         toFile[1] = (uchar)(W[1].get3d(x, y, z) *  255);
         toFile[2] = (uchar)(W[2].get3d(x, y, z) *  255);
-        
+
         data.write((char *)toFile, sizeof(char)*3);
 
         updateStepValues(WDH, nrChannels, x, y, z, i);
@@ -317,7 +317,7 @@ bool Textures::Load3D(const std::string & key, const std::string & path)
     std::ifstream file(path, std::ios::binary);
     if(!file.is_open())
     {
-        std::cerr<<" Fichier Introuvable"<<std::endl;
+        std::cerr<<" Fichier Introuvable : " << path <<std::endl;
         return false;
     }
     std::vector<unsigned char> data(std::istreambuf_iterator<char>(file), {});
@@ -327,13 +327,13 @@ bool Textures::Load3D(const std::string & key, const std::string & path)
     data.pop_back();
 
     std::cout<<WDH<<std::endl;
-    
+
 
     file.close();
     GLenum format = GL_RG;
     switch(nChan)
     {
-        case 3: 
+        case 3:
             format = GL_RGB;
             break;
         case 4:
@@ -348,11 +348,11 @@ bool Textures::Load3D(const std::string & key, const std::string & path)
     {
         format = GL_RGB;
     }
-    
+
     std::cout<<data.size()/4<<std::endl;
     if(!data.empty())
     {
-        
+
         m_texId.insert({key, 0});
         glGenTextures(1, &m_texId[key]);
         glBindTexture(GL_TEXTURE_3D, m_texId[key]);
