@@ -345,7 +345,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
         
-        density += shapeNoiseSample(texcoords);
+        density += texture(shape, texcoords).y;//shapeNoiseSample(texcoords);
         /// Vrai fonction mais trop laggy pour l'instant
         //getCloudNoise(texcoords, 1, texture(shape, vec3(texcoords.x, 0, texcoords.z)).r, texture(noisemap, texcoords.xz).r, 1);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
     }
@@ -410,9 +410,9 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         float locationValue = texture(shape, vec3(texcoords.x, 0, texcoords.z)).r;
         float noiseValue = texture(noisemap, texcoords.xz).r;
         float heightValue = 1;//max(texture(heightmap, texcoords.xz).g, 0.1);
-        float densityValue = texture(densitymap, texcoords.xz).b;
+        float densityValue = 1;//texture(densitymap, texcoords.xz).b;
         
-        float local_density = getCloudNoise(texcoords, heightValue, locationValue, noiseValue, densityValue);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
+        float local_density = getCloudNoise(texcoords, heightValue, locationValue, noiseValue, densityValue);
         
         
 

@@ -71,6 +71,12 @@ void Engine::init(uint w, uint h)
     m_texturesManager.init();
     m_texturesManager.Load3D("shape", "./data/texture3D/highres.3DT");
     m_texturesManager.Load3D("detail", "./data/texture3D/lowres.3DT");
+    m_texturesManager.Load2D("locationmap", "./data/weathermap/location.png");
+    m_texturesManager.Load2D("noisemap", "./data/weathermap/LocationNoise.png");
+    m_texturesManager.Load2D("densitymap", "./data/weathermap/density.png");
+    m_texturesManager.Load2D("heightmap", "./data/weathermap/Height.png");
+
+
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
     //m_texturesManager.Load2D("cumulonimbus", "./data/cumulonimbus.png");

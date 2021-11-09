@@ -8,8 +8,7 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
 
     Cube * defaultCube = new Cube();
     defaultCube->setShaderKey("nuage");
-    defaultCube->setTextureKeys({"nuage1", "nuage2"});
-
+    defaultCube->setTextureKeys({"shape", "detail", "locationmap", "noisemap", "densitymap", "heightmap"});
     addObject(defaultCube);
 
     // //Création du conteneur de nuage
@@ -50,8 +49,8 @@ void World::update(float time, float ratioScreen)
 
   glm::translate(getCam()->getView(), glm::vec3(-15, 0, 0));
 
-  glm::vec3 box_vmin = glm::vec3(-50.0f, -50.0f, -50.0f);
-  glm::vec3 box_vmax = glm::vec3(50.0f, 50.0f, 50.0f);
+  glm::vec3 box_vmin = glm::vec3(-100.0f, -25.0f, -100.0f);
+  glm::vec3 box_vmax = glm::vec3(100.0f, 25.0f, 100.0f);
 
   glm::mat4 model = glm::mat4(1.f);
   glm::mat4 view = getCam()->getView();
@@ -73,6 +72,11 @@ void World::update(float time, float ratioScreen)
 
   m_shader.setFloat("nuage","time", m_time);
   m_shader.setFloat("nuage","temperature", 10);
+
+  m_shader.setFloat("nuage","globalCoverage", 1.0);
+  m_shader.setFloat("nuage","globalDensity", 10.0);
+  m_shader.setFloat("nuage","anvilAmount", 1.0);
+
 
   m_cam->update();
 }
