@@ -8,7 +8,24 @@ uniform mat4 mvMatrix;
 
 uniform sampler3D shape;
 uniform sampler3D detail;
-uniform sampler2D gradient;
+
+// WEATHER MAP
+uniform sampler2D locationmap;
+uniform sampler2D noisemap;
+uniform sampler2D heightmap;
+uniform sampler2D densitymap;
+
+uniform float globalCoverage;
+uniform float globalDensity;
+uniform float anvilAmount;
+
+// LIGHT UNIFORM
+
+uniform float extraIntensity;
+uniform float centralizedValue;
+uniform float cloudDensityImpact;
+uniform float lightAbsorbtion;
+uniform float clampAttenuation;
 
 // coordonées de la boîte à nuages
 uniform vec3 vmin;
@@ -26,6 +43,243 @@ uniform float temperature; // Plus froid = plus dense
 in vec2 position;
 
 out vec4 fragment_color;
+
+/// UTILITY ///
+/** clamp la valeur en paramètre entre 0 et 1
+*   r -> valeur a clamper
+*/
+float saturation(float r)
+{
+    return clamp(r, 0.0, 1.0);
+}
+
+/** Transforme une valeur de l'intervalle 0 [l0, h0] en une valeur de l'intervale n [ln, hn]
+* v -> valeur d'entrée a remapper
+* l0 -> valeur basse de I0
+* h0 -> valeur haute de I0
+* ln -> valeur basse de IN
+* hn -> valeur basse de IN
+*/
+float remap(float v, float l0 , float h0 , float ln ,float hn)
+{
+    return ln + (v - l0) * (hn - ln) / (h0 - l0); 
+}
+/// WEATHER MAP FUNCTION ///  
+
+/** Renvoit la valeur de localisation dans la weather map du fragment actuel
+* c0 -> [0, 1] valeur dans le rouge
+* c1 -> [0, 1] valeur dans le vert (bruit)
+*/
+float weatherMapCoverage(float c0, float c1)
+{
+    return max(c0, saturation(globalCoverage - 0.5) * c1 * 2.0);
+}
+
+/// HEIGHT FUNCTION ///
+
+/** arondie le nuage en bas
+* y -> [0, 1] hauteur dans le cube
+*/
+float roundShapeBottom(float y)
+{
+    return saturation(remap(y, 0, 0.07, 0, 1));
+}
+
+/** arondie le nuage en haut
+* y -> [0, 1] hauteur dans le cube
+* weatherHeight -> [0, 1] hauteur max dans la weather map
+*/
+float roundShapeTop(float y, float weatherHeight)
+{
+    return saturation(remap(y, weatherHeight * 0.2, weatherHeight, 1, 0));
+}
+
+/** arondie le nuage
+* y -> [0, 1] hauteur dans le cube
+* weatherHeight -> [0, 1] hauteur max dans la weather map
+*/
+float roundShape(float y, float weatherHeight)
+{
+    return pow(roundShapeBottom(y) * roundShapeTop(y, weatherHeight), saturation(remap(y, 0.65, 0.95, 1, 1 - anvilAmount * globalCoverage)));
+}
+
+/// DENSITY FUNCTION ///
+
+/** reduit la densité du nuage en bas
+* y -> [0, 1] hauteur dans le cube
+*/
+float densityReductionBottom(float y)
+{
+    return y * saturation(remap(y, 0, 0.15, 0, 1));
+}
+
+/** reduit la densité du nuage en haut
+* y -> [0, 1] hauteur dans le cube
+*/
+float densityReductionTop(float y)
+{
+    return y * saturation(remap(y, 0.9, 1.0, 1, 0));
+}
+
+/** Altère la densité du nuage
+* y -> [0, 1] hauteur dans le cube
+* weatherDensity -> [0, 1] densité actuel dans la weather map
+*/
+float densityReduction(float y, float weatherDensity)
+{
+    return (globalDensity * densityReductionBottom(y) * densityReductionTop(y) * 1 * 2) * mix(1, saturation(remap(sqrt(y), 0.4, 0.95, 1, 0.2)), anvilAmount);
+}
+
+/// SHAPE FUNCTION ///
+/** Recupere la valeur de la texture de forme
+*   position -> xyz[0, 1] position actuel dans la texture
+*/
+float shapeNoiseSample(vec3 position)
+{
+    vec4 Shape = texture(shape, position);
+    return remap(Shape.r, (Shape.g * 0.625 + Shape.b * 0.25 + Shape.a * 0.125) - 1, 1, 0, 1);
+}
+
+/** calcul la forme du nuage a cette endroit du rayon
+*   position -> xyz[0, 1] position actuel dans la texture
+*/
+float getShape(vec3 position, float weatherHeight, float c0, float c1, float weatherDensity)
+{
+    return remap(shapeNoiseSample(position) * roundShape(position.y, weatherHeight), 
+                1 - globalCoverage * weatherMapCoverage(c0, c1), 
+                1, 
+                0, 
+                1) * densityReduction(position.y, weatherDensity);
+}
+
+/// DETAIL FUNCTION
+/** Recupere la valeur de la texture de détails
+*   position -> xyz[0, 1] position actuel dans la texture
+*/
+float detailNoiseSample(vec3 position)
+{
+    vec4 Detail = texture(detail, position);
+    return Detail.r * 0.625 + Detail.g * 0.25 + Detail.b * 0.125;
+}
+
+/** calcul les détails du nuage a cette endroit du rayon
+*   position -> xyz[0, 1] position actuel dans la texture
+*/
+float getDetail(vec3 position)
+{
+    float sample = detailNoiseSample(position);
+    return 0.35 * exp(-globalCoverage * 0.75) * mix(sample, 1 - sample, saturation(position.y * 5));
+}
+
+/// NOISE COMBINING FUNCTION
+/** calcul la forme FINAL du nuage a cette endroit du rayon
+*   position -> xyz[0, 1] position actuel dans la texture
+*   weatherHeight -> hauteur dans la weather map
+*   c0 -> [0, 1] coverage rouge du ciel
+*   c1 -> [0, 1] coverage vert(bruit) du ciel
+*/
+float getCloudNoise(vec3 position, float weatherHeight, float c0, float c1, float densityValue)
+{
+    return saturation(remap(getShape(position, weatherHeight, c0, c1, densityValue), getDetail(position), 1, 0, 1));
+}
+
+/// END WEATHER MAP FUNCTION
+
+/// WM LIGHT
+/** Calcul simplifié de la loi de beer lambert, sert a déterminer l'atténuation lumineuse
+*   sunAccumulatedDensity -> [0, inf] Densité accumulé jusqu'au soleil
+*   lightAbsorbtion -> [0, inf] Lumiere a absorber 
+*/
+float beerLaw(float sunAccumulatedDensity)
+{
+    return exp(-lightAbsorbtion * sunAccumulatedDensity);
+}
+
+/** henyey-greenstein phase function, sert a calculer la diffusion de la lumiere
+*   angleSunRay -> [-1, 1] produit scalaire entre la direction du soleil et la direction du rayon de la caméra
+*   scattering -> [-1, 1] intervalle entre la "rétrodiffusion",  isotropique et la diffusion d'intérieur
+*/
+float HGPhase(float angleSunRay, float scattering)
+{
+    return (1 / 4 * PI) * ((1 - scattering * scattering) / pow(1 + (scattering * scattering) - 2 * (scattering *cos(angleSunRay) ), 3.0/2.0));
+}
+
+/** Utilisé pour crée des couchert de soleil plus intense
+*   angleSunRay -> [-1, 1] produit scalaire entre la direction du soleil et la direction du rayon de la caméra
+*
+*   extraIntensity -> Intensité ajouté autour du soleil
+*   centralizedValue -> décalage par rapport au centre du soleil
+*/
+float extraScattering(float angleSunRay)
+{
+    return extraIntensity * pow(saturation(angleSunRay), centralizedValue);
+}
+
+/** Fonction de diffusion interieur/exterieur
+*   angleSunRay -> [-1, 1] produit scalaire entre la direction du soleil et la direction du rayon de la caméra
+*   iScat -> [-1, 1] diffusion d'intérieur (in-scatter, pas sur pour la trad sorry)
+*   oScat -> [-1, 1] intervalle entre la "rétrodiffusion",  isotropique et la diffusion d'intérieur
+*   scatTransition -> [0, 1] valeur d'interpolation
+*/
+float inOutScattering(float angleSunRay, float iScat, float oScat, float scatTransition)
+{
+    return mix(max(HGPhase(angleSunRay, iScat), extraScattering(angleSunRay)), HGPhase(angleSunRay, -oScat), scatTransition);
+}
+
+/** Sert a avoir des bord plus foncé, surtout pour les nuages façant le soleil
+*   y -> [0, 1] hauteur dans le cube
+*   oScat -> [-1, 1] diffusion d'exterieur (out-scatter, pas sur pour la trad sorry)
+*   cloudDensity -> [0, 1] densité du nuage en ce point
+*
+*   
+*/
+float extraOutScattering(float y, float oScat, float cloudDensity)
+{
+    return 1 - saturation(oScat * pow(cloudDensity, remap(y, 0.3, 0.9, 0.5, 1.0))) * saturation(pow(remap(y, 0, 0.3, 0.8, 1.0), 0.8));
+}
+
+/** Sert a clamper la fonction de beer lambert (L'atténuation lumineuse)
+*   sunAccumulatedDensity -> [0, inf] Densité accumulé jusqu'au soleil
+*
+*   lightAbsorbtion -> [0, inf] Lumiere a absorber   
+*   clampAttenuation -> [0, 1] valeur pour atténuer le clamping
+*/
+float beerClamping(float sunAccumulatedDensity)
+{
+    return max(beerLaw(sunAccumulatedDensity), beerLaw(clampAttenuation));
+}
+
+/** Ajoute des nuances a beerClamping
+*   density -> [0, 1] densité du fragment
+*   sunAccumulatedDensity -> [0, inf] Densité accumulé jusqu'au soleil
+*
+*   lightAbsorbtion -> [0, inf] Lumiere a absorber   
+*   clampAttenuation -> [0, 1] valeur pour atténuer le clamping
+*/
+float densityMinimumAlteration(float density, float sunAccumulatedDensity)
+{
+    return max(density * cloudDensityImpact, beerClamping(sunAccumulatedDensity));
+}
+
+/** Lumiere final
+*   density -> [0, 1] densité du fragment
+*   sunAccumulatedDensity -> [0, inf] Densité accumulé jusqu'au soleil
+*   y -> [0, 1] hauteur sur le cube de nuage
+*   angleSunRay -> [-1, 1] produit cartésien entre le soleil et le rayon de la caméra
+*   iScat -> [0, 1] nombre de diffusion interieur
+*   oScat -> [0, 1] nombre de diffusion exterieur
+*   scatTransition -> [0, 1] interpolation in out
+*
+*   lightAbsorbtion -> [0, inf] Lumiere a absorber   
+*   clampAttenuation -> [0, 1] valeur pour atténuer le clamping
+*/
+float lightFinal(float density, float sunAccumulatedDensity, float y, float angleSunRay, float iScat, float oScat, float scatTransition)
+{
+    return densityMinimumAlteration(density, sunAccumulatedDensity) 
+    * inOutScattering(angleSunRay, iScat, oScat, scatTransition) 
+    * extraOutScattering(y, oScat, density);
+}
+/// END WM LIGHT
 
 float angle_between_normed_vec3(vec3 u, vec3 v)
 {
@@ -90,10 +344,10 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.x /= boxdim.x;
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
-        vec3 centre = vec3(0.5);
-        float delta = 1 - (distance(centre, texcoords));
-        vec4 tex = texture(shape, texcoords);
-        density +=  mix(tex.x, tex.z, 0.25) * delta;
+        
+        density += shapeNoiseSample(texcoords);
+        /// Vrai fonction mais trop laggy pour l'instant
+        //getCloudNoise(texcoords, 1, texture(shape, vec3(texcoords.x, 0, texcoords.z)).r, texture(noisemap, texcoords.xz).r, 1);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
     }
 
     return density / float(steps);
@@ -123,6 +377,7 @@ float rayleighPhase(float angle)
     return 3.0/8.0 * (1 + cosvalue*cosvalue);
 }
 
+
 vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
 {
     entry = entry - vmin;
@@ -151,26 +406,22 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         texcoords.x /= boxdim.x;
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
-
-        float scale = 1.0/3.0;
-        texcoords *= scale;
-
-
-        // Calcul de l'excentricité du point
-        vec3 centre = vec3(0.5);
-        float cloudCoverage = 1;//max(1 - 2*distance(centre, texcoords), 0);
-
-        // Calcul de densité par sampling des bruits mixés
-        vec4 tex = mix(texture(shape, texcoords), texture(detail, texcoords), 0.25);
-        vec4 grad = texture(gradient, (texcoords.xy)/scale);
-        float local_density = mix(tex.x, tex.z, 1) * cloudCoverage * grad.x;
+        
+        float locationValue = texture(shape, vec3(texcoords.x, 0, texcoords.z)).r;
+        float noiseValue = texture(noisemap, texcoords.xz).r;
+        float heightValue = 1;//max(texture(heightmap, texcoords.xz).g, 0.1);
+        float densityValue = texture(densitymap, texcoords.xz).b;
+        
+        float local_density = getCloudNoise(texcoords, heightValue, locationValue, noiseValue, densityValue);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
+        
+        
 
         // Calcul du vecteur point->lumière
         to_light = normalize(lightpos - true_pos);
         // Puis de la transmission le long du rayon par le point
         float transmission = rayleighPhase(angle_between_normed_vec3(raydir, to_light)) * local_density;
-
-        local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
+        
+        //local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
         if(local_density == 0) rS--;
         density += local_density;
         // Lumière transmise depuis le point =
@@ -218,7 +469,7 @@ void main()
         //TODO Vrai calcul de densité à partir de la texture3D
         vec3 entry = o + T_in * d;
         vec3 exit = o + T_out * d;
-        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 64);
+        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 128);
         float density = density_light.x;
         float light = density_light.y;
 
