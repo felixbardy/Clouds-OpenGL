@@ -16,6 +16,18 @@ public:
     ~Cube() {}
 };
 
+class Terrain : public Object
+{
+public:
+  Terrain() : Object()
+  {
+      setFaceCulling(true);
+      setTextureTypeTo2D();
+      setMesh(&Shapes::terrain);
+  }
+  ~Terrain() {}
+};
+
 
 
 #endif //OBJECTS_H

@@ -1,11 +1,13 @@
 #include "Shapes.h"
+#include <cassert>
 
 namespace Shapes
 {
     void initShapes() {
         std::cout<<"Initialisation des meshs primitifs..."<<std::endl;
-        
+
         initCube();
+        initTerrain();
 
         std::cout<<"Initialisation terminée!"<<std::endl;
     }
@@ -90,5 +92,64 @@ namespace Shapes
         std::cout<<"OK!"<<std::endl;
     }
 
+    void initTerrain()
+    {
+      const int width = 2;
+      const int height = 4;
+
+      assert(width >= 2 && height >=2);
+
+      std::cout<<"Terrain...";
+
+      std::vector<float> vertices;
+      //  =
+      // {
+      //     0.f, 0.f, 0.f,
+      //     0.f, 0.f, 1.f,
+      //     0.f, 0.f, 2.f,
+      //     0.f, 0.f, 3.f,
+      //
+      //     1.f, 0.f, 0.f,
+      //     1.f, 0.f, 1.f,
+      //     1.f, 0.f, 2.f,
+      //     1.f, 0.f, 3.f
+      // };
+
+      for(int i=0; i<width; i++)
+      {
+          for(int j=0; j<height; j++)
+          {
+             vertices.push_back(i);
+             vertices.push_back(0.f);
+             vertices.push_back(j);
+          }
+      }
+
+      std::vector<uint> verticesOrder =
+      {
+          1+4, 1, 0+4,
+          0+4, 1, 0
+      };
+
+      std::vector<float> uv =
+      {
+          0.f, 0.f,
+          0.f, 1.f,
+          1.f, 1.f,
+          1.f, 0.f
+      };
+
+      std::vector<uint> uvIndex
+      {
+          1, 2, 0,
+          0, 2, 3,
+
+      };
+      terrain = Mesh();
+      terrain.setPolygon(vertices, verticesOrder, uv, uvIndex/*, color, colorId*/);
+      std::cout<<"OK!"<<std::endl;
+    }
+
     Mesh cube;
+    Mesh terrain;
 } // namespace Shapes

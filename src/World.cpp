@@ -10,7 +10,15 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
     defaultCube->setShaderKey("nuage");
     defaultCube->setTextureKeys({"nuage1", "nuage2"});
 
-    addObject(defaultCube);
+    Terrain * beurk = new Terrain();
+    beurk->setShaderKey("basic2D");
+    beurk->setTextureKeys({"kirbo"});
+
+
+    addObject(beurk);
+
+    //addObject(defaultCube);
+
 
     // //Création du conteneur de nuage
     // Object & cloud_container = *(new Cube());
