@@ -15,29 +15,32 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
         Cam->setLastY(yPos);
         Cam->m_initMouse = false;
     }
-    float xOffset, yOffset;
-    xOffset = (xPos - Cam->getLastX()) * Cam->getMouseSensitivity();
-    yOffset = (Cam->getLastY() - yPos) * Cam->getMouseSensitivity();
-    Cam->setLastX(xPos);
-    Cam->setLastY(yPos);
-    Cam->m_yawD += xOffset;
-    Cam->m_pitchD += yOffset;
-    if(Cam->m_pitchD > 89.0f)
-        Cam->m_pitchD =  89.0f;
-    if(Cam->m_pitchD < -89.0f)
-        Cam->m_pitchD = -89.0f;
+    if(glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+    {
+        float xOffset, yOffset;
+        xOffset = (xPos - Cam->getLastX()) * Cam->getMouseSensitivity();
+        yOffset = (Cam->getLastY() - yPos) * Cam->getMouseSensitivity();
+        Cam->setLastX(xPos);
+        Cam->setLastY(yPos);
+        Cam->m_yawD += xOffset;
+        Cam->m_pitchD += yOffset;
+        if(Cam->m_pitchD > 89.0f)
+            Cam->m_pitchD =  89.0f;
+        if(Cam->m_pitchD < -89.0f)
+            Cam->m_pitchD = -89.0f;
 
-    glm::vec3 FG;
-    FG.x = cos(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
-    FG.y = sin(glm::radians(Cam->m_pitchD));
-    FG.z = sin(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
-    Cam->m_frontMove = normalize(FG);
-    Cam->m_front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->m_pitchD)), FG.y, FG.z * cos(glm::radians(Cam->m_pitchD))));
+        glm::vec3 FG;
+        FG.x = cos(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
+        FG.y = sin(glm::radians(Cam->m_pitchD));
+        FG.z = sin(glm::radians(Cam->m_yawD)); //* cos(glm::radians(Cam->pitchD));
+        Cam->m_frontMove = normalize(FG);
+        Cam->m_front = normalize(glm::vec3(FG.x * cos(glm::radians(Cam->m_pitchD)), FG.y, FG.z * cos(glm::radians(Cam->m_pitchD))));
+    }
 }
 void Engine::init(uint w, uint h)
 {
-    m_engineWindow = Window(w, h, "suus");
-    m_engineWindow.init();
+    m_engineWindow = new Window(w, h, "suus");
+    m_engineWindow->init();
     initGLAD();
 
     Shapes::initShapes();
@@ -79,9 +82,11 @@ void Engine::init(uint w, uint h)
     m_world->getCam()->setLastY(h / 2.f);
     m_world->m_projection = mat4(1.f);
 
-    glfwSetFramebufferSizeCallback(m_engineWindow.getWindow(), resetCamerawindow);
-    glfwSetWindowUserPointer(m_engineWindow.getWindow(), m_world->getCam());
-    glfwSetCursorPosCallback(m_engineWindow.getWindow(), cursorCallback);
+    
+
+    glfwSetFramebufferSizeCallback(m_engineWindow->getWindow(), resetCamerawindow);
+    glfwSetWindowUserPointer(m_engineWindow->getWindow(), m_world->getCam());
+    glfwSetCursorPosCallback(m_engineWindow->getWindow(), cursorCallback);
 }
 void Engine::setBackgroundColor(float red, float green, float blue, float alpha)
 {
@@ -108,13 +113,13 @@ void Engine::keyboardHandler(Camera * Cam)
     float speed = Cam->getSpeed() * deltaTime;
     if(m_inputPrevent <= 0)
     {
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(m_engineWindow.getWindow(), true);
+            glfwSetWindowShouldClose(m_engineWindow->getWindow(), true);
             m_inputPrevent = 10;
         }
 
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_P) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_P) == GLFW_PRESS)
         {
             m_isWireframe = !m_isWireframe;
             if(m_isWireframe)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -122,22 +127,15 @@ void Engine::keyboardHandler(Camera * Cam)
             m_inputPrevent = 10;
         }
 
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_Z) == GLFW_PRESS)
-        {
-            m_texturesManager.writeWeatherMap(rand()%1000, 3, 15, rand()%1000, 3);
-            m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
-            m_inputPrevent = 10;
-        }
-
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_F11) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_F11) == GLFW_PRESS)
         {
             if(m_isFullscreen)
             {
-                glfwSetWindowMonitor(m_engineWindow.getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 0);
+                glfwSetWindowMonitor(m_engineWindow->getWindow(), glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, 0);
             }
             else
             {
-                glfwSetWindowMonitor(m_engineWindow.getWindow(), NULL, 710, 290, 500, 500, 0);
+                glfwSetWindowMonitor(m_engineWindow->getWindow(), NULL, 710, 290, 500, 500, 0);
             }
 
             m_isFullscreen = !m_isFullscreen;
@@ -147,38 +145,38 @@ void Engine::keyboardHandler(Camera * Cam)
 
 
 
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
         {
             if(m_isCursorLocked)
-                glfwSetInputMode(m_engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                glfwSetInputMode(m_engineWindow->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             else
-                glfwSetInputMode(m_engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                glfwSetInputMode(m_engineWindow->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
             m_isCursorLocked = !m_isCursorLocked;
             m_inputPrevent = 10;
         }
     }
-     if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+     if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         {
             Cam->move(FORWARD, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_S) == GLFW_PRESS)
         {
             Cam->move(BACKWARD, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_A) == GLFW_PRESS)
         {
             Cam->move(LEFT, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_D) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_D) == GLFW_PRESS)
         {
             Cam->move(RIGHT, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {
             Cam->move(UP, speed);
         }
-        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
             Cam->move(BOTTOM, speed);
         }
@@ -192,7 +190,7 @@ Shader* Engine::getShader()
 
 void Engine::run()
 {
-    glfwSetInputMode(m_engineWindow.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(m_engineWindow->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -200,16 +198,72 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    while(!m_engineWindow.m_quit)
+    bool renderWorld = true;
+
+    while(!m_engineWindow->m_quit)
     {
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-        float ratioScreen = (float)m_engineWindow.getWidth() / (float)m_engineWindow.getHeight();
+        float ratioScreen = (float)m_engineWindow->getWidth() / (float)m_engineWindow->getHeight();
+        
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        bool show = true;
+        
+        if(renderWorld)
+        {
+            m_world->update(time, ratioScreen);
+            m_world->render();
+        }
 
-        m_world->update(time, ratioScreen);
-        m_world->render();
-        m_engineWindow.update();
+
+        /// CLOUD VALUES
+        m_engineWindow->beginGui("Cloud Shape");
+        CloudContainer * C = (CloudContainer*)(m_world->m_objects[0]);
+        m_engineWindow->slider("Cumulonimbus", C->m_anvilAmount, 0.f, 1.f);
+        m_engineWindow->slider("Coverage", C->m_globalCoverage, 0.f, 1.f);
+        m_engineWindow->slider("Density", C->m_globalDensity, 0.f, 15.f);
+        m_engineWindow->slider("pos min X", C->m_boxVmin.x, -200.f, 200.f);
+        m_engineWindow->slider("pos min Y", C->m_boxVmin.y, -200.f, 200.f);
+        m_engineWindow->slider("pos min Z", C->m_boxVmin.z, -200.f, 200.f);
+        m_engineWindow->slider("pos max X", C->m_boxVmax.x, -200.f, 200.f);
+        m_engineWindow->slider("pos max Y", C->m_boxVmax.y, -200.f, 200.f);
+        m_engineWindow->slider("pos max Z", C->m_boxVmax.z, -200.f, 200.f);
+        m_engineWindow->endGui();
+
+        /// WEATHERMAP VALUES
+        m_engineWindow->beginGui("Weather");
+        if(m_engineWindow->button("Reroll weathermap",100, 50))
+        {
+            m_texturesManager.writeWeatherMap(rand(), 3, 15, rand(), 4);
+            m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
+        }
+        m_engineWindow->endGui();
+
+        /// LIGHT VALUES
+        m_engineWindow->beginGui("Light");
+        m_engineWindow->slider("Light position X", C->m_lightPos.x, -300.f, 300.f);
+        m_engineWindow->slider("Light position Y", C->m_lightPos.y, -300.f, 300.f);
+        m_engineWindow->slider("Light position Z", C->m_lightPos.z, -300.f, 300.f);
+         m_engineWindow->slider("Light Power", C->m_lightPower, 0.f, 200.f);
+          m_engineWindow->slider("Multiplicator", C->m_lightMultiplicator, 0.f, 40.f);
+        m_engineWindow->endGui();
+
+
+        
+        m_engineWindow->drawGui();
+        
+
+        //delete C;
+
         keyboardHandler(m_world->getCam());
         if(m_inputPrevent >= 0) m_inputPrevent--;
+        m_engineWindow->update();
     }
+}
+
+Engine::~Engine()
+{
+    //delete m_engineWindow;
 }

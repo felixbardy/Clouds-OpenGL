@@ -35,8 +35,6 @@ uniform float lightMultiplicator;
 
 uniform float time;
 
-uniform float temperature; // Plus froid = plus dense
-
 in vec2 position;
 
 out vec4 fragment_color;
@@ -404,7 +402,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         
         vec4 WM = texture(weathermap, texcoords.xz);
 
-        float local_density = getCloudNoise(texcoords, WM.b, WM.r, WM.g, WM.a);
+        float local_density = getCloudNoise(texcoords, 1, WM.r, WM.g, 1);
         
         
 

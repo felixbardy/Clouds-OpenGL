@@ -10,6 +10,7 @@
 #include <random>
 #include <map>
 
+
 using namespace glm;
 
 /** @class Engine
@@ -52,10 +53,11 @@ public:
 
     /// Instance de l'objet contenant toutes les textures
     Textures m_texturesManager;
+    ~Engine();
 
 private:
 
-    Window m_engineWindow;        //!< Instance de l'objet contenant la fenêtre
+    Window * m_engineWindow;        //!< Instance de l'objet contenant la fenêtre
     Shader m_shader;              //!< Instance du shader
     int m_inputPrevent;           //!< Variable de prévetion pour éviter les multiples input
     bool m_isWireframe = false;   //!< Booléen, si oui le rendu passe en wireframe
