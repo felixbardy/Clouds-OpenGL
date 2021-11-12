@@ -63,19 +63,12 @@ void Engine::init(uint w, uint h)
     m_shader.use("nuage");
     m_shader.setInt("nuage", "shape", 0);
     m_shader.setInt("nuage", "detail", 1);
-    m_shader.setInt("nuage", "locationmap", 2);
-    m_shader.setInt("nuage", "noisemap", 3);
-    m_shader.setInt("nuage", "heightmap", 4);
-    m_shader.setInt("nuage", "densitymap", 5);
+    m_shader.setInt("nuage", "weathermap", 2);
 
     m_texturesManager.init();
     m_texturesManager.Load3D("shape", "./data/texture3D/highres.3DT");
     m_texturesManager.Load3D("detail", "./data/texture3D/lowres.3DT");
-    m_texturesManager.Load2D("locationmap", "./data/weathermap/location.png");
-    m_texturesManager.Load2D("noisemap", "./data/weathermap/LocationNoise.png");
-    m_texturesManager.Load2D("densitymap", "./data/weathermap/density.png");
-    m_texturesManager.Load2D("heightmap", "./data/weathermap/Height.png");
-
+    m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
 
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
@@ -126,6 +119,13 @@ void Engine::keyboardHandler(Camera * Cam)
             m_isWireframe = !m_isWireframe;
             if(m_isWireframe)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            m_inputPrevent = 10;
+        }
+
+        if(glfwGetKey(m_engineWindow.getWindow(), GLFW_KEY_Z) == GLFW_PRESS)
+        {
+            m_texturesManager.writeWeatherMap(rand()%1000, 3, 15, rand()%1000, 3);
+            m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
             m_inputPrevent = 10;
         }
 

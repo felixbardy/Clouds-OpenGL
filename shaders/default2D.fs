@@ -14,5 +14,5 @@ void main()
 {
 	//vec2 tex = mix(texture(texture1, shaderTexCoord).xy, texture(texture2, shaderTexCoord).xy, (cos(time)+1)/2.0);
 	//float noise = tex.x;
-	FragColor = vec4(vec3(texture(texture1, shaderTexCoord).r), 1);
+	FragColor = vec4(texture(texture1, shaderTexCoord));
 }

@@ -34,6 +34,17 @@ class Worley
      */
     float get3d(glm::vec3 position);
 
+     /** @brief Renvoie la valeur du worley en un point donner
+     * @param x position en x du point
+     * @param y position en y du point
+     */
+    float get2d(float x, float y);
+
+    /** @brief Renvoie la valeur du worley en un point donner
+     * @param position position du point
+     */
+    float get2d(glm::vec2 position);
+
     /** @brief Mutateur resolution worley
      * @param s nouvelle resolution
      */

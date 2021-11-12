@@ -7,20 +7,19 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
     m_projection = glm::mat4(1.f);
 
     Cube * defaultCube = new Cube();
-    defaultCube->setShaderKey("nuage");
-    defaultCube->setTextureKeys({"shape", "detail", "locationmap", "noisemap", "densitymap", "heightmap"});
+    defaultCube->setShaderKey("basic2D");
+    defaultCube->setTextureKeys({"kirbo"});
     addObject(defaultCube);
 
-    // //Création du conteneur de nuage
-    // Object & cloud_container = *(new Cube());
-    // cloud_container.setTextureTypeTo3D()
-    //                 .setTextureKeys({"nuage1", "nuage2"})
-    //                 .setShaderKey("nuage")
-    //                 .setFaceCulling(false);
+    //Création du conteneur de nuage
+    Object * cloud_container = new Cube();
+    cloud_container->setShaderKey("nuage")
+                    .setTextureKeys({"shape", "detail", "weathermap"})  
+                    .setFaceCulling(false);
 
-    // cloud_container.m_position.push_back(glm::vec3(2,0,2));
+    cloud_container->m_position = glm::vec3(2,0,2);
 
-    // m_world->addMesh(&cloud_container);
+    addObject(cloud_container);
     std::cout<<"Fin de l'initialisation du monde"<<std::endl;
 }
 
@@ -63,7 +62,7 @@ void World::update(float time, float ratioScreen)
   m_shader.setVec3("nuage","vmax", box_vmax);
   m_shader.setVec3("nuage","lightpos", glm::vec3(0, cos(time) * 70, 0));
   m_shader.setFloat("nuage","lightpower", 100 * ((cos(time / 3.0)/2)+0.5));
-  m_shader.setFloat("nuage","lightMultiplicator", 2.5);
+  m_shader.setFloat("nuage","lightMultiplicator", 20);
 
   m_shader.setMat4("nuage","view", getCam()->getViewRef());
   m_shader.setMat4("nuage","projection", m_projection);
@@ -75,7 +74,7 @@ void World::update(float time, float ratioScreen)
 
   m_shader.setFloat("nuage","globalCoverage", 1.0);
   m_shader.setFloat("nuage","globalDensity", 10.0);
-  m_shader.setFloat("nuage","anvilAmount", 1.0);
+  m_shader.setFloat("nuage","anvilAmount", 0);
 
 
   m_cam->update();
