@@ -1,6 +1,6 @@
 
-#ifndef DEF_WORLD
-#define DEF_WORLD
+#ifndef WORLD_H
+#define WORLD_H
 
 #include "Camera.h"
 #include "Mesh.h"
@@ -13,16 +13,18 @@ class World
     public:
 
     /// Tableau dynamique des meshs de la scène
-    std::vector<Mesh *> Meshs;
+    std::vector<Mesh *> m_meshs;
     /// Pointeur vers la caméra utilisée pour afficher la scène
-    Camera * Cam;
+    Camera * m_cam;
     /// Matrice de projection utilisée
-    glm::mat4 projection;
+    glm::mat4 m_projection;
 
     /** @brief Ajoute un cube a la scene
      * @param textures Les textures à appliquer au mesh 
      */
-    void addNewMeshCube(const Textures& textures);
+    void addNewMeshCube(const std::string & shaderKey, std::vector<std::string> textureKeys, bool is2D = false);
+
+    Camera* getCam();
     
     /** @brief Ajoute un cube a la scene
      * @param textures Les textures à appliquer au mesh 
@@ -33,7 +35,7 @@ class World
      * @param Shader les shaders à utiliser
      * @param time le temps actuel du monde
      */
-    void render(Shader & Shader, float time);
+    void render(Shader & shaderManager, Textures & textureManager, float time);
 
     /** @brief Fait la mise à jour physique du monde
      */
@@ -51,4 +53,4 @@ class World
 
 };
 
-#endif
+#endif // WORLD_H

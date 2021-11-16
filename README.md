@@ -2,10 +2,12 @@
 
 ## Description
 
-Objectif: Simulation de nuages volumétriques sur openGL \
-État actuel: Mise en place de l'environnement de travail
+* Objectif: Simulation de nuages volumétriques sur openGL
+* État actuel:
+  * Génération d'un nuage par bruit 3D (mix perlin/worley)
+  * Affichage en temps réel par lancer de rayons avec élairage par une source de lumière
 
-## Librairies
+## Librairies utilisées
 
 * **Glad**: \
  Glad est un loader openGL, à réinstaller dans `lib/` si vous rencontrez des problèmes. \
@@ -13,7 +15,7 @@ Objectif: Simulation de nuages volumétriques sur openGL \
 
 * **GLFW**: \
  Gestionnaire de fenêtres pour openGL \
- Installation:
+ Installation avec apt-get:
 
         sudo apt-get update
         sudo apt-get install libglfw3
@@ -26,18 +28,21 @@ Librairie de fonctions mathématiques pour openGL
 
 ## Compilation
 
-La compilation se fait à l'aide d'un Makefile.
+La compilation se fait à l'aide d'un Makefile à la racine du projet.
 
-* `make` compile le projet
+* `make` compile les librairies et exécutables
+* `make main` compile l'exécutable principal
+* `make generator` compile l'exécutable de génération de textures
 * `make doc` génère la documentation à l'aide de [Doxygen](https://www.doxygen.nl/index.html)
 
-* `make all` compile le projet ET génère la documentation
+* `make all` compile les librairies, les exécutables et génère la documentation
 * `make clean` nettoie les dossiers `bin/` et `obj/`
-* `make pentaclean` nettoie `bin/` `obj/` et `doc/`
+* `make pentaclean` nettoie `bin/`, `obj/`, `lib/` et `doc/`
 
 ## Lancement
 
-L'exécutable principal se lance avec `bin/run` à la racine du projet
+L'exécutable principal se lance avec `bin/run` à la racine du projet. \
+`bin/generate` se lance aussi à la racine et permet de générer les textures 3D représentant les nuages.
 
 ## Équipe
 

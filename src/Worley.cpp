@@ -3,77 +3,98 @@
 Worley::Worley(float s, int w, int h, int d)
 {
     setScale(s);
-    disablePropagation();
-    disableGrid();
-    disablePoint();
     setWidth(w);
     setHeight(h);
     setDepth(d);
+    iniPoint();
+}
+
+//generates a psuedo-random float between 0.0 and 0.999...
+float randfloat()
+{
+    return rand()/(float(RAND_MAX)+1);
+}
+
+//generates a psuedo-random float between 0.0 and max
+float randfloat(float max)
+{
+    return randfloat()*max;
+}
+
+//generates a psuedo-random float between min and max
+float randfloat(float min, float max)
+{
+    if (min>max)
+    {
+        return randfloat()*(min-max)+max;    
+    }
+    else
+    {
+        return randfloat()*(max-min)+min;
+    }    
+}
+
+void Worley::iniPoint()
+{
+    
+    for(int i = 0; i < getScale(); i++)
+    {
+        std::vector<std::vector<glm::vec3>> py;
+        for(int j = 0; j < getScale(); j++)
+        {
+            std::vector<glm::vec3> pz;
+            for(int k = 0; k < getScale(); k++)
+            {
+                float x, y, z;
+                x = randfloat();
+                y = randfloat();
+                z = randfloat();
+                pz.push_back(glm::vec3(x, y, z));
+            }
+            py.push_back(pz);
+        }
+        m_points.push_back(py);
+    }
 }
 
 void Worley::setWidth(int w)
 {
-    width = w;
+    m_width = w;
 }
 
 int Worley::getWidth()
 {
-    return width;
+    return m_width;
 }
 
 void Worley::setHeight(int h)
 {
-    height = h;
+    m_height = h;
 }
 
 int Worley::getHeight()
 {
-    return height;
+    return m_height;
 }
 
 void Worley::setDepth(int d)
 {
-    depth = d;
+    m_depth = d;
 }
 
 int Worley::getDepth()
 {
-    return depth;
+    return m_depth;
 }
 
 void Worley::setScale(float s)
 {
-    scale = s;
+    m_scale = s;
 }
 
 float Worley::getScale()
 {
-    return scale;
-}
-
-void Worley::enableGrid()
-{
-    drawGrid = true;
-}
-void Worley::disableGrid()
-{
-    drawGrid = false;
-}
-void Worley::enablePoint()
-{
-    drawPoint = true;
-}
-void Worley::disablePoint()
-{
-    drawPoint = false;
-}
-void Worley::enablePropagation()
-{
-    drawPropagation = true;
-}
-void Worley::disablePropagation()
-{
-    drawPropagation = false;
+    return m_scale;
 }
 
 float Worley::get3d(glm::vec3 position)
@@ -83,97 +104,53 @@ float Worley::get3d(glm::vec3 position)
     position.z /= (float)getDepth();
     //std::cout<<position.x<<" "<<position.y<<" "<<position.z<<std::endl;
     glm::vec3 st = position;
+    
+
     st *= getScale();
-    glm::vec3 i_st = glm::vec3(glm::floor(st.x), glm::floor(st.y), glm::floor(st.z));
-    glm::vec3 f_st = glm::vec3(st.x - i_st.x, st.y - i_st.y, st.z  - i_st.z);
-    //std::cout<<" I : x = "<<i_st.x<<" y = "<<i_st.y<<" z = "<<i_st.z<<std::endl;
-    //std::cout<<" F : x = "<<f_st.x<<" y = "<<f_st.y<<" z = "<<f_st.z<<std::endl;
+    st -= getScale();
+    glm::vec3 intPos = glm::vec3(glm::floor(st.x), glm::floor(st.y), glm::floor(st.z));
+    glm::vec3 decimPos = glm::vec3(st.x - intPos.x, st.y - intPos.y, st.z  - intPos.z);
     float color = 0;
 
     float minimalDistance = 1;
-    
-
-    for(int x = -1; x <= 1; x++)
+    for(int i = intPos.x - 1; i <= intPos.x + 1; i++)
     {
-        for(int y = -1; y <= 1; y++)
+        for(int j = intPos.y - 1; j <= intPos.y + 1; j++)
         {
-            for(int z = -1; z <= 1; z++)
+            for(int k = intPos.z - 1; k <= intPos.z + 1; k++)
             {
-                glm::vec3 voisin = glm::vec3(float(x), float(y), float(z));
-                glm::vec3 point = random3(i_st + voisin);
-                glm::vec3 diff = (voisin + point) - f_st;
-                float dist = glm::length(diff);
-                minimalDistance = glm::min(minimalDistance, dist);
+                float x, y, z;
+                if(i < -getScale()) x = getScale() - 1;
+                else if(i < 0) x = getScale() + i;
+                else if(i == getScale()*2) x = 0;
+                else if(i >= getScale()) x = i - getScale();
+                else x = i;
+                
+                if(j < -getScale()) y = getScale() - 1;
+                else if(j < 0) y = getScale() + j;
+                else if(j == getScale()*2) y = 0;
+                else if(j >= getScale()) y = j - getScale();
+                else y = j;
+
+                if(k < -getScale()) z = getScale() - 1;
+                else if(k < 0) z = getScale() + k;
+                else if(k == getScale()*2) z = 0;
+                else if(k >= getScale()) z = k - getScale();
+                else z = k;
+                float dist = glm::distance(st, m_points[x][y][z] + glm::vec3(i, j, k));
+                if(dist < minimalDistance)
+                {
+                    minimalDistance = dist;
+                }
+                
             }
         }
     }
-
     color += minimalDistance;
-
-    if(drawPropagation)
-    {
-        // Draw Propagation
-        if(abs(sin(50.0*minimalDistance)) < 0.7)
-        {
-            color = 0;
-        }
-        else
-        {
-            color = 0.3;
-        }
-    }
-    
-    if(drawPoint)
-    {
-        // Draw Points
-        if(minimalDistance < 0.02)
-        {
-            color += 0;
-        }
-        else
-        {
-            color += 1;
-        }
-    }
-
-    if(drawGrid)
-    {
-        // Draw grid
-        if(f_st.x < 0.98)
-        {
-            color += 0;
-        }
-        else
-        {
-            color += 1;
-        }
-        
-        if(f_st.y < 0.98)
-        {
-            color += 0;
-        }
-        else
-        {
-            color += 1;
-        }
-    }
     return 1 - color;
 }
 
 float Worley::get3d(float x, float y, float z)
 {
     return get3d(glm::vec3(x, y, z));
-}
-
-glm::vec3 Worley::random3(glm::vec3 p) 
-{
-    glm::vec3 toMult = sin(glm::vec3(
-        dot(p,glm::vec3(127.1,311.7, 214.4)),
-        dot(p,glm::vec3(269.5,183.3, 107.5)),
-        dot(p,glm::vec3(114.5,413.3, 49.5))
-        ));
-
-    glm::vec3 toFrac = glm::vec3(toMult.x * 43758.5453, toMult.y * 43758.5453, toMult.z * 43758.5453);
-
-    return glm::vec3(toFrac.x - floor(toFrac.x), toFrac.y - floor(toFrac.y), toFrac.z - floor(toFrac.z));
 }

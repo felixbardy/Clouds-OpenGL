@@ -1,18 +1,31 @@
-#ifndef DEF_TEXTURES
-#define DEF_TEXTURES
+#ifndef TEXTURES_H
+#define TEXTURES_H
 #include <string>
 #include <iostream>
 #include "stb_image.h"
 #include <vector>
 #include "FastNoise.h"
 #include "Worley.h"
+#include <algorithm>
+#include <map>
+
+#include <fstream>
+
+#include "lodepng.h"
 
 #include "stb_image.h"
 #include "glad.h"
+#include <cmath>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <iomanip>
+
+//Typedef pour s'épargner les longs "unsigned char x = ..."
+typedef unsigned char uchar;
+
 /** @class Textures
  * @brief Contient toutes les textures du projet
  * */
@@ -27,44 +40,44 @@ class Textures
     ~Textures();
 
     /** @brief Initialise toutes les textures */
-    void initAtlas();
+    void init();
 
     void fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & tab);
 
     /** @brief Définit la texture a utiliser pour déssinner
      * @param texture uint contenant l'id de la texture
     */
-    void useTexture(const uint& texture);
-    
-    /// Variable de référence de la texture blockAtlas
-    uint blockAtlas;
-    /// Variable de référence de Nescafey, what else ?
-    uint nesCafey;
-    /// Valeur de référence de la texture de nicolas cage
-    uint cage;
-    
-    uint tex3D;
-    /** @brief Charge une texture dans la CG
+    void use3D(const std::string& key, uint texNumb = 0);
+    void use2D(const std::string& key, uint texNumb = 0);
+
+
+    /** @brief Genere et charge une texture 3D dans la CG
+     * @param texture uint qui va contenir l'ID de la texture
+    */
+    bool createAndLoad3D(const std::string& key);
+
+    /** @brief Charge une texture 3D dans la CG
      * @param texture uint qui va contenir l'ID de la texture
      * @param path string qui contient le chemin de la texture
     */
-    bool loadTexture(uint& texture, std::string path);
+    bool Load3D(const std::string & key, const std::string & path);
+    void Load2D(const std::string & key, const std::string & path);
+    
 
-    /// Tableau des id des textures pour les faces des cubes minecraft
-    std::vector<std::vector<uint>> blockTextures =
-    {
-        {0, 0, 0, 0, 0, 0}, //Stone
-        {5, 5, 5, 5, 6, 6}, // Oak Log
-        {10, 10, 10, 10, 10, 10}, //Sand DEV DER G D H B
-        {12, 13, 13, 13, 15, 15}
-    };
+    /** @brief Ecrit une texture dans un fichier texte
+     * @param path string qui contient le chemin du fichier ou écrire
+    */
+    bool write3D3Chan(int WDH, int WR[3], int worleySeed, std::string name);
+    bool write3D4Chan(int WDH, int WR[3], int worleySeed,  int O, int S, int F, std::string name);
+    bool write2DCurl();
 
+    
 
-
-
+    void updateStepValues(const uint & resolution, const uint & nChan, uint & x, uint & y, uint & z, uint & i);
+    std::map<std::string, uint> m_texId;
     private:
-
+    
 };
 
 
-#endif
+#endif // TEXTURE_H
