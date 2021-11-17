@@ -282,8 +282,8 @@ void Textures::writeWeatherMap(int perlinSeed, int Octaves, int frequency, int w
     Alpha.SetFractalOctaves(Octaves);
 
     Green.SetFrequency(0.015);
-    Blue.SetFrequency(0.005);
-    Alpha.SetFrequency(0.005);
+    Blue.SetFrequency(0.0025);
+    Alpha.SetFrequency(0.0025);
     
 
     Worley Red(resolution, 512, 512, 512);

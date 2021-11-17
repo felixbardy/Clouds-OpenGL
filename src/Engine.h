@@ -9,6 +9,7 @@
 #include "World.h"
 #include <random>
 #include <map>
+#include <thread>
 
 
 using namespace glm;
@@ -69,6 +70,8 @@ private:
      * @param cam adresse memoire de la camera
      */
     void keyboardHandler(Camera * cam);
+
+    //void writeAndLoad();
 
     float r; //!< Valeur de rouge du background entre 0 et 1
     float g; //!< Valeur de vert du background entre 0 et 1

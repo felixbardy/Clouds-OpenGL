@@ -82,6 +82,7 @@ void Engine::init(uint w, uint h)
     m_world->getCam()->setLastY(h / 2.f);
     m_world->m_projection = mat4(1.f);
 
+    srand(time(NULL));
     
 
     glfwSetFramebufferSizeCallback(m_engineWindow->getWindow(), resetCamerawindow);
@@ -188,15 +189,24 @@ Shader* Engine::getShader()
     return &m_shader;
 }
 
+void writeAndLoad(Textures & tex, bool & endRegen)
+{
+    tex.writeWeatherMap(rand(), 3, 15, rand(), 4);
+    endRegen = true;
+}
+
 void Engine::run()
 {
-    //glfwSetInputMode(m_engineWindow->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(m_engineWindow->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    std::vector<std::thread> weatherGen; 
+    bool endRegen = false;
 
     bool renderWorld = true;
 
@@ -232,13 +242,25 @@ void Engine::run()
         m_engineWindow->slider("pos max Z", C->m_boxVmax.z, -200.f, 200.f);
         m_engineWindow->endGui();
 
+        if(endRegen)
+        {
+            m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
+            endRegen = false;
+            //weatherGen.join();
+        }
+
         /// WEATHERMAP VALUES
         m_engineWindow->beginGui("Weather");
         if(m_engineWindow->button("Reroll weathermap",100, 50))
         {
-            m_texturesManager.writeWeatherMap(rand(), 3, 15, rand(), 4);
-            m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
+            weatherGen.push_back(std::thread(writeAndLoad, std::ref(m_texturesManager), std::ref(endRegen)));
         }
+
+        m_engineWindow->slider("minimal density", C->m_minDensity, 0.f, 1.f);
+        m_engineWindow->slider("maximal density", C->m_maxDensity, 0.f, 1.f);
+        m_engineWindow->slider("minimal height", C->m_minHeight, 0.f, 1.f);
+        m_engineWindow->slider("maximal height", C->m_maxHeight, 0.f, 1.f);
+
         m_engineWindow->endGui();
 
         /// LIGHT VALUES
@@ -246,8 +268,8 @@ void Engine::run()
         m_engineWindow->slider("Light position X", C->m_lightPos.x, -300.f, 300.f);
         m_engineWindow->slider("Light position Y", C->m_lightPos.y, -300.f, 300.f);
         m_engineWindow->slider("Light position Z", C->m_lightPos.z, -300.f, 300.f);
-         m_engineWindow->slider("Light Power", C->m_lightPower, 0.f, 200.f);
-          m_engineWindow->slider("Multiplicator", C->m_lightMultiplicator, 0.f, 40.f);
+        m_engineWindow->slider("Light Power", C->m_lightPower, 0.f, 200.f);
+        m_engineWindow->slider("Multiplicator", C->m_lightMultiplicator, 0.f, 40.f);
         m_engineWindow->endGui();
 
 
@@ -261,6 +283,11 @@ void Engine::run()
         if(m_inputPrevent >= 0) m_inputPrevent--;
         m_engineWindow->update();
     }
+  for(int i = 0; i < weatherGen.size(); i++)
+  {
+      weatherGen[i].join();
+  }
+    
 }
 
 Engine::~Engine()

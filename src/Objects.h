@@ -25,6 +25,10 @@ public:
     float m_globalCoverage;
     float m_globalDensity;
     float m_lightPower;
+    float m_minHeight;
+    float m_maxHeight;
+    float m_minDensity;
+    float m_maxDensity;
 
 
     glm::vec3 m_boxVmin;
@@ -43,6 +47,10 @@ public:
         m_globalCoverage = 1.0;
         m_globalDensity = 5;
         m_lightPower = 100;
+        m_minHeight = 0.f;
+        m_maxHeight = 1.f;
+        m_minDensity = 0.f;
+        m_maxDensity = 1.f;
 
         m_boxVmin = glm::vec3(0, 0, 0);
         m_boxVmax = glm::vec3(100, 50, 100);
@@ -65,6 +73,11 @@ public:
         Shader.setVec3("nuage","lightpos", m_lightPos);
         Shader.setFloat("nuage","lightpower", m_lightPower);
         Shader.setFloat("nuage","lightMultiplicator", m_lightMultiplicator);
+
+        Shader.setFloat("nuage","minHeight", m_minHeight);
+        Shader.setFloat("nuage","maxHeight", m_maxHeight);
+        Shader.setFloat("nuage","minDensity", m_minDensity);
+        Shader.setFloat("nuage","maxDensity", m_maxDensity);
 
         Shader.setMat4("nuage","view", view);
         Shader.setMat4("nuage","projection", projection);

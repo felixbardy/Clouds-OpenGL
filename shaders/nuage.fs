@@ -16,6 +16,12 @@ uniform float globalCoverage;
 uniform float globalDensity;
 uniform float anvilAmount;
 
+uniform float minDensity;
+uniform float maxDensity;
+
+uniform float minHeight;
+uniform float maxHeight;
+
 // LIGHT UNIFORM
 
 uniform float extraIntensity;
@@ -340,7 +346,7 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
         
-        density += 1;//getCloudNoise(texcoords, 1, texture(shape, vec3(texcoords.x, 0, texcoords.z)).r, texture(noisemap, texcoords.xz).r, 1);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
+        density += 1;//getCloudNoise(texcoords, 1, texture(shape, vec3(texcoords.x, 0, texcoords.z)).r, texture(weathermap, texcoords.xz).r, 1);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
     }
 
     return density / float(steps);
@@ -402,7 +408,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         
         vec4 WM = texture(weathermap, texcoords.xz);
 
-        float local_density = getCloudNoise(texcoords, 1, WM.r, WM.g, 1);
+        float local_density = getCloudNoise(texcoords, clamp(WM.b, minHeight, maxHeight), WM.r, WM.g, clamp(WM.a, minDensity, maxDensity));
         
         
 
@@ -411,7 +417,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         // Puis de la transmission le long du rayon par le point
         float transmission = rayleighPhase(angle_between_normed_vec3(raydir, to_light)) * local_density;
         
-        local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
+        //local_density = max(local_density - density_offset, 0) / (1.0 - density_offset);
         if(local_density == 0) rS--;
         density += local_density;
         // Lumière transmise depuis le point =
@@ -459,7 +465,7 @@ void main()
         //TODO Vrai calcul de densité à partir de la texture3D
         vec3 entry = o + T_in * d;
         vec3 exit = o + T_out * d;
-        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 256);
+        vec2 density_light = getDensityAndLightAlongRay(entry, exit, 128);
         float density = density_light.x;
         float light = density_light.y;
 
