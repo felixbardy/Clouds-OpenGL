@@ -94,8 +94,17 @@ namespace Shapes
 
     void initTerrain()
     {
-      const int width = 5;
-      const int height = 3;
+      const int width = 50;
+      const int height = 50;
+
+      const int maxHeight = 10;
+      FastNoise fastNoise;
+      fastNoise.SetSeed(42);
+      fastNoise.SetNoiseType(FastNoise::NoiseType::Perlin);
+      fastNoise.SetFractalOctaves(5);
+      fastNoise.SetFrequency(0.05);
+      fastNoise.SetFractalLacunarity(2.0);
+
 
       assert(width >= 2 && height >=2);
 
@@ -107,7 +116,7 @@ namespace Shapes
           for(int j=0; j<height; j++)
           {
              vertices.push_back(i);
-             vertices.push_back(0.f);
+             vertices.push_back(((fastNoise.GetNoise(i, j)+1)/2)*maxHeight);
              vertices.push_back(j);
           }
       }
