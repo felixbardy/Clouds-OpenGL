@@ -94,27 +94,14 @@ namespace Shapes
 
     void initTerrain()
     {
-      const int width = 2;
-      const int height = 4;
+      const int width = 5;
+      const int height = 3;
 
       assert(width >= 2 && height >=2);
 
       std::cout<<"Terrain...";
 
       std::vector<float> vertices;
-      //  =
-      // {
-      //     0.f, 0.f, 0.f,
-      //     0.f, 0.f, 1.f,
-      //     0.f, 0.f, 2.f,
-      //     0.f, 0.f, 3.f,
-      //
-      //     1.f, 0.f, 0.f,
-      //     1.f, 0.f, 1.f,
-      //     1.f, 0.f, 2.f,
-      //     1.f, 0.f, 3.f
-      // };
-
       for(int i=0; i<width; i++)
       {
           for(int j=0; j<height; j++)
@@ -125,26 +112,51 @@ namespace Shapes
           }
       }
 
-      std::vector<uint> verticesOrder =
+      std::vector<uint> verticesOrder;
+      for(int i=0; i<width-1; i++)
       {
-          1+4, 1, 0+4,
-          0+4, 1, 0
-      };
+          for(int j=0; j<height-1; j++)
+          {
+              // 1ere face
+              verticesOrder.push_back((i+1)*(height)+j+1);
+              verticesOrder.push_back(i*height+j+1);
+              verticesOrder.push_back((i+1)*(height)+j);
 
-      std::vector<float> uv =
+              // 2eme face
+              verticesOrder.push_back((i+1)*(height)+j);
+              verticesOrder.push_back(i*height+j+1);
+              verticesOrder.push_back((i)*(height)+j);
+          }
+      }
+
+      std::vector<float> uv;
+      for(int i=0; i<width; i++)
       {
-          0.f, 0.f,
-          0.f, 1.f,
-          1.f, 1.f,
-          1.f, 0.f
-      };
+          for(int j=0; j<height; j++)
+          {
+              uv.push_back((float)i/(width-1));
+              uv.push_back((float)j/(height-1));
 
-      std::vector<uint> uvIndex
+          }
+      }
+
+      std::vector<uint> uvIndex;
+      for(int i=0; i<width-1; i++)
       {
-          1, 2, 0,
-          0, 2, 3,
+          for(int j=0; j<height-1; j++)
+          {
+              // 1ere face
+              uvIndex.push_back((i+1)*(height)+j+1);
+              uvIndex.push_back(i*height+j+1);
+              uvIndex.push_back((i+1)*(height)+j);
 
-      };
+              // 2eme face
+              uvIndex.push_back((i+1)*(height)+j);
+              uvIndex.push_back(i*height+j+1);
+              uvIndex.push_back((i)*(height)+j);
+          }
+      }
+
       terrain = Mesh();
       terrain.setPolygon(vertices, verticesOrder, uv, uvIndex/*, color, colorId*/);
       std::cout<<"OK!"<<std::endl;
