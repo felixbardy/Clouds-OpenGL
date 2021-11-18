@@ -12,7 +12,7 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
 
     Terrain * beurk = new Terrain();
     beurk->setShaderKey("basic2D");
-    beurk->setTextureKeys({"kirbo"});
+    beurk->setTextureKeys({"atlas"});
 
 
     addObject(beurk);

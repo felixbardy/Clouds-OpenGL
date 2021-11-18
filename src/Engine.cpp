@@ -69,6 +69,7 @@ void Engine::init(uint w, uint h)
     m_texturesManager.Load3D("detail", "./data/texture3D/lowres.3DT");
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
+    m_texturesManager.Load2D("atlas", "./data/realistAtlas.png");
 
     m_world = new World(m_texturesManager, m_shader);
     m_world->getCam()->setLastX(w / 2.f);

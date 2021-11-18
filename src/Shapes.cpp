@@ -97,13 +97,14 @@ namespace Shapes
       const int width = 50;
       const int height = 50;
 
-      const int maxHeight = 10;
+      const int maxHeight = 12;
       FastNoise fastNoise;
       fastNoise.SetSeed(42);
       fastNoise.SetNoiseType(FastNoise::NoiseType::Perlin);
       fastNoise.SetFractalOctaves(5);
-      fastNoise.SetFrequency(0.05);
+      fastNoise.SetFrequency(0.1);
       fastNoise.SetFractalLacunarity(2.0);
+      auto getNoise = [fastNoise](int x, int y) -> float{return ((fastNoise.GetNoise(x, y)+1)/2)*maxHeight;};
 
 
       assert(width >= 2 && height >=2);
@@ -116,7 +117,8 @@ namespace Shapes
           for(int j=0; j<height; j++)
           {
              vertices.push_back(i);
-             vertices.push_back(((fastNoise.GetNoise(i, j)+1)/2)*maxHeight);
+             //vertices.push_back(((fastNoise.GetNoise(i, j)+1)/2)*maxHeight);
+             vertices.push_back(getNoise(i, j));
              vertices.push_back(j);
           }
       }
@@ -139,32 +141,91 @@ namespace Shapes
       }
 
       std::vector<float> uv;
-      for(int i=0; i<width; i++)
+      for(int i=0; i<3; i++)
       {
-          for(int j=0; j<height; j++)
+          for(int j=0; j<3; j++)
           {
-              uv.push_back((float)i/(width-1));
-              uv.push_back((float)j/(height-1));
-
+              uv.push_back((float)i/2);
+              uv.push_back((float)j/2);
           }
       }
 
+      int weight[6] = {4, 1, 3, 3, 1, 0};
       std::vector<uint> uvIndex;
       for(int i=0; i<width-1; i++)
       {
           for(int j=0; j<height-1; j++)
           {
-              // 1ere face
-              uvIndex.push_back((i+1)*(height)+j+1);
-              uvIndex.push_back(i*height+j+1);
-              uvIndex.push_back((i+1)*(height)+j);
+              int typeTerrain = 0;
+              float heightPoint = getNoise (i, j);
 
-              // 2eme face
-              uvIndex.push_back((i+1)*(height)+j);
-              uvIndex.push_back(i*height+j+1);
-              uvIndex.push_back((i)*(height)+j);
+              if(heightPoint<maxHeight/4)
+              {
+                  typeTerrain = 3;
+              }else if(heightPoint<maxHeight/2)
+              {
+                  typeTerrain = 4;
+              }else if(heightPoint<3*(maxHeight/4))
+              {
+                  typeTerrain = 1;
+              }else
+              {
+                  typeTerrain = 0;
+              }
+
+              for(int k=0; k<6; k++)
+              {
+
+                  uvIndex.push_back(weight[k]+typeTerrain);
+              }
+
+              // uvIndex.push_back(4);
+              // uvIndex.push_back(1);
+              // uvIndex.push_back(3);
+              //
+              // uvIndex.push_back(3);
+              // uvIndex.push_back(1);
+              // uvIndex.push_back(0);
+
+              // // 1ere face
+              // uvIndex.push_back((i+1)*(height)+j+1);
+              // uvIndex.push_back(i*height+j+1);
+              // uvIndex.push_back((i+1)*(height)+j);
+              //
+              // // 2eme face
+              // uvIndex.push_back((i+1)*(height)+j);
+              // uvIndex.push_back(i*height+j+1);
+              // uvIndex.push_back((i)*(height)+j);
           }
       }
+
+      // Pour afficher une image entière
+      // std::vector<float> uv;
+      // for(int i=0; i<width; i++)
+      // {
+      //     for(int j=0; j<height; j++)
+      //     {
+      //         uv.push_back((float)i/(width-1));
+      //         uv.push_back((float)j/(height-1));
+      //     }
+      // }
+      //
+      // std::vector<uint> uvIndex;
+      // for(int i=0; i<width-1; i++)
+      // {
+      //     for(int j=0; j<height-1; j++)
+      //     {
+      //         // 1ere face
+      //         uvIndex.push_back((i+1)*(height)+j+1);
+      //         uvIndex.push_back(i*height+j+1);
+      //         uvIndex.push_back((i+1)*(height)+j);
+      //
+      //         // 2eme face
+      //         uvIndex.push_back((i+1)*(height)+j);
+      //         uvIndex.push_back(i*height+j+1);
+      //         uvIndex.push_back((i)*(height)+j);
+      //     }
+      // }
 
       terrain = Mesh();
       terrain.setPolygon(vertices, verticesOrder, uv, uvIndex/*, color, colorId*/);
