@@ -200,5 +200,6 @@ void Engine::run()
         m_engineWindow.update();
         keyboardHandler(m_world->getCam());
         if(m_inputPrevent >= 0) m_inputPrevent--;
+        time += 0.01;
     }
 }
