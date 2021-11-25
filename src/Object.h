@@ -28,6 +28,22 @@ private:
   bool                     is2D;             //!< Documentation à remplir
   bool                     has_face_culling; //!< Indique si l'objet doit cacher l'environnement
 
+protected:
+  /** @brief méthode abstraite qui doit être surchargée, permet de
+   * passer les Uniforms au shader utilisé par l'objet
+   * 
+   * @param shaders     le gestionnaire de shaders
+   * @param model       la matrice model de l'objet
+   * @param view        la matrice de vue
+   * @param projection  la matrice de projection
+   */
+  virtual void setUniforms(
+    Shader& shaders,
+    const glm::mat4 & model,
+    const glm::mat4 & view,
+    const glm::mat4 & projection
+  ) = 0;
+
 public:
     /** @brief Constructeur par défaut     */
     Object();
