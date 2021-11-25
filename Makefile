@@ -40,7 +40,7 @@ generator: ./$(BINDIR)/generate
 
 # Règles de compilation
 
-./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Object.o ./$(OBJDIR)/Shapes.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
+./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Object.o ./$(OBJDIR)/Objects.o ./$(OBJDIR)/Shapes.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 
 ./$(BINDIR)/generate : ./$(OBJDIR)/generate.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Worley.o ./$(LIBDIR)/glad.a 

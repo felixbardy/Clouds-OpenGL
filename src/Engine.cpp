@@ -36,7 +36,7 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
 }
 void Engine::init(uint w, uint h)
 {
-    m_engineWindow = Window(w, h, "suus");
+    m_engineWindow = Window(w, h, "nuage");
     m_engineWindow.init();
     initGLAD();
 
@@ -45,7 +45,6 @@ void Engine::init(uint w, uint h)
     r = g = b = 0.f;
     a = 1.f;
     m_inputPrevent = 0;
-
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
