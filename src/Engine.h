@@ -54,15 +54,14 @@ public:
     Textures m_texturesManager;
 
 private:
-    
+
     Window m_engineWindow;        //!< Instance de l'objet contenant la fenêtre
     Shader m_shader;              //!< Instance du shader
     int m_inputPrevent;           //!< Variable de prévetion pour éviter les multiples input
     bool m_isWireframe = false;   //!< Booléen, si oui le rendu passe en wireframe
     bool m_isCursorLocked = true; //!< Booléen, si non le curseur n'est plus bloqué par la fenêtre
     bool m_isFullscreen = false;  //!< Indique si la fenêtre est en plein écran
-    std::map<std::string, Shader*> m_dictShader;
-    
+
 
     /** @brief Gère les inputs
      * @param cam adresse memoire de la camera

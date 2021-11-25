@@ -6,8 +6,8 @@
 uniform mat4 mvpInvMatrix;
 uniform mat4 mvMatrix;
 
-uniform sampler3D texture1;
-uniform sampler3D texture2;
+uniform sampler3D shape;
+uniform sampler3D detail;
 
 // coordonées de la boîte à nuages
 uniform vec3 vmin;
@@ -51,41 +51,41 @@ float angleBetweenNormedVec3(vec3 u, vec3 v)
 vec2 cloudBoxIntersection(vec3 ray_o, vec3 ray_d)
 {
     float temp;
-    float tmin = (vmin.x - ray_o.x) / ray_d.x; 
-    float tmax = (vmax.x - ray_o.x) / ray_d.x; 
- 
-    if (tmin > tmax) {temp=tmin; tmin=tmax; tmax=temp;} 
- 
-    float tymin = (vmin.y - ray_o.y) / ray_d.y; 
-    float tymax = (vmax.y - ray_o.y) / ray_d.y; 
- 
+    float tmin = (vmin.x - ray_o.x) / ray_d.x;
+    float tmax = (vmax.x - ray_o.x) / ray_d.x;
+
+    if (tmin > tmax) {temp=tmin; tmin=tmax; tmax=temp;}
+
+    float tymin = (vmin.y - ray_o.y) / ray_d.y;
+    float tymax = (vmax.y - ray_o.y) / ray_d.y;
+
     if (tymin > tymax) {temp=tymin; tymin=tymax; tymax=temp;}
- 
-    if ((tmin > tymax) || (tymin > tmax)) 
+
+    if ((tmin > tymax) || (tymin > tmax))
         return vec2(-1,-1);
- 
-    if (tymin > tmin) 
-        tmin = tymin; 
- 
-    if (tymax < tmax) 
-        tmax = tymax; 
- 
-    float tzmin = (vmin.z - ray_o.z) / ray_d.z; 
-    float tzmax = (vmax.z - ray_o.z) / ray_d.z; 
- 
+
+    if (tymin > tmin)
+        tmin = tymin;
+
+    if (tymax < tmax)
+        tmax = tymax;
+
+    float tzmin = (vmin.z - ray_o.z) / ray_d.z;
+    float tzmax = (vmax.z - ray_o.z) / ray_d.z;
+
     if (tzmin > tzmax) {temp=tzmin; tzmin=tzmax; tzmax=temp;}
- 
-    if ((tmin > tzmax) || (tzmin > tmax)) 
-        return vec2(-1,-1); 
- 
-    if (tzmin > tmin) 
-        tmin = tzmin; 
- 
-    if (tzmax < tmax) 
-        tmax = tzmax; 
-    
+
+    if ((tmin > tzmax) || (tzmin > tmax))
+        return vec2(-1,-1);
+
+    if (tzmin > tmin)
+        tmin = tzmin;
+
+    if (tzmax < tmax)
+        tmax = tzmax;
+
     //FIXME Renvoyer Tmin et Tmax
-    return vec2(tmin,tmax); 
+    return vec2(tmin,tmax);
 }
 
 
@@ -102,16 +102,12 @@ float sampleDensity(vec3 pos) {
     pos.y = mod(pos.y, 1.0);
     pos.z = mod(pos.z, 1.0);
 
-    //return 1;
     return texture(texture1, pos).x;
-    
 }
 
 vec3 getSunColorAtPoint(vec3 position) {
     // Au début, on a aucune extinction (on multiplie la couleur par 1)
     float extinction = 1.0;
-
-
     vec3 dir = normalize(-SunPos);
     vec2 tminmax = cloudBoxIntersection(position-dir, dir);
     vec3 origin = position + tminmax.x*dir;
@@ -186,16 +182,8 @@ vec4 computeCloud(vec3 origin, vec3 end) {
 
 
 
-void main() 
+void main()
 {
-    //TODO Remplacer par un uniform qui indique la couleur de fond si fragment_color est nul
-    fragment_color = vec4(0.4,0.4,0.8,1);
-
-    /*****************/
-    /****  MESHS  ****/
-    /*****************/
-
-
     /*****************/
     /****  NUAGE  ****/
     /*****************/
@@ -207,7 +195,7 @@ void main()
     //? pas compris
     vec3 o = origin_s.xyz / origin_s.w;                         // origine
     vec3 d = normalize(end_s.xyz / end_s.w - origin_s.xyz / origin_s.w); // direction
-    
+
     vec2 itrsect = cloudBoxIntersection(o,d);
     float T_in = itrsect.x;
     float T_out = itrsect.y;
@@ -222,5 +210,16 @@ void main()
         vec4 scatt_ext = computeCloud(o + T_in*d, o+T_out*d);
 
         fragment_color = fragment_color * scatt_ext;
+    }
+    // Si pas d'intersection:
+    else    fragment_color = bgcolor;
+
+    // Affichage lumière
+    vec3 dir_to_light = normalize(lightpos - o);
+    float angle = angle_between_normed_vec3(d, dir_to_light);
+    // 0.03490658503988659rad ~= 2deg
+    if ( angle < 0.03490658503988659 && angle > -0.03490658503988659) {
+        fragment_color = fragment_color + lightcolor * lum;
+        return;
     }
 }
