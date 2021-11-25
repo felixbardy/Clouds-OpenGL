@@ -3,8 +3,11 @@
 #define PI 3.1415926538
 #define TWO_PI 6.2831853076
 
+
 uniform mat4 mvpInvMatrix;
-uniform mat4 mvMatrix;
+uniform mat4 mvpMatrix;
+uniform mat4 vpInvMatrix;
+uniform mat4 vpMatrix;
 
 uniform sampler3D shape;
 uniform sampler3D detail;
@@ -31,7 +34,7 @@ uniform int ExtinctionFactor;
 uniform vec3 IsotropicLightBottom;
 uniform vec3 IsotropicLightTop;
 
-in vec2 position;
+in vec3 position;
 
 out vec4 fragment_color;
 
@@ -50,6 +53,7 @@ float angleBetweenNormedVec3(vec3 u, vec3 v)
 
 vec2 cloudBoxIntersection(vec3 ray_o, vec3 ray_d)
 {
+    
     float temp;
     float tmin = (vmin.x - ray_o.x) / ray_d.x;
     float tmax = (vmax.x - ray_o.x) / ray_d.x;
@@ -95,14 +99,14 @@ float rayleighPhase(float angle)
     return 3.0/8.0 * (1 + cosvalue*cosvalue);
 }
 
-
+//TODO Mettre à jour le sampleDensity
 float sampleDensity(vec3 pos) {
     //TODO Mixer les textures avec des paramètres d'Amplitude et de fréquence
     pos.x = mod(pos.x, 1.0);
     pos.y = mod(pos.y, 1.0);
     pos.z = mod(pos.z, 1.0);
 
-    return texture(texture1, pos).x;
+    return texture(shape, pos).x;
 }
 
 vec3 getSunColorAtPoint(vec3 position) {
@@ -184,12 +188,13 @@ vec4 computeCloud(vec3 origin, vec3 end) {
 
 void main()
 {
+
     /*****************/
     /****  NUAGE  ****/
     /*****************/
     // construction du rayon pour le pixel
-    vec4 origin_s = mvpInvMatrix * vec4(position, 0, 1); // origine sur near
-    vec4 end_s    = mvpInvMatrix * vec4(position, 1, 1); // fin sur far
+    vec4 origin_s = vpInvMatrix * vec4(position.xy, 0.0, position.z); // origine sur near
+    vec4 end_s    = vpInvMatrix * vec4(position.xy, 1.0, position.z); // fin sur far
 
     // normalisation pour l'expression du rayon
     //? pas compris
@@ -197,7 +202,7 @@ void main()
     vec3 d = normalize(end_s.xyz / end_s.w - origin_s.xyz / origin_s.w); // direction
 
     vec2 itrsect = cloudBoxIntersection(o,d);
-    float T_in = itrsect.x;
+    float T_in  = itrsect.x;
     float T_out = itrsect.y;
 
     // Si intersection avec le conteneur de nuages:
@@ -210,16 +215,7 @@ void main()
         vec4 scatt_ext = computeCloud(o + T_in*d, o+T_out*d);
 
         fragment_color = fragment_color * scatt_ext;
-    }
-    // Si pas d'intersection:
-    else    fragment_color = bgcolor;
 
-    // Affichage lumière
-    vec3 dir_to_light = normalize(lightpos - o);
-    float angle = angle_between_normed_vec3(d, dir_to_light);
-    // 0.03490658503988659rad ~= 2deg
-    if ( angle < 0.03490658503988659 && angle > -0.03490658503988659) {
-        fragment_color = fragment_color + lightcolor * lum;
-        return;
     }
+    else fragment_color = vec4(1,0,0,0.5);
 }

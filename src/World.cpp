@@ -17,14 +17,14 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
     beurk->setTextureKeys({"atlas"});
 
     //Création du conteneur de nuage
-    // CloudContainer * cloud_container = new CloudContainer(glm::vec3(1));
-    // cloud_container->setShaderKey("nuage")
-    //                .setTextureKeys({"nuage1", "nuage2"});
+    CloudContainer * cloud_container = new CloudContainer(glm::vec3(1));
+    cloud_container->setShaderKey("nuage")
+                   .setTextureKeys({"nuage1", "nuage2"});
 
     addObject(defaultCube);
     addObject(beurk);
     //Nuage masqué le temps de mettre à jour le vertex shader (masque tout sinon)
-    //addObject(cloud_container);
+    addObject(cloud_container);
 
     std::cout<<"Fin de l'initialisation du monde"<<std::endl;
 }
