@@ -39,7 +39,8 @@ void cursorCallback(GLFWwindow * window, double xPos, double yPos)
 }
 void Engine::init(uint w, uint h)
 {
-    m_engineWindow = new Window(w, h, "suus");
+    m_engineWindow = new Window(w, h, "nuage");
+
     m_engineWindow->init();
     initGLAD();
 
@@ -48,7 +49,6 @@ void Engine::init(uint w, uint h)
     r = g = b = 0.f;
     a = 1.f;
     m_inputPrevent = 0;
-
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
@@ -75,7 +75,7 @@ void Engine::init(uint w, uint h)
 
     m_texturesManager.Load2D("kirbo", "./data/kirbo.png");
     m_texturesManager.Load2D("sonc", "./data/sonc.png");
-    //m_texturesManager.Load2D("cumulonimbus", "./data/cumulonimbus.png");
+    m_texturesManager.Load2D("atlas", "./data/realistAtlas.png");
 
     m_world = new World(m_texturesManager, m_shader);
     m_world->getCam()->setLastX(w / 2.f);
@@ -234,12 +234,12 @@ void Engine::run()
         m_engineWindow->slider("Cumulonimbus", C->m_anvilAmount, 0.f, 1.f);
         m_engineWindow->slider("Coverage", C->m_globalCoverage, 0.f, 1.f);
         m_engineWindow->slider("Density", C->m_globalDensity, 0.f, 15.f);
-        m_engineWindow->slider("pos min X", C->m_boxVmin.x, -200.f, 200.f);
+        /*m_engineWindow->slider("pos min X", C->m_boxVmin.x, -200.f, 200.f);
         m_engineWindow->slider("pos min Y", C->m_boxVmin.y, -200.f, 200.f);
         m_engineWindow->slider("pos min Z", C->m_boxVmin.z, -200.f, 200.f);
         m_engineWindow->slider("pos max X", C->m_boxVmax.x, -200.f, 200.f);
         m_engineWindow->slider("pos max Y", C->m_boxVmax.y, -200.f, 200.f);
-        m_engineWindow->slider("pos max Z", C->m_boxVmax.z, -200.f, 200.f);
+        m_engineWindow->slider("pos max Z", C->m_boxVmax.z, -200.f, 200.f);*/
         m_engineWindow->endGui();
 
         if(endRegen)

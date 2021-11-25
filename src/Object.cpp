@@ -112,8 +112,8 @@ void Object::render(Shader & Shader, Textures & textureManager, const glm::mat4 
     resetModel();
     translate(m_position);
     Shader.setMat4(m_shaderKey, "model", m_model);
+    setUniforms(Shader, m_model, view, projection);
     draw();
-    m_model = glm::mat4(1.f);
 
     if (!has_face_culling) glEnable(GL_CULL_FACE);
 }
