@@ -47,12 +47,25 @@ public:
     float m_minDensity;
     float m_maxDensity;
     glm::vec3 m_lightPos;
+
     CloudContainer(glm::vec3 position) : Object()
     {
         setPosition(position);
         setMesh(&Shapes::cube);
         setTextureTypeTo3D();
         setFaceCulling(false);
+        m_anvilAmount = 0;
+        m_lightMultiplicator = 10;
+        m_timeFactor = 0;
+        m_globalCoverage = 1.0;
+        m_globalDensity = 5;
+        m_lightPower = 100;
+        m_minHeight = 0.f;
+        m_maxHeight = 1.f;
+        m_minDensity = 0.f;
+        m_maxDensity = 1.f;
+        m_lightPos = glm::vec3(50, 100, 50);
+
     }
 
     void setUniforms(

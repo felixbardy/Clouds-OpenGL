@@ -19,13 +19,15 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
     CloudContainer * CloudBox = new CloudContainer(glm::vec3(0, 0, 0));
     CloudBox->setShaderKey("nuage")
                     .setTextureKeys({"shape", "detail", "weathermap"})  
-                    .setFaceCulling(false);
+                    .setFaceCulling(false)
+                    .setTextureTypeTo3D();
 
     CloudBox->m_position = glm::vec3(2,0,2);
 
-    addObject(CloudBox);
+    
     addObject(defaultCube);
     addObject(beurk);
+    addObject(CloudBox);
     //Nuage masqué le temps de mettre à jour le vertex shader (masque tout sinon)
     //addObject(cloud_container);
 
