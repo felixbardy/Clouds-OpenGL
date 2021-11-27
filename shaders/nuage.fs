@@ -3,6 +3,7 @@
 #define PI 3.1415926538
 #define TWO_PI 6.2831853076
 
+uniform mat4 vpInvMatrix;
 uniform mat4 mvpInvMatrix;
 uniform mat4 mvMatrix;
 
@@ -31,7 +32,7 @@ uniform int ExtinctionFactor;
 uniform vec3 IsotropicLightBottom;
 uniform vec3 IsotropicLightTop;
 
-in vec2 position;
+in vec3 position;
 
 out vec4 fragment_color;
 
@@ -454,8 +455,8 @@ void main()
     /****  NUAGE  ****/
     /*****************/
     // construction du rayon pour le pixel
-    vec4 origin_s = mvpInvMatrix * vec4(position, 0, 1); // origine sur near
-    vec4 end_s    = mvpInvMatrix * vec4(position, 1, 1); // fin sur far
+    vec4 origin_s = vpInvMatrix * vec4(position.xy, 0, position.z); // origine sur near
+    vec4 end_s    = vpInvMatrix * vec4(position.xy, 1, position.z); // fin sur far
 
     // normalisation pour l'expression du rayon
     //? pas compris
