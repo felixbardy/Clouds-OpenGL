@@ -17,7 +17,7 @@ OS=`uname`
 ifeq ( $(OS), Darwin ) # is MacOS
 	GL = -ldl -lglfw3
 else #is Linux
-	GL = -ldl -lglfw3 -pthread ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a ./$(LIBDIR)/lodepng.a 
+	GL = -ldl -lglfw -pthread ./$(LIBDIR)/stb_image.a ./$(LIBDIR)/FastNoise.a ./$(LIBDIR)/lodepng.a 
 endif
 
 .PHONY: all main generator doc lib clean pentaclean 
@@ -40,7 +40,7 @@ generator: ./$(BINDIR)/generate
 
 # Règles de compilation
 
-./$(BINDIR)/run : ./$(OBJDIR)/main.o -lglfw ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Object.o ./$(OBJDIR)/Shapes.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a ./$(LIBDIR)/imgui.a ./$(LIBDIR)/imgui_impl_opengl3.a ./$(LIBDIR)/imgui_impl_glfw.a ./$(LIBDIR)/imgui_draw.a ./$(LIBDIR)/imgui_tables.a ./$(LIBDIR)/imgui_widgets.a ./$(LIBDIR)/imgui_demo.a
+./$(BINDIR)/run : ./$(OBJDIR)/main.o ./$(OBJDIR)/Engine.o ./$(OBJDIR)/Camera.o ./$(OBJDIR)/World.o ./$(OBJDIR)/Window.o ./$(OBJDIR)/Worley.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Object.o ./$(OBJDIR)/Shapes.o ./$(OBJDIR)/Mesh.o ./$(OBJDIR)/Shader.o ./$(LIBDIR)/glad.a ./$(LIBDIR)/imgui.a ./$(LIBDIR)/imgui_impl_opengl3.a ./$(LIBDIR)/imgui_impl_glfw.a ./$(LIBDIR)/imgui_draw.a ./$(LIBDIR)/imgui_tables.a ./$(LIBDIR)/imgui_widgets.a ./$(LIBDIR)/imgui_demo.a
 	g++ $(FLAGS) $^ -o $@ $(LIB) $(GL)
 
 ./$(BINDIR)/generate : ./$(OBJDIR)/generate.o ./$(OBJDIR)/Textures.o ./$(OBJDIR)/Worley.o ./$(LIBDIR)/glad.a 
