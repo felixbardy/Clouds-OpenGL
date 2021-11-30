@@ -67,8 +67,8 @@ public:
         m_minDensity = 0.f;
         m_maxDensity = 1.f;
         m_lightPos = glm::vec3(50, 150, 50);
-        m_vboxMin = glm::vec3(0, 0, 0);
-        m_vboxMax = glm::vec3(100, 100, 100);
+        m_vboxMin = glm::vec3(0, 80, 0);
+        m_vboxMax = glm::vec3(100, 130, 100);
 
     }
 

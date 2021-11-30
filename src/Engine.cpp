@@ -269,7 +269,6 @@ void Engine::run()
             m_engineWindow->slider("maximal density", C->m_maxDensity, 0.f, 1.f);
             m_engineWindow->slider("minimal height", C->m_minHeight, 0.f, 1.f);
             m_engineWindow->slider("maximal height", C->m_maxHeight, 0.f, 1.f);
-
             m_engineWindow->endGui();
 
             /// LIGHT VALUES
