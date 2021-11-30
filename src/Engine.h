@@ -64,6 +64,7 @@ private:
     bool m_isWireframe = false;   //!< Booléen, si oui le rendu passe en wireframe
     bool m_isCursorLocked = true; //!< Booléen, si non le curseur n'est plus bloqué par la fenêtre
     bool m_isFullscreen = false;  //!< Indique si la fenêtre est en plein écran
+    bool m_isUIDisplayed = true;
 
 
     /** @brief Gère les inputs

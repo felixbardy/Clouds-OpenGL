@@ -47,6 +47,8 @@ public:
     float m_minDensity;
     float m_maxDensity;
     glm::vec3 m_lightPos;
+    glm::vec3 m_vboxMin;
+    glm::vec3 m_vboxMax;
 
     CloudContainer(glm::vec3 position) : Object()
     {
@@ -64,7 +66,9 @@ public:
         m_maxHeight = 1.f;
         m_minDensity = 0.f;
         m_maxDensity = 1.f;
-        m_lightPos = glm::vec3(50, 100, 50);
+        m_lightPos = glm::vec3(50, 150, 50);
+        m_vboxMin = glm::vec3(0, 0, 0);
+        m_vboxMax = glm::vec3(100, 100, 100);
 
     }
 
@@ -88,8 +92,8 @@ public:
         glm::mat4 mvp = p * v * m;
         glm::mat4 mvpInv = glm::inverse(mvp);
 
-        shaders.setVec3("nuage","vmin", m_position);
-        shaders.setVec3("nuage","vmax", m_position + glm::vec3(1));
+        shaders.setVec3("nuage","vmin", m_vboxMin/*m_position*/);
+        shaders.setVec3("nuage","vmax", m_vboxMax/*m_position + glm::vec3(1)*/);
         shaders.setVec3("nuage","lightpos", m_lightPos);
         shaders.setFloat("nuage","lightpower", m_lightPower);
         shaders.setFloat("nuage","lightMultiplicator", m_lightMultiplicator);

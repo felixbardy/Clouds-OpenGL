@@ -9,12 +9,14 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
     //Création du cube de test
     Cube * defaultCube = new Cube(glm::vec3(2.f));
     defaultCube->setShaderKey("basic2D")
-               .setTextureKeys({"sonc", "kirbo"});
+                .setFaceCulling(false)
+                .setTextureKeys({"sonc", "kirbo"});
 
     //Création du terrain
     Terrain * beurk = new Terrain();
-    beurk->setShaderKey("basic2D");
-    beurk->setTextureKeys({"atlas"});
+    beurk->setShaderKey("basic2D")
+            .setFaceCulling(false)
+            .setTextureKeys({"atlas"});
     //Création du conteneur de nuage
     CloudContainer * CloudBox = new CloudContainer(glm::vec3(0, 0, 0));
     CloudBox->setShaderKey("nuage")
@@ -22,14 +24,13 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
                     .setFaceCulling(false)
                     .setTextureTypeTo3D();
 
+
     CloudBox->m_position = glm::vec3(2,0,2);
 
     
     addObject(defaultCube);
     addObject(beurk);
     addObject(CloudBox);
-    //Nuage masqué le temps de mettre à jour le vertex shader (masque tout sinon)
-    //addObject(cloud_container);
 
     std::cout<<"Fin de l'initialisation du monde"<<std::endl;
 }

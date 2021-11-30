@@ -52,7 +52,7 @@ void Engine::init(uint w, uint h)
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
-    m_shader.init("nuage", "./shaders/nuage.vs", "./shaders/nuage.fs");
+    m_shader.init("nuage", "./shaders/oldNuageVS.vs", "./shaders/oldNuageFS.fs");
 
 
     m_shader.use("basic2D");
@@ -128,6 +128,12 @@ void Engine::keyboardHandler(Camera * Cam)
             m_inputPrevent = 10;
         }
 
+        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_U) == GLFW_PRESS)
+        {
+            m_isUIDisplayed = !m_isUIDisplayed;
+            m_inputPrevent = 10;
+        }
+
         if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_F11) == GLFW_PRESS)
         {
             if(m_isFullscreen)
@@ -157,32 +163,30 @@ void Engine::keyboardHandler(Camera * Cam)
             m_inputPrevent = 10;
         }
     }
-     if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
-        {
-            Cam->move(FORWARD, speed);
-        }
-        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_S) == GLFW_PRESS)
-        {
-            Cam->move(BACKWARD, speed);
-        }
-        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_A) == GLFW_PRESS)
-        {
-            Cam->move(LEFT, speed);
-        }
-        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_D) == GLFW_PRESS)
-        {
-            Cam->move(RIGHT, speed);
-        }
-        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
-        {
-            Cam->move(UP, speed);
-        }
-        if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        {
-            Cam->move(BOTTOM, speed);
-        }
-
-
+    if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
+    {
+        Cam->move(FORWARD, speed);
+    }
+    if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_S) == GLFW_PRESS)
+    {
+        Cam->move(BACKWARD, speed);
+    }
+    if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_A) == GLFW_PRESS)
+    {
+        Cam->move(LEFT, speed);
+    }
+    if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_D) == GLFW_PRESS)
+    {
+        Cam->move(RIGHT, speed);
+    }
+    if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        Cam->move(UP, speed);
+    }
+    if(glfwGetKey(m_engineWindow->getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
+        Cam->move(BOTTOM, speed);
+    }
 }
 Shader* Engine::getShader()
 {
@@ -197,6 +201,7 @@ void writeAndLoad(Textures & tex, bool & endRegen)
 
 void Engine::run()
 {
+    
     glfwSetInputMode(m_engineWindow->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     float time = 0;
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -207,8 +212,8 @@ void Engine::run()
 
     std::vector<std::thread> weatherGen; 
     bool endRegen = false;
+    bool debugStart = true;
 
-    bool renderWorld = true;
 
     while(!m_engineWindow->m_quit)
     {
@@ -216,65 +221,68 @@ void Engine::run()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
         float ratioScreen = (float)m_engineWindow->getWidth() / (float)m_engineWindow->getHeight();
         
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        bool show = true;
+        if(m_isUIDisplayed)
+        {
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+            bool show = true;
+        }
         
-        if(renderWorld)
-        {
-            m_world->update(time, ratioScreen);
-            m_world->render();
-        }
-
-
-        /// CLOUD VALUES
-        m_engineWindow->beginGui("Cloud Shape");
-        CloudContainer * C = (CloudContainer*)(m_world->m_objects[0]);
-        m_engineWindow->slider("Cumulonimbus", C->m_anvilAmount, 0.f, 1.f);
-        m_engineWindow->slider("Coverage", C->m_globalCoverage, 0.f, 1.f);
-        m_engineWindow->slider("Density", C->m_globalDensity, 0.f, 15.f);
-        /*m_engineWindow->slider("pos min X", C->m_boxVmin.x, -200.f, 200.f);
-        m_engineWindow->slider("pos min Y", C->m_boxVmin.y, -200.f, 200.f);
-        m_engineWindow->slider("pos min Z", C->m_boxVmin.z, -200.f, 200.f);
-        m_engineWindow->slider("pos max X", C->m_boxVmax.x, -200.f, 200.f);
-        m_engineWindow->slider("pos max Y", C->m_boxVmax.y, -200.f, 200.f);
-        m_engineWindow->slider("pos max Z", C->m_boxVmax.z, -200.f, 200.f);*/
-        m_engineWindow->endGui();
-
-        if(endRegen)
-        {
-            m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
-            endRegen = false;
-            //weatherGen.join();
-        }
-
-        /// WEATHERMAP VALUES
-        m_engineWindow->beginGui("Weather");
-        if(m_engineWindow->button("Reroll weathermap",100, 50))
-        {
-            weatherGen.push_back(std::thread(writeAndLoad, std::ref(m_texturesManager), std::ref(endRegen)));
-        }
-
-        m_engineWindow->slider("minimal density", C->m_minDensity, 0.f, 1.f);
-        m_engineWindow->slider("maximal density", C->m_maxDensity, 0.f, 1.f);
-        m_engineWindow->slider("minimal height", C->m_minHeight, 0.f, 1.f);
-        m_engineWindow->slider("maximal height", C->m_maxHeight, 0.f, 1.f);
-
-        m_engineWindow->endGui();
-
-        /// LIGHT VALUES
-        m_engineWindow->beginGui("Light");
-        m_engineWindow->slider("Light position X", C->m_lightPos.x, -300.f, 300.f);
-        m_engineWindow->slider("Light position Y", C->m_lightPos.y, -300.f, 300.f);
-        m_engineWindow->slider("Light position Z", C->m_lightPos.z, -300.f, 300.f);
-        m_engineWindow->slider("Light Power", C->m_lightPower, 0.f, 200.f);
-        m_engineWindow->slider("Multiplicator", C->m_lightMultiplicator, 0.f, 40.f);
-        m_engineWindow->endGui();
-
-
         
-        m_engineWindow->drawGui();
+        m_world->update(time, ratioScreen);
+        m_world->render();
+        
+
+        if(m_isUIDisplayed)
+        { 
+            CloudContainer * C = (CloudContainer*)(m_world->m_objects.back());
+            /// CLOUD VALUES
+            m_engineWindow->beginGui("Cloud Shape");
+            m_engineWindow->slider("Cumulonimbus", C->m_anvilAmount, 0.f, 1.f);
+            m_engineWindow->slider("Coverage", C->m_globalCoverage, 0.f, 1.f);
+            m_engineWindow->slider("Density", C->m_globalDensity, 0.f, 15.f);
+            m_engineWindow->slider("pos min X", C->m_vboxMin.x, -200.f, 200.f);
+            m_engineWindow->slider("pos min Y", C->m_vboxMin.y, -200.f, 200.f);
+            m_engineWindow->slider("pos min Z", C->m_vboxMin.z, -200.f, 200.f);
+            m_engineWindow->slider("pos max X", C->m_vboxMax.x, -200.f, 200.f);
+            m_engineWindow->slider("pos max Y", C->m_vboxMax.y, -200.f, 200.f);
+            m_engineWindow->slider("pos max Z", C->m_vboxMax.z, -200.f, 200.f);
+            m_engineWindow->endGui();
+
+            if(endRegen)
+            {
+                m_texturesManager.Load2D("weathermap", "./data/weathermap/test.png");
+                endRegen = false;
+                //weatherGen.join();
+            }
+
+            /// WEATHERMAP VALUES
+            m_engineWindow->beginGui("Weather");
+            if(m_engineWindow->button("Reroll weathermap",100, 50) || debugStart)
+            {
+                weatherGen.push_back(std::thread(writeAndLoad, std::ref(m_texturesManager), std::ref(endRegen)));
+                debugStart = false;
+            }
+
+            m_engineWindow->slider("minimal density", C->m_minDensity, 0.f, 1.f);
+            m_engineWindow->slider("maximal density", C->m_maxDensity, 0.f, 1.f);
+            m_engineWindow->slider("minimal height", C->m_minHeight, 0.f, 1.f);
+            m_engineWindow->slider("maximal height", C->m_maxHeight, 0.f, 1.f);
+
+            m_engineWindow->endGui();
+
+            /// LIGHT VALUES
+            m_engineWindow->beginGui("Light");
+            m_engineWindow->slider("Light position X", C->m_lightPos.x, -300.f, 300.f);
+            m_engineWindow->slider("Light position Y", C->m_lightPos.y, -300.f, 300.f);
+            m_engineWindow->slider("Light position Z", C->m_lightPos.z, -300.f, 300.f);
+            m_engineWindow->slider("Light Power", C->m_lightPower, 0.f, 200.f);
+            m_engineWindow->slider("Multiplicator", C->m_lightMultiplicator, 0.f, 40.f);
+            m_engineWindow->endGui();
+            m_engineWindow->drawGui();
+
+        }
         
 
         //delete C;
