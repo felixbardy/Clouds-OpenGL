@@ -36,49 +36,89 @@ protected:
 class CloudContainer : public Object
 {
 public:
-    /** @brief Constructeur de CloudContainer
-     * @param position la position de l'objet
-     */
+    float m_anvilAmount;
+    float m_lightMultiplicator;
+    float m_timeFactor;
+    float m_globalCoverage;
+    float m_globalDensity;
+    float m_lightPower;
+    float m_minHeight;
+    float m_maxHeight;
+    float m_minDensity;
+    float m_maxDensity;
+    glm::vec3 m_lightPos;
+    glm::vec3 m_vboxMin;
+    glm::vec3 m_vboxMax;
+
     CloudContainer(glm::vec3 position) : Object()
     {
         setPosition(position);
-        setFaceCulling(false);
-        setTextureTypeTo3D();
         setMesh(&Shapes::cube);
-    }
-    ~CloudContainer() {}
+        setTextureTypeTo3D();
+        setFaceCulling(false);
+        m_anvilAmount = 0;
+        m_lightMultiplicator = 10;
+        m_timeFactor = 0;
+        m_globalCoverage = 1.0;
+        m_globalDensity = 5;
+        m_lightPower = 100;
+        m_minHeight = 0.f;
+        m_maxHeight = 1.f;
+        m_minDensity = 0.f;
+        m_maxDensity = 1.f;
+        m_lightPos = glm::vec3(50, 150, 50);
+        m_vboxMin = glm::vec3(0, 80, 0);
+        m_vboxMax = glm::vec3(100, 130, 100);
 
-protected:
+    }
+
     void setUniforms(
         Shader& shaders,
         const glm::mat4 &model,
         const glm::mat4 &view,
         const glm::mat4 &projection
-    ) override {
-
+    ) override
+    {
         shaders.use("nuage");
         glm::mat4 pInv = glm::inverse(projection);
         glm::mat4 vInv = glm::inverse(view);
-
-        
         glm::mat4 vpInv = vInv * pInv;
+        glm::mat4 m = glm::mat4(1.f);
+        glm::mat4 v = view;
+        glm::mat4 p = projection;
 
-        glm::mat4 mvp = projection * view * model;
+        float m_time = 0;
+
+        glm::mat4 mvp = p * v * m;
         glm::mat4 mvpInv = glm::inverse(mvp);
-        
-        shaders.setVec3("nuage","vmin", m_position);
-        shaders.setVec3("nuage","vmax", m_position + glm::vec3(1));
-        shaders.setVec3("nuage","lightpos", glm::vec3(0,70, 0));
-        shaders.setFloat("nuage","lightpower", 100);
-        shaders.setFloat("nuage","lightMultiplicator", 2.5);
 
+        shaders.setVec3("nuage","vmin", m_vboxMin/*m_position*/);
+        shaders.setVec3("nuage","vmax", m_vboxMax/*m_position + glm::vec3(1)*/);
+        shaders.setVec3("nuage","lightpos", m_lightPos);
+        shaders.setFloat("nuage","lightpower", m_lightPower);
+        shaders.setFloat("nuage","lightMultiplicator", m_lightMultiplicator);
+
+        shaders.setFloat("nuage","minHeight", m_minHeight);
+        shaders.setFloat("nuage","maxHeight", m_maxHeight);
+        shaders.setFloat("nuage","minDensity", m_minDensity);
+        shaders.setFloat("nuage","maxDensity", m_maxDensity);
+
+        shaders.setMat4("nuage","view", view);
+        shaders.setMat4("nuage","projection", projection);
         shaders.setMat4("nuage","vpInvMatrix", vpInv);
         shaders.setMat4("nuage","vpMatrix", projection * view);
         shaders.setMat4("nuage","mvpMatrix", mvp);
         shaders.setMat4("nuage","mvpInvMatrix", mvpInv);
 
+        shaders.setFloat("nuage","time", m_timeFactor);
+
+        shaders.setFloat("nuage","globalCoverage", m_globalCoverage);
+        shaders.setFloat("nuage","globalDensity", m_globalDensity);
+        shaders.setFloat("nuage","anvilAmount", m_anvilAmount);
         shaders.setFloat("nuage","temperature", 10);
     }
+    
+    ~CloudContainer() {}
 };
 
 class Terrain : public Object

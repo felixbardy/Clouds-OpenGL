@@ -5,9 +5,9 @@ namespace Shapes
 {
     void initShapes() {
         std::cout<<"Initialisation des meshs primitifs..."<<std::endl;
-
-        initCube();
         initTerrain();
+        initCube();
+        
 
         std::cout<<"Initialisation terminée!"<<std::endl;
     }
@@ -231,7 +231,7 @@ namespace Shapes
       terrain.setPolygon(vertices, verticesOrder, uv, uvIndex/*, color, colorId*/);
       std::cout<<"OK!"<<std::endl;
     }
-
-    Mesh cube;
     Mesh terrain;
+    Mesh cube;
+    
 } // namespace Shapes

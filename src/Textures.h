@@ -63,6 +63,8 @@ class Textures
     bool Load3D(const std::string & key, const std::string & path);
     void Load2D(const std::string & key, const std::string & path);
     
+    void writeWeatherMap(int perlinSeed, int Octaves, int frequency, int worleySeed, int resolution);
+    void GenerateWeatherMap(std::vector<unsigned char> data, int perlinSeed, int Octaves, int frequency, int worleySeed, int resolution);
 
     /** @brief Ecrit une texture dans un fichier texte
      * @param path string qui contient le chemin du fichier ou écrire

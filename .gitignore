@@ -10,3 +10,5 @@ doc/latex/
 
 # Garder les .keep
 !.keep
+
+imgui.ini

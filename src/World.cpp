@@ -9,22 +9,28 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
     //Création du cube de test
     Cube * defaultCube = new Cube(glm::vec3(2.f));
     defaultCube->setShaderKey("basic2D")
-               .setTextureKeys({"sonc", "kirbo"});
+                .setFaceCulling(false)
+                .setTextureKeys({"sonc", "kirbo"});
 
     //Création du terrain
     Terrain * beurk = new Terrain();
-    beurk->setShaderKey("basic2D");
-    beurk->setTextureKeys({"atlas"});
-
+    beurk->setShaderKey("basic2D")
+            .setFaceCulling(false)
+            .setTextureKeys({"atlas"});
     //Création du conteneur de nuage
-    // CloudContainer * cloud_container = new CloudContainer(glm::vec3(1));
-    // cloud_container->setShaderKey("nuage")
-    //                .setTextureKeys({"nuage1", "nuage2"});
+    CloudContainer * CloudBox = new CloudContainer(glm::vec3(0, 0, 0));
+    CloudBox->setShaderKey("nuage")
+                    .setTextureKeys({"shape", "detail", "weathermap"})  
+                    .setFaceCulling(false)
+                    .setTextureTypeTo3D();
 
+
+    CloudBox->m_position = glm::vec3(2,0,2);
+
+    
     addObject(defaultCube);
     addObject(beurk);
-    //Nuage masqué le temps de mettre à jour le vertex shader (masque tout sinon)
-    //addObject(cloud_container);
+    addObject(CloudBox);
 
     std::cout<<"Fin de l'initialisation du monde"<<std::endl;
 }
@@ -48,15 +54,6 @@ void World::update(float time, float ratioScreen)
   m_time = glfwGetTime();
 
   m_projection = glm::perspective(glm::radians(70.f), ratioScreen, 0.1f, 1000.f);
-
-  // Définition des uniforms
-  //FIXME Intégrer correctement la définition de la "boite à nuage"
-
-  glm::translate(getCam()->getView(), glm::vec3(-15, 0, 0));
-
-  glm::mat4 model = glm::mat4(1.f);
-  glm::mat4 view = getCam()->getView();
-  glm::mat4 projection = m_projection;
 
   m_cam->update();
 }

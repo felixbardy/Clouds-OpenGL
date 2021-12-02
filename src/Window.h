@@ -1,15 +1,29 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 #include <string>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 /** @class Window
  * @brief Gestionnaire de la fenetre pour openGL
 */
 class Window
 {
     public:
+
+    void beginGui(const std::string & Title);
+    void endGui();
+    void drawGui();
+
+
+    void slider(const std::string & title, float & f, float min, float max);
+    bool button(const std::string & title, float width, float height);
 
     /// Booléen de quittage de rendue
     bool m_quit = false;
@@ -70,6 +84,9 @@ class Window
     /// Position Y de la souris
     double m_yPos;
 
+    ImGuiIO * m_IO = new ImGuiIO;
+
+    void initImGui();
 
     /** @brief Initialisation de la librairie GLFW
      * @param major version d'openGL (genre 1 2 3 4)
@@ -87,6 +104,7 @@ class Window
      * @return -1 en cas d'erreur
     */
     int initGLAD();
+
 
 
 

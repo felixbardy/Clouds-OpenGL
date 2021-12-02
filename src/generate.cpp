@@ -2,7 +2,7 @@
 
 int main(int argc, char*argv[])
 {
-    std::string name = "";
+    /*std::string name = "";
     bool wrongFormat = false;
     std::cout<<argc<<std::endl;
     if(argc < 6)
@@ -61,7 +61,11 @@ int main(int argc, char*argv[])
             writer.write3D4Chan(WDH, WR, worleySeed, O, S, F, name);
             std::cout<<"Ecriture d'une texture 3D4CHAN terminer"<<std::endl;
         }
-    }
+    }*/
+
+    Textures writer;
+
+    writer.writeWeatherMap(42, 3, 15, 43, 3);
 
     return EXIT_SUCCESS;
    

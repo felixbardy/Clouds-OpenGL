@@ -44,12 +44,26 @@ void Textures::Load2D(const std::string & key, const std::string & path)
     //if there's an error, display it
     if(error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 
-    m_texId.insert({key, 0});
+    if(m_texId.find(key) == m_texId.end())
+    {
+        std::cout<<"Chargement de la texture : "<<key<<std::endl;
+        m_texId.insert({key, 0});
+        
+    }
+    else
+    {
+        std::cout<<"Rechargement de la texture : "<<key<<std::endl;
+        uint texToDel[1] = {m_texId[key]};
+        glDeleteTextures(1, texToDel);
+    }
+
     glGenTextures(1, &m_texId[key]);
     glBindTexture(GL_TEXTURE_2D, m_texId[key]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
     glGenerateMipmap(GL_TEXTURE_2D);
 }
+
+
 
 void Textures::fillPoint(int width, int height, int x, int y, int z, FastNoise & F, Worley & W, std::vector<unsigned char> & data)
 {
@@ -253,6 +267,46 @@ glm::vec3 curlNoise(glm::vec3 p, FastNoise & fast)
     const float divisor = 1.0 / ( 2.0 * e );
     return glm::normalize( glm::vec3( x , y , z ) * divisor );
 
+}
+
+void Textures::writeWeatherMap(int perlinSeed, int Octaves, int frequency, int worleySeed, int resolution)
+{
+    srand(worleySeed);
+    FastNoise Green, Blue, Alpha;
+    Green.SetSeed(perlinSeed);
+    Blue.SetSeed(perlinSeed+1);
+    Alpha.SetSeed(perlinSeed+2);
+
+    Green.SetFractalOctaves(Octaves);
+    Blue.SetFractalOctaves(Octaves);
+    Alpha.SetFractalOctaves(Octaves);
+
+    Green.SetFrequency(0.015);
+    Blue.SetFrequency(0.0025);
+    Alpha.SetFrequency(0.0025);
+    
+
+    Worley Red(resolution, 512, 512, 512);
+
+    std::vector<unsigned char> data;
+    std::vector<unsigned char> png;
+
+    std::cout<<"generating data"<<std::endl;
+    for(int i = 0; i < 512; i++)
+    {
+        //std::cout<<"step "<<i<<" / 512"<<std::endl;
+        for(int j = 0; j < 512; j++)
+        {
+            data.push_back(Red.get3d(i, j, 0) * 255);
+            data.push_back((Green.GetPerlin(i, j) + 1)/2.f * 255);
+            data.push_back((Blue.GetPerlin(i, j) + 1)/2.f * 255);
+            data.push_back((Alpha.GetPerlin(i, j) + 1)/2.f * 255);
+        }
+    }
+
+    unsigned error = lodepng::encode(png, data, 512, 512);
+    if(!error) lodepng::save_file(png, "./data/weathermap/test.png");
+    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
 }
 
 bool Textures::write3D3Chan(int WDH, int WR[3], int WorleySeed, std::string name)

@@ -9,6 +9,8 @@
 #include "World.h"
 #include <random>
 #include <map>
+#include <thread>
+
 
 using namespace glm;
 
@@ -52,21 +54,25 @@ public:
 
     /// Instance de l'objet contenant toutes les textures
     Textures m_texturesManager;
+    ~Engine();
 
 private:
 
-    Window m_engineWindow;        //!< Instance de l'objet contenant la fenêtre
+    Window * m_engineWindow;        //!< Instance de l'objet contenant la fenêtre
     Shader m_shader;              //!< Instance du shader
     int m_inputPrevent;           //!< Variable de prévetion pour éviter les multiples input
     bool m_isWireframe = false;   //!< Booléen, si oui le rendu passe en wireframe
     bool m_isCursorLocked = true; //!< Booléen, si non le curseur n'est plus bloqué par la fenêtre
     bool m_isFullscreen = false;  //!< Indique si la fenêtre est en plein écran
+    bool m_isUIDisplayed = true;
 
 
     /** @brief Gère les inputs
      * @param cam adresse memoire de la camera
      */
     void keyboardHandler(Camera * cam);
+
+    //void writeAndLoad();
 
     float r; //!< Valeur de rouge du background entre 0 et 1
     float g; //!< Valeur de vert du background entre 0 et 1

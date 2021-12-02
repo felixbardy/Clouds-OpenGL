@@ -150,7 +150,56 @@ float Worley::get3d(glm::vec3 position)
     return 1 - color;
 }
 
+float Worley::get2d(glm::vec2 position)
+{
+    position.x /= (float)getWidth();
+    position.y /= (float)getHeight();
+    //std::cout<<position.x<<" "<<position.y<<" "<<position.z<<std::endl;
+    glm::vec3 st = glm::vec3(position.x, position.y, 0);
+    
+
+    st *= getScale();
+    st -= getScale();
+    glm::vec3 intPos = glm::vec3(glm::floor(st.x), glm::floor(st.y), glm::floor(st.z));
+    glm::vec3 decimPos = glm::vec3(st.x - intPos.x, st.y - intPos.y, st.z  - intPos.z);
+    float color = 0;
+
+    float minimalDistance = 1;
+    for(int i = intPos.x - 1; i <= intPos.x + 1; i++)
+    {
+        for(int j = intPos.y - 1; j <= intPos.y + 1; j++)
+        {
+        
+            float x, y;
+            if(i < -getScale()) x = getScale() - 1;
+            else if(i < 0) x = getScale() + i;
+            else if(i == getScale()*2) x = 0;
+            else if(i >= getScale()) x = i - getScale();
+            else x = i;
+            
+            if(j < -getScale()) y = getScale() - 1;
+            else if(j < 0) y = getScale() + j;
+            else if(j == getScale()*2) y = 0;
+            else if(j >= getScale()) y = j - getScale();
+            else y = j;
+
+            float dist = glm::distance(st, m_points[x][y][0] + glm::vec3(i, j, 0));
+            if(dist < minimalDistance)
+            {
+                minimalDistance = dist;
+            }
+        }
+    }
+    color += minimalDistance;
+    return 1 - color;
+}
+
 float Worley::get3d(float x, float y, float z)
 {
     return get3d(glm::vec3(x, y, z));
+}
+
+float Worley::get2d(float x, float y)
+{
+    return get2d(glm::vec2(x, y));
 }

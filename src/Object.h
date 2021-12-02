@@ -71,6 +71,8 @@ public:
     Object& setFaceCulling(bool face_culling);
     bool  getFaceCulling() const;
 
+    virtual void setUniform(Shader & Shader, const glm::mat4 & view, const glm::mat4 & projection);
+
 
     void setMesh(Mesh * newMesh);
 
