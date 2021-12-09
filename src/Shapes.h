@@ -10,7 +10,7 @@ namespace Shapes
     void initShapes();
 
     void initCube();   //!< Initialise le mesh de cube
-    void initTerrain();
+    void initTerrain(); //!<Initialise un mesh de terrain
 
     extern Mesh cube;
     extern Mesh terrain;

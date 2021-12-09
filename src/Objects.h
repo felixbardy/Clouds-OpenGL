@@ -92,8 +92,8 @@ public:
         glm::mat4 mvp = p * v * m;
         glm::mat4 mvpInv = glm::inverse(mvp);
 
-        shaders.setVec3("nuage","vmin", glm::vec3(0)/*m_position*/);
-        shaders.setVec3("nuage","vmax", glm::vec3(1)/*m_position + glm::vec3(1)*/);
+        shaders.setVec3("nuage","vmin", glm::vec3(0));
+        shaders.setVec3("nuage","vmax", glm::vec3(1));
         shaders.setVec3("nuage","lightpos", m_lightPos);
         shaders.setFloat("nuage","lightpower", m_lightPower);
         shaders.setFloat("nuage","lightMultiplicator", m_lightMultiplicator);
