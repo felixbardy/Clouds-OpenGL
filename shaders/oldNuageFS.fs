@@ -10,14 +10,17 @@ uniform sampler3D shape;
 uniform sampler3D detail;
 
 // WEATHER MAP
-uniform sampler2D locationmap;
-uniform sampler2D noisemap;
-uniform sampler2D heightmap;
-uniform sampler2D densitymap;
+uniform sampler2D weathermap;
 
 uniform float globalCoverage;
 uniform float globalDensity;
 uniform float anvilAmount;
+
+uniform float minDensity;
+uniform float maxDensity;
+
+uniform float minHeight;
+uniform float maxHeight;
 
 // LIGHT UNIFORM
 
@@ -37,8 +40,6 @@ uniform float lightpower;
 uniform float lightMultiplicator;
 
 uniform float time;
-
-uniform float temperature; // Plus froid = plus dense
 
 in vec2 position;
 
@@ -127,7 +128,7 @@ float densityReductionTop(float y)
 */
 float densityReduction(float y, float weatherDensity)
 {
-    return (globalDensity * densityReductionBottom(y) * densityReductionTop(y) * 1 * 2) * mix(1, saturation(remap(sqrt(y), 0.4, 0.95, 1, 0.2)), anvilAmount);
+    return (globalDensity * densityReductionBottom(y) * densityReductionTop(y) * 1 * 2) * mix(1, saturation(remap(sqrt(y), 0.4, 0.95, 1, 0.2)), 1);
 }
 
 /// SHAPE FUNCTION ///
@@ -345,15 +346,12 @@ float computeCloudDensity(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
         
-        density += texture(shape, texcoords).y;//shapeNoiseSample(texcoords);
-        /// Vrai fonction mais trop laggy pour l'instant
-        //getCloudNoise(texcoords, 1, texture(shape, vec3(texcoords.x, 0, texcoords.z)).r, texture(noisemap, texcoords.xz).r, 1);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
+        density += getCloudNoise(texcoords, 1, texture(shape, vec3(texcoords.x, 0, texcoords.z)).r, texture(weathermap, texcoords.xz).r, 1);//getCloudNoise(texcoords, heightValue, locationValue, densityValue);
     }
 
     return density / float(steps);
 
 }
-    
 
 float getIlluminationAtPoint(vec3 point)
 {
@@ -393,7 +391,7 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
     vec3 raydir = normalize(exit-entry);
     vec3 to_light;
 
-    float density_offset = 0.3;
+    float density_offset = 0.05;
 
     //FIXME Hack tant qu'on se sert de exp(-density)
     int rS = steps; //< Real steps
@@ -408,12 +406,9 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
         texcoords.y /= boxdim.y;
         texcoords.z /= boxdim.z;
         
-        float locationValue = texture(shape, vec3(texcoords.x, 0, texcoords.z)).r;
-        float noiseValue = texture(noisemap, texcoords.xz).r;
-        float heightValue = 1;//max(texture(heightmap, texcoords.xz).g, 0.1);
-        float densityValue = 1;//texture(densitymap, texcoords.xz).b;
-        
-        float local_density = getCloudNoise(texcoords, heightValue, locationValue, noiseValue, densityValue);
+        vec4 WM = texture(weathermap, texcoords.xz);
+
+        float local_density = getCloudNoise(texcoords, clamp(WM.b, minHeight, maxHeight), WM.r, WM.g, clamp(WM.a, minDensity, maxDensity));
         
         
 
@@ -446,13 +441,13 @@ vec2 getDensityAndLightAlongRay(vec3 entry, vec3 exit, int steps)
 void main()
 {
     // construction du rayon pour le pixel
-    vec4 origin_s = mvpInvMatrix * vec4(position.xy, -0.1, position.z); // origine sur near
-    vec4 end_s    = mvpInvMatrix * vec4(position.xy, 0, position.z); // fin sur far
+    vec4 origin_s = mvpInvMatrix * vec4(position, 0, 1); // origine sur near
+    vec4 end_s    = mvpInvMatrix * vec4(position, 1, 1); // fin sur far
 
     // normalisation pour l'expression du rayon
     //? pas compris
     vec3 o = origin_s.xyz / origin_s.w;                         // origine
-    vec3 d = normalize(end_s.xyz / end_s.w - o); // direction
+    vec3 d = normalize(end_s.xyz / end_s.w - origin_s.xyz / origin_s.w); // direction
 
     vec2 itrsect = cloudBoxIntersection(o,d);
     float T_in = itrsect.x;
@@ -460,7 +455,7 @@ void main()
 
     float lum = lightpower / 100.0;
     vec4 bgcolor = vec4(vec3(0.4, 0.4, 0.8) * lum, 1);
-    vec4 lightcolor = vec4(1,1,1,1);
+    vec4 lightcolor = vec4(1);
 
     // Si intersection:
     if (T_out >= 0)
@@ -475,22 +470,19 @@ void main()
         float light = density_light.y;
 
         //float density = computeCloudDensity(entry, exit, 50);
-
-        // // Une densité inférieure à density_offset donnera un espace vide
-        // float density_offset = 0.25;
-        // density = max(density - density_offset, 0) / (1.0 - density_offset);
         fragment_color = vec4(bgcolor.xyz, exp(-density)) * (1-light) + lightcolor * light;
+        // couleur     = couleur_de_base * extinction 
+        //fragment_color = 
     }
     // Si pas d'intersection:
-    else    fragment_color = bgcolor;
+    else fragment_color = vec4(0.0);
 
     // Affichage lumière
     vec3 dir_to_light = normalize(lightpos - o);
     float angle = angle_between_normed_vec3(d, dir_to_light);
     // 0.03490658503988659rad ~= 2deg
     if ( angle < 0.03490658503988659 && angle > -0.03490658503988659) {
-        fragment_color = lightcolor * lum;
+        fragment_color = fragment_color + lightcolor * lum;
         return;
     }
-    
 }

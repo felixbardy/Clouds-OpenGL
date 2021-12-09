@@ -116,18 +116,12 @@ void Shader::readShaderFile(std::string vertexPath, std::string fragmentPath)
     catch(std::ifstream::failure e)
     {
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ = " <<strerror(errno) <<std::endl;
+        std::cout<<"VERTEX PATH :: "<<vertexPath<<std::endl;
+        std::cout<<"FRAGMENT PATH :: "<<fragmentPath<<std::endl;
     }
     m_vertexShaderSource = m_vertexCode.c_str();
     m_fragmentShaderSource = m_fragmentCode.c_str();
 }
-
-
-
-
-
-
-
-
 
 void Shader::init(const std::string & programKey, const std::string & vertexPath, const std::string & fragmentPath)
 {

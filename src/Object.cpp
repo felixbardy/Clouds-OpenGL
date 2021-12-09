@@ -89,6 +89,7 @@ void Object::render(Shader & Shader, Textures & textureManager, const glm::mat4 
 
     // Si l'objet ne doit pas masquer l'environnement
     // activer puis désactiver le face culling
+    Shader.use(getShaderKey());
     if (!has_face_culling) glDisable(GL_CULL_FACE);
 
     for(int i = 0; i < m_texturesKeys.size(); i++)
@@ -96,12 +97,10 @@ void Object::render(Shader & Shader, Textures & textureManager, const glm::mat4 
         if(is2D)
         {
             textureManager.use2D(m_texturesKeys[i], i);
-            //std::cout<<"2D = "<<m_texturesKeys[i]<<std::endl;
         }
         else
         {
             textureManager.use3D(m_texturesKeys[i], i);
-            //std::cout<<"3D = "<<m_texturesKeys[i]<<std::endl;
         }
     }
 
