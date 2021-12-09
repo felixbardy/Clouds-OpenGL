@@ -52,7 +52,8 @@ void Engine::init(uint w, uint h)
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
-    m_shader.init("nuage", "./shaders/oldNuageVS.vs", "./shaders/oldNuageFS.fs");
+    m_shader.init("old_nuage", "./shaders/oldNuageVS.vs", "./shaders/oldNuageFS.fs");
+    m_shader.init("nuage", "./shaders/nuage.vs", "./shaders/nuage.fs");
 
 
     m_shader.use("basic2D");

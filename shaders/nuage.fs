@@ -455,8 +455,8 @@ void main()
     /****  NUAGE  ****/
     /*****************/
     // construction du rayon pour le pixel
-    vec4 origin_s = vpInvMatrix * vec4(position.xy, 0, position.z); // origine sur near
-    vec4 end_s    = vpInvMatrix * vec4(position.xy, 1, position.z); // fin sur far
+    vec4 origin_s = mvpInvMatrix * vec4(position.xy, -0.1, position.z); // origine sur near
+    vec4 end_s    = mvpInvMatrix * vec4(position.xy, 0, position.z); // fin sur far
 
     // normalisation pour l'expression du rayon
     //? pas compris
