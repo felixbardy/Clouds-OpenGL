@@ -1,0 +1,44 @@
+{
+	"files": [
+		{
+			"path": "src/Shapes.h",
+			"bookmarks": [
+				{
+					"line": 7,
+					"column": 0,
+					"label": "Namespace Shapes"
+				}
+			]
+		},
+		{
+			"path": "src/World.cpp",
+			"bookmarks": [
+				{
+					"line": 9,
+					"column": 0,
+					"label": "Création de la scène"
+				}
+			]
+		},
+		{
+			"path": "src/Engine.cpp",
+			"bookmarks": [
+				{
+					"line": 52,
+					"column": 0,
+					"label": "Shaders et textures"
+				}
+			]
+		},
+		{
+			"path": "src/Object.cpp",
+			"bookmarks": [
+				{
+					"line": 98,
+					"column": 0,
+					"label": "Méthode d'affichage d'objet"
+				}
+			]
+		}
+	]
+}
