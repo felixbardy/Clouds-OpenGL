@@ -81,16 +81,11 @@ Object& Object::setTextureTypeTo2D()
     return *this;
 }
 
-void Object::setUniform(Shader & Shader, const glm::mat4 & view, const glm::mat4 & projection)
+void Object::render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection)
 {
     Shader.use(m_shaderKey);
     Shader.setMat4(m_shaderKey, "view", view);
     Shader.setMat4(m_shaderKey, "projection", projection);
-}
-
-void Object::render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection)
-{
-    setUniform(Shader, view, projection);
     // Si l'objet ne doit pas masquer l'environnement
     // activer puis désactiver le face culling
     if (!has_face_culling) glDisable(GL_CULL_FACE);
