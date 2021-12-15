@@ -28,8 +28,8 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
     CloudBox->m_position = glm::vec3(2,0,2);
 
     
-    addObject(defaultCube);
-    addObject(beurk);
+    
+    //addObject(beurk);
     addObject(CloudBox);
 
     std::cout<<"Fin de l'initialisation du monde"<<std::endl;

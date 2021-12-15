@@ -24,6 +24,7 @@ class Window
 
     void slider(const std::string & title, float & f, float min, float max);
     bool button(const std::string & title, float width, float height);
+    void checkBox(const std::string & title, bool & value);
 
     /// Booléen de quittage de rendue
     bool m_quit = false;

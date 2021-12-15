@@ -49,6 +49,11 @@ void Window::drawGui()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void Window::checkBox(const std::string & title, bool & value)
+{
+    ImGui::Checkbox(title.c_str(), &value);
+}
+
 void Window::slider(const std::string & title, float & value, float min, float max)
 {
     ImGui::SliderFloat(title.c_str(), &value, min, max);

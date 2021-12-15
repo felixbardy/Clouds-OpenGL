@@ -364,12 +364,9 @@ float rayleighPhase(float angle)
 
 
 float sampleDensity(vec3 pos) {
-    //TODO Mixer les textures avec des paramètres d'Amplitude et de fréquence
-    pos.x = mod(pos.x, 1.0);
-    pos.y = mod(pos.y, 1.0);
-    pos.z = mod(pos.z, 1.0);
+    vec4 WM = texture(weathermap, pos.xz);
 
-    return texture(shape, pos).x;
+    return getCloudNoise(pos, clamp(WM.b, minHeight, maxHeight), WM.r, WM.g, clamp(WM.a, minDensity, maxDensity));
 }
 
 vec3 getSunColorAtPoint(vec3 position) {
@@ -433,7 +430,7 @@ vec4 computeCloud(vec3 origin, vec3 end) {
         float scattering_coeff = ScatteringFactor * density;
         float extinction_coeff = ExtinctionFactor * density;
 
-        extinction *= exp(-extinction_coeff * stepSize);
+        extinction *= (exp(-extinction_coeff * stepSize));
 
         vec3 sun_color = getSunColorAtPoint(pos);
         //TODO Remmetre la lumière ambiante
@@ -444,7 +441,8 @@ vec4 computeCloud(vec3 origin, vec3 end) {
         // (moins de lumière a atteint cette étape que ce qu'on avait initialement)
         scattering += extinction * step_scattering;
     }
-    return vec4(scattering,extinction);
+
+    return vec4(scattering, extinction);
 }
 
 
@@ -483,8 +481,11 @@ void main()
 
         // Dispersion en rgb (scattering) et extinction (float)
         vec4 scatt_ext = computeCloud(o + T_in*d, o+T_out*d);
+        vec4 WM = texture(weathermap, position.xz);
 
-         fragment_color= fragment_color * scatt_ext;
+        float local_density = getCloudNoise(position, clamp(WM.b, minHeight, maxHeight), WM.r, WM.g, clamp(WM.a, minDensity, maxDensity));
+        
+        fragment_color = (fragment_color * scatt_ext) + vec4(0, 0, 0, 0.5);
     }
     // Si pas d'intersection:
     else    fragment_color = vec4(0.0);

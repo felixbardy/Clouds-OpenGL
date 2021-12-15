@@ -52,8 +52,8 @@ void Engine::init(uint w, uint h)
 
     m_shader.init("basic2D", "./shaders/default.vs", "./shaders/default2D.fs");
     m_shader.init("basic3D", "./shaders/default.vs", "./shaders/default3D.fs");
-    m_shader.init("old_nuage", "./shaders/oldNuageVS.vs", "./shaders/oldNuageFS.fs");
-    m_shader.init("nuage", "./shaders/nuage.vs", "./shaders/nuage.fs");
+    m_shader.init("nuage", "./shaders/oldNuageVS.vs", "./shaders/oldNuageFS.fs");
+    //m_shader.init("nuage", "./shaders/nuage.vs", "./shaders/nuage.fs");
 
 
     m_shader.use("basic2D");
@@ -211,6 +211,8 @@ void Engine::run()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     std::vector<std::thread> weatherGen; 
     bool endRegen = false;
     bool debugStart = true;
@@ -279,9 +281,9 @@ void Engine::run()
             m_engineWindow->slider("Light position Z", C->m_lightPos.z, -300.f, 300.f);
             m_engineWindow->slider("Light Power", C->m_lightPower, 0.f, 200.f);
             m_engineWindow->slider("Multiplicator", C->m_lightMultiplicator, 0.f, 40.f);
+            m_engineWindow->checkBox("Sun", C->m_drawSun);
             m_engineWindow->endGui();
             m_engineWindow->drawGui();
-
         }
         
 
