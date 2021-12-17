@@ -472,10 +472,10 @@ void main()
         float light = density_light.y;
 
         //float density = computeCloudDensity(entry, exit, 50);
-        fragment_color = vec4(bgcolor.xyz, exp(-density)) * (1-light) + lightcolor * light;
-        if(fragment_color.a == 1.0) fragment_color = vec4(0.0); 
+        fragment_color = vec4(bgcolor.xyz, 1 - exp(-density)) * (1-light) + lightcolor * light;
+        //if(fragment_color.a == 1.0) fragment_color = vec4(0.0); 
     }
-    else    fragment_color = vec4(0.0, 0.0, 0.0, 0.0);
+    else    fragment_color = vec4(0.0);
 
     // Affichage lumière
     vec3 dir_to_light = normalize(lightpos - o);

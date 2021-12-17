@@ -29,7 +29,7 @@ World::World(Textures &tex, Shader &shad): m_textures(tex), m_shader(shad)
 
     
     
-    //addObject(beurk);
+    addObject(beurk);
     addObject(CloudBox);
 
     std::cout<<"Fin de l'initialisation du monde"<<std::endl;
