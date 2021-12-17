@@ -25,7 +25,7 @@ private:
   Mesh * m_mesh;
   std::string              m_shaderKey;      //!< Identifiant du shader à utiliser
   std::vector<std::string> m_texturesKeys;   //!< Identifiants des textures à utiliser
-  bool                     is2D;             //!< Documentation à remplir
+  bool                     is2D;             //!< Indique si les textures utilisées sont 2D
   bool                     has_face_culling; //!< Indique si l'objet doit cacher l'environnement
 
 protected:
@@ -51,36 +51,39 @@ public:
     /** @brief destructeur par défaut     */
     ~Object();
 
-    /** @brief Tourne autour des axes données
+    /** @brief Tourne l'objet autour de l'axe donné
      * @param angle Angle de la rotation
-     * @param vAxis axes
+     * @param vAxis axe
      */
     Object& rotate(float angle, glm::vec3 vAxis);
 
-    /** @brief Redimensionne sur les axes le mesh
+    /** @brief Redimensionne l'objet selon les axes x, y et z
      * @param vScale vecteur de redimensionnement
      */
     Object& scale(glm::vec3 vScale);
 
-    /** @brief Déplace du vecteur donnée en paramètre dans le monde
+    /** @brief Déplace l'objet selon le vecteur donné
      * @param vTranslate vecteur de translation
      */
     Object& translate(glm::vec3 vTranslate);
 
-
+    /** @brief Permet d'activer/désactiver le face culling pour l'objet
+     * @param face_culling la valeur à donner au paramètre
+     */
     Object& setFaceCulling(bool face_culling);
+    /// Renvoie true si le face culling est activé pour l'objet. renvoie false sinon
     bool  getFaceCulling() const;
 
     virtual void setUniform(Shader & Shader, const glm::mat4 & view, const glm::mat4 & projection);
 
-
+    /// Permet de changer le mesh utilisé par l'objet
     void setMesh(Mesh * newMesh);
 
-    /** @brief Dessinne le mesh
+    /** @brief Dessinne l'objet (utiliser render pour la procédure complète d'affichage)
      */
     void draw();
 
-    /** @brief affiche le mesh
+    /** @brief affiche l'objet
      * @param angle angle de rotation
      * @param shaderToUse Pointeur vers le shader a utiliser
      * @param projection matrice 4 dimension du monde
@@ -88,30 +91,28 @@ public:
      */
     void render(Shader & Shader, Textures & textureManager, const glm::mat4 & view, const glm::mat4 & projection);
 
-    /** @brief remplit les positions ou afficher le mesh
-     * @param positions
+    /** @brief Remplace la position de l'objet par le vecteur donné
+     * @param position la nouvelle position de l'objet
      */
     Object& setPosition(glm::vec3 position);
 
-    /** @brief remplit la clé du shader du mesh
-     * @param key
+    /** @brief remplit la clé du shader de l'objet
+     * @param key la clé du shader à utiliser
      */
     Object&     setShaderKey(const std::string & shaderKey);
     std::string getShaderKey() const; //!< Renvoie l'identifiant du shader utilisé
 
-    /** @brief remplit la clé du shader du mesh
+    /** @brief remplit les clés de textures de l'objet 
      * @param keys vecteur de string
      */
     Object& setTextureKeys(std::vector<std::string> keys);
 
-      /** @brief obtient la clé du shader du mesh
-     * @param key
-     */
-
+    /// Indique à l'objrt qu'il utilise des textures 3D
     Object& setTextureTypeTo3D();
+    /// Indique à l'objet qu'il utilise des textures 2D
     Object& setTextureTypeTo2D();
      
-    /** @brief retire les transformation     */
+    /// Remet la matrice model à sa valeur par défaut (l'identité)
     Object& resetModel();
 
 
