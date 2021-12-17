@@ -6,11 +6,15 @@
 
 #include <iostream>
 
+
+/** @class Cube
+ * @brief Représente un cube
+ */
 class Cube : public Object
 {
 public:
     /** @brief Constructeur de Cube
-     * @param position la position de l'objet
+     * @param position la position du cube
      */
     Cube(glm::vec3 position) : Object()
     {
@@ -33,6 +37,9 @@ protected:
 
 };
 
+/** @class CloudContainer
+ * @brief Représente un conteneur à nuages
+ */
 class CloudContainer : public Object
 {
 public:
@@ -40,17 +47,18 @@ public:
     float m_anvilAmount;
     float m_lightMultiplicator;
     float m_timeFactor;
-    float m_globalCoverage;
-    float m_globalDensity;
-    float m_lightPower;
-    float m_minHeight;
-    float m_maxHeight;
-    float m_minDensity;
-    float m_maxDensity;
-    glm::vec3 m_lightPos;
-    glm::vec3 m_vboxMin;
-    glm::vec3 m_vboxMax;
+    float m_globalCoverage; //!< contrôle la couverture nuageuse
+    float m_globalDensity;  //!< contrôle la densité globale
+    float m_lightPower;     //!< contrôle la puissance de la source de lumière
+    float m_minHeight;      //!< contrôle la hauteur minimale des nuages dans le conteneur
+    float m_maxHeight;      //!< contrôle la heuteur maximale des nuages dans le conteneur
+    float m_minDensity;     //!< contrôle la densité minimale
+    float m_maxDensity;     //!< contrôle la densité maximale
+    glm::vec3 m_lightPos;   //!< position de la source de lumière
+    glm::vec3 m_vboxMin;    //!< coin inferieur du conteneur
+    glm::vec3 m_vboxMax;    //!< coin supérieur du conteneur
 
+    /// Constructeur du conteneur de nuages
     CloudContainer(glm::vec3 position) : Object()
     {
         setPosition(position);
@@ -125,6 +133,9 @@ public:
     ~CloudContainer() {}
 };
 
+/** @class Terrain
+ * @brief Représente un terrain avec un mesh pré-généré
+ */
 class Terrain : public Object
 {
 public:

@@ -6,7 +6,7 @@
 #include "Objects.h"
 
 /** @class World
- * @brief Gère les meshs, un peu comme une scène sur unity et contient la matrice du monde
+ * @brief Gère les objets, un peu comme une scène sur unity et contient la matrice du monde
  */
 class World
 {
@@ -24,6 +24,7 @@ class World
      */
     void addNewCube(const std::string & shaderKey, std::vector<std::string> textureKeys, bool is2D = false);
 
+    /// Renvoie la Camera utilisée
     Camera* getCam();
 
     /** @brief Ajoute un cube a la scene
@@ -51,9 +52,11 @@ class World
     ~World();
 
   private:
+    /// Gestionnaire de textures
     Textures m_textures;
+    /// Gestionnaire de shaders
     Shader m_shader;
-
+    /// Le temps écoulé depuis le lancement du monde
     float m_time;
 
 };
