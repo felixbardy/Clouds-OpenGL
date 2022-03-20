@@ -2,15 +2,14 @@
 
 ## Description
 
-Objectif: Simulation de nuages volumétriques sur openGL \
-État actuel: Mise en place de l'environnement de travail
+Objectif: Simulation en temps réel de nuages volumétriques sur openGL
 
 ## Librairies
 
 * **Glad**: \
- Glad est un loader openGL, à réinstaller dans `lib/` si vous rencontrez des problèmes. \
+ Glad est un loader openGL, il est intégré au git mais à réinstaller dans `lib/` si vous rencontrez des problèmes. \
  La librairie peut être [générée ici.](https://glad.dav1d.de/)
-
+ 
 * **GLFW**: \
  Gestionnaire de fenêtres pour openGL \
  Installation:
@@ -22,7 +21,7 @@ Objectif: Simulation de nuages volumétriques sur openGL \
 * **GLM**: \
 Librairie de fonctions mathématiques pour openGL
 
-        sudo apt install libglm-dev
+        sudo apt-get install libglm-dev
 
 ## Compilation
 
